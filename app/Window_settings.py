@@ -187,7 +187,7 @@ class FormWindow_Settings(QWidget):
             self.textBox_convolution_execution_index.text() not in allowed_values or
             self.textBox_otherColorFunctions_execution_index.text() not in allowed_values
             ):
-            print("Error: one or more of the entered color functions indexes was not found.")
+            print(f"Error: one or more of the entered color functions indexes was not found! The allowed indexes are:\n{allowed_values}")
             return False
         
         if(
@@ -195,16 +195,11 @@ class FormWindow_Settings(QWidget):
             self.textBox_sliders_execution_index.text() == self.textBox_otherColorFunctions_execution_index.text() or
             self.textBox_convolution_execution_index.text() == self.textBox_otherColorFunctions_execution_index.text() 
         ):
-            print("Error: an index of color function cannot be the same as the index of any other color function")
+            print("Error: an index of color function cannot be the same as the index of any other color function!")
             return False
-
-        if(
-            self.textBox_sliders_execution_index.text() != "" or
-            self.textBox_convolution_execution_index.text() != "" or
-            self.textBox_otherColorFunctions_execution_index.text() != ""
-        ):
-            self.color_functions_execution_order[0] = int(self.textBox_sliders_execution_index.text())
-            self.color_functions_execution_order[1] = int(self.textBox_convolution_execution_index.text())
-            self.color_functions_execution_order[2] = int(self.textBox_otherColorFunctions_execution_index.text())
+        
+        self.color_functions_execution_order[0] = int(self.textBox_sliders_execution_index.text())
+        self.color_functions_execution_order[1] = int(self.textBox_convolution_execution_index.text())
+        self.color_functions_execution_order[2] = int(self.textBox_otherColorFunctions_execution_index.text())
         
         return True
