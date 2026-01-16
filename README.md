@@ -180,7 +180,7 @@ The sliders on the Main window and the convolutional filters on the Convolution 
 ### Setup
 0. Clone the repository
 
-1. Create a virtual python environment  
+1. Create a virtual python environment (make sure the env's folder is inside the repo)  
    `python -m venv "path/to/new/virtual/environment"`  
 
 2. Activate the env - if you don't know how you can check my `python_venv_activation.md` file
