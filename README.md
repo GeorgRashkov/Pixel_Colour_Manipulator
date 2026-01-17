@@ -15,45 +15,27 @@ This project depends on third-party packages that may have their own license agr
 
 **🧮 User-defined formulas for each RGB channel**
 
-
-
 **🌀 Near real-time pixel transformation using a configurable timer**
-
-
 
 **🎛️ Per-channel convolutional filters**
 
-
-
 **🎨 Drawing masks that apply separate formulas to user-painted regions**
-
-
 
 **📸 Capture masks that apply separate formulas to different regions created with the output of the Main window and RGB thresholds defined by the user**
 
-
-
 **🎥 Works on almost anything placed below the Main window including static content or live video behind the window**
 
-
-
 ##
-
-
 
 ### **How it works**
 
 The Main window continuously samples the pixels under it and applies the user-defined formulas to them.
 
-
-
-The Main window allows the user to enter formula for each of the RGB channels. Formulas entered by user are used as a return value from lambda functions. Each lambda function takes as input the parameters `(r,g,b)` where `r` contains the red channel pixel values under the window, `g` contains the green channel pixel values under the window, `b` contains the blue channel pixel values under the window. Each Main window RGB channel has its own lambda function whose return value is defined by the user. 
-
-
+The Main window allows the user to enter formula for each of the RGB channels. Formulas entered by user are used as a return value from lambda functions. Each lambda function takes as input the parameters `(r,g,b)` where `r` contains the red channel pixel values under the window, `g` contains the green channel pixel values under the window, `b` contains the blue channel pixel values under the window. Each Main window RGB channel has its own lambda function whose return value is defined by the user. The lambda finctions look like this:
+<br>
+`eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
 
 The user can use any of the following characters when writing the formula: \[`.` `(` `)` `r` `g` `b` `+` `-` `*` `/` `^` `%` `<` `>` `=` `0` `1` `2` `3` `4` `5` `6` `7` `8` `9`]. When writing the formula the user must use at least once any of the symbols \[`r` `g` `b`] so the program can have pixel values to apply transformations. 
-
-
 
 Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.
 
