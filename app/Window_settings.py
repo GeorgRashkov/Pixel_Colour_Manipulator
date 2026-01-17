@@ -49,7 +49,7 @@ class FormWindow_Settings(QWidget):
         #<elements - execution sequence of the functions for setting the pixel values
         self.label_color_functions_sequence = QLabel("Color functions sequence")
         
-        self.label_sliders_execution_index = QLabel("Sliders")
+        self.label_sliders_execution_index = QLabel("RGB Funcs")
         textBox_sliders_execution_index_txt = "1"
         self.textBox_sliders_execution_index = QLineEdit(textBox_sliders_execution_index_txt)
         self.textBox_sliders_execution_index.setMaxLength(1)
@@ -63,7 +63,7 @@ class FormWindow_Settings(QWidget):
         self.textBox_convolution_execution_index.setMaximumWidth(15)
         self.textBox_convolution_execution_index.setValidator(colour_funcs_sequence_validator)
         
-        self.label_otherColorFunctions_execution_index = QLabel("Others")
+        self.label_otherColorFunctions_execution_index = QLabel("Sliders")
         textBox_otherColorFunctions_execution_index_txt = "3"
         self.textBox_otherColorFunctions_execution_index = QLineEdit(textBox_otherColorFunctions_execution_index_txt)
         self.textBox_otherColorFunctions_execution_index.setMaxLength(1)
@@ -162,6 +162,8 @@ class FormWindow_Settings(QWidget):
         if(self.check_color_functions_sequence_values()==False):
             return None, None, None, None, None
 
+        self.set_color_function_execution_order()
+
         RGB_use_doubles = self.checkBox_RGB_use_doubles.isChecked()
        
 
@@ -197,9 +199,15 @@ class FormWindow_Settings(QWidget):
         ):
             print("Error: an index of color function cannot be the same as the index of any other color function!")
             return False
-        
-        self.color_functions_execution_order[0] = int(self.textBox_sliders_execution_index.text())
-        self.color_functions_execution_order[1] = int(self.textBox_convolution_execution_index.text())
-        self.color_functions_execution_order[2] = int(self.textBox_otherColorFunctions_execution_index.text())
-        
+                
         return True
+    
+    def set_color_function_execution_order(self):
+                
+        execution_indexes = [int(self.textBox_sliders_execution_index.text()),  int(self.textBox_convolution_execution_index.text()), int(self.textBox_otherColorFunctions_execution_index.text())]
+        color_func_index = 1
+
+        for execution_index in execution_indexes:
+            self.color_functions_execution_order[execution_index-1] = color_func_index
+            color_func_index += 1
+
