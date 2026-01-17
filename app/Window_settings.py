@@ -50,7 +50,7 @@ class FormWindow_Settings(QWidget):
         self.label_color_functions_sequence = QLabel("Color functions sequence")
         
         self.label_sliders_execution_index = QLabel("Sliders")
-        textBox_sliders_execution_index_txt = "3"
+        textBox_sliders_execution_index_txt = "1"
         self.textBox_sliders_execution_index = QLineEdit(textBox_sliders_execution_index_txt)
         self.textBox_sliders_execution_index.setMaxLength(1)
         self.textBox_sliders_execution_index.setMaximumWidth(15)
@@ -64,7 +64,7 @@ class FormWindow_Settings(QWidget):
         self.textBox_convolution_execution_index.setValidator(colour_funcs_sequence_validator)
         
         self.label_otherColorFunctions_execution_index = QLabel("Others")
-        textBox_otherColorFunctions_execution_index_txt = "1"
+        textBox_otherColorFunctions_execution_index_txt = "3"
         self.textBox_otherColorFunctions_execution_index = QLineEdit(textBox_otherColorFunctions_execution_index_txt)
         self.textBox_otherColorFunctions_execution_index.setMaxLength(1)
         self.textBox_otherColorFunctions_execution_index.setMaximumWidth(15)
