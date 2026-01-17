@@ -37,7 +37,7 @@ The Main window allows the user to enter formula for each of the RGB channels. F
 
 The user can use any of the following characters when writing the formula: \[`.` `(` `)` `r` `g` `b` `+` `-` `*` `/` `^` `%` `<` `>` `=` `0` `1` `2` `3` `4` `5` `6` `7` `8` `9`]. When writing the formula the user must use at least once any of the symbols \[`r` `g` `b`] so the program can have pixel values to apply transformations. 
 
-Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.
+Most of the time if the RGB formula has a correct Python syntax the app will consider it as valid. However the app considers as invalid all RGB formulas which have a comparison or arithmetic operator placed before or after another comparison or arithmetic operator. Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.
 
 ##
 
@@ -159,15 +159,28 @@ The sliders on the Main window and the convolutional filters on the Convolution 
 ##
 
 
+### Setup hints
+- The app setup process and commands were based on Windows 11 OS.
+- When running the terminal commands make sure the current working directory is the project's folder.
+- If you are not familiar with python you can execute files by running `python path/to/file` where `path/to/file` starts from the current working directory.
+
+
+##
+
+
 ### Setup
-0. Clone the repository
+0) Clone the repository
 
-1. Create a virtual python environment (make sure the env's folder is inside the repo)  
-   `python -m venv "path/to/new/virtual/environment"`  
+1) Open the terminal
 
-2. Activate the env - if you don't know how you can check my `python_venv_activation.md` file
+2) Create a virtual python environment (make sure the env's folder is inside the repo)  
+   `python -m venv "path/to/new/virtual/environment"`
+   - If you have 2 or more python versions and you want to use version 3.12.5 you should run   
+   `py -3.12 -m venv "path/to/new/virtual/environment"`
 
-3. Install the required packages in the env  
+3) Activate the env - if you don't know how, you can check my `python_venv_activation.md` file
+
+4) Install the required packages in the env  
    `pip install -r requirements.txt`
 
-4. Run the `Main_app.py` file
+5) Run the `Main_app.py` file
