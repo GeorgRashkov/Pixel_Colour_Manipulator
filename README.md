@@ -57,7 +57,7 @@ Most of the time if the RGB formula has a correct Python syntax the app will con
 * `draw mask` button - opens the Draw masks window
 * `capture mask` button - opens the Capture mask window
 * `convolution` button - opens the Convolution window
-
+* `stack output` check box - when checked the Main window will use as input the RGB values of it's own result; when unchecked the Main window will use as input the RGB values of the pixels under itself
 
 
 #### **Settings window**
