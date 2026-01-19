@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton, QSlider
 import win32con, win32gui
 import cv2
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QLabel
 from PyQt5.QtCore import Qt
 import RGB_formula_elements
 
@@ -30,6 +30,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
     def __init__(self, screen_width, screen_height, camera):
         super().__init__()
+        self.transformed_image = None
         self.rgb_kernels = None
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -65,6 +66,11 @@ class CaptureWindow(QtWidgets.QWidget):
         
         self.button_capture_now = QPushButton('capture', QtWidgets.QWidget(self))
         self.button_capture_now.clicked.connect(self.update_capture)
+
+        self.label_stack_output = QLabel("stack output")
+        self.label_stack_output.setStyleSheet("background-color: black; color: white;")
+        self.checkBox_stack_output = QCheckBox()
+        self.label_stack_output.setBuddy(self.checkBox_stack_output)
 
         self.button_open_settings = QPushButton('settings',  QtWidgets.QWidget(self))
         self.button_open_drawMask = QPushButton('draw mask',  QtWidgets.QWidget(self))
@@ -168,15 +174,17 @@ class CaptureWindow(QtWidgets.QWidget):
         self.v_layout = QVBoxLayout()
         self.v_layout.setContentsMargins(0,0,0,0)
        
-        h_layout = QHBoxLayout()
-        #h_layout.setContentsMargins(0,0,0,0)
+        h_layout = QHBoxLayout()        
         h_layout.addWidget(self.button0_showHide_widgets)
         
         h_layout.addWidget(self.button_capture_now)
+        h_layout.addWidget(self.label_stack_output)
+        h_layout.addWidget(self.checkBox_stack_output)
+        h_layout.setAlignment(Qt.AlignLeft)
+
         self.v_layout.addLayout(h_layout)
 
-        h_layout = QHBoxLayout()
-        #h_layout.setContentsMargins(0,0,0,0)
+        h_layout = QHBoxLayout()        
         h_layout.addWidget(self.button1_showHide_widgets)
         h_layout.addWidget(self.button_open_settings)
         h_layout.addWidget(self.button_open_drawMask)
@@ -184,18 +192,16 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_convolutionalFilter)
         self.v_layout.addLayout(h_layout)
 
-        h_layout = QHBoxLayout()
-        #h_layout.setContentsMargins(0,0,0,0)
+        h_layout = QHBoxLayout()        
         h_layout.addWidget(self.button2_showHide_widgets)
         h_layout.addWidget(self.slider_red)
         h_layout.addWidget(self.slider_green)
         h_layout.addWidget(self.slider_blue)
         self.v_layout.addLayout(h_layout)
-
-        #<in testing state
+        
         self.rgb_elements = RGB_formula_elements.RGB_formula_elements()
         h_layout = QHBoxLayout()
-        #h_layout.setContentsMargins(0,0,0,0)
+        
         h_layout.addWidget(self.button3_showHide_widgets)
         for channel in self.rgb_elements.channels:
             button_apply_formula = QPushButton("OK")
@@ -207,9 +213,9 @@ class CaptureWindow(QtWidgets.QWidget):
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_showHide_all_widgets, alignment=Qt.AlignLeft)
-        #h_layout.addWidget(self.button3_showHide_widgets)
+        
         self.v_layout.addLayout(h_layout)
-        #in testing state>
+       
 
         self.setLayout(self.v_layout)
         self.v_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
@@ -360,7 +366,7 @@ class CaptureWindow(QtWidgets.QWidget):
     
 
 #<Functions for changing the RGB values of the area under the window
-
+    
     def update_capture(self):
             
             """#this is usefull for checking the count of the mask filters and the colour functions (it is not important as it is only for testing purposes)
@@ -373,18 +379,22 @@ class CaptureWindow(QtWidgets.QWidget):
             
             if(w < 1 or h < 1):#don't make tranformartions if the user places the window completly outside the screen (this check avoids errors that can crash the app when `self.camera.grab` is called)
                 return
-           
-            # Use dxcam to capture that screen rectangle
-            img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+
+            img = None            
+            if(self.checkBox_stack_output.isChecked() == True and self.transformed_image is not None):
+                img = self.transformed_image 
+            else:
+                # Use dxcam to capture that screen rectangle
+                img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
            
             if img is not None:
                 
-                transformed_image = self.transform_image(img)
+                self.transformed_image = self.transform_image(img)
                
                 # Convert to QImage
-                h, w = transformed_image.shape[:2]
+                h, w = self.transformed_image.shape[:2]
                 bytes_per_line = 3 * w
-                qimg = QtGui.QImage(transformed_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+                qimg = QtGui.QImage(self.transformed_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
                 
                 # make a QPixmap to draw (copy to ensure memory is owned by Qt)
                 pixmap = QtGui.QPixmap.fromImage(qimg).copy()
