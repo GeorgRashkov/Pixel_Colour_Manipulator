@@ -37,8 +37,9 @@ The Main window allows the user to enter formula for each of the RGB channels. F
 
 The user can use any of the following characters when writing the formula: \[`.` `(` `)` `r` `g` `b` `+` `-` `*` `/` `^` `%` `<` `>` `=` `0` `1` `2` `3` `4` `5` `6` `7` `8` `9`]. When writing the formula the user must use at least once any of the symbols \[`r` `g` `b`] so the program can have pixel values to apply transformations. 
 
-Most of the time if the RGB formula has a correct Python syntax the app will consider it as valid. However the app considers as invalid all RGB formulas which have a comparison or arithmetic operator placed before or after another comparison or arithmetic operator. Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.
+Most of the time if the RGB formula has a correct Python syntax the app will consider it as valid. However the app considers as invalid all RGB formulas which have a comparison or arithmetic operator placed before or after another comparison or arithmetic operator. Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.<br>
 
+If you want to know more about the RGB formulas you can check my `RGB_formulas.md` document.
 ##
 
 
