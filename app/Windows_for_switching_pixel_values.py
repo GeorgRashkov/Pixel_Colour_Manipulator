@@ -3,7 +3,6 @@ import Window_canvas, Canvas_switch_pixel_values, Window_switch_pixel_values
 from PyQt5.QtCore import Qt
 
 import ast
-import numpy as np
 
 import Check_input_for_switching_pixel_values
 
@@ -55,33 +54,17 @@ class Windows_for_switching_pixel_values:
         self.canvas_window.canvas.clear()
         self.canvas_window.canvas.insert_rectangle_pairs(rectangle_pairs=rectangle_pairs)
     
+        
     def update_text_area(self, rectangle_pairs: list):
         
         text = str(rectangle_pairs)
         text = text[1:len(text)-1]#remove the first and last bracket of the whole expression
-        text = f"{text},"
-        text = self.add_new_lines(text)
-        self.form_window.text_area.setText(text)
+        text = f"{text},"#add a comma at the end so the string format of all rectangle pairs is the same
+        
+        text = text.replace("[[[", "[   [ [").replace("]]],","] ]   ],\n").replace("[[", "[ [").replace("]]", "] ]").replace(", [ [", ",   [ [") #adding some spaces and new lines for readability      
 
-    def add_new_lines(self, text):
-        
-        start_index = 5
-        end_index = len(text)-5
-        new_text = ""
-        last_used_index = 0
-        
-        for i in range(start_index, end_index):
-            if(text[i]==","):
-                if(text[i-3:i] == "]]]"):
-                    new_text = f"{new_text}{text[last_used_index:i+1]}\n"
-                    last_used_index = i+1
-        
-        new_text = f"{new_text}{text[last_used_index:len(text)]}\n"
+        self.form_window.text_area.setText(text)    
 
-        return new_text              
-
-        
-    
 
     def show_form_window(self):
         self.form_window.show()

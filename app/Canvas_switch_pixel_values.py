@@ -61,27 +61,7 @@ class DrawingWidget(QWidget):
     
     def mousePressEvent(self, event):
         self.mousePressed.emit(event.pos(), event.button())#emiting the signal will call a function specified from outside the class
-    """   
-    def left_mouse_button_pressed(self, event):#this is called from the outside the class
-        if event.button() == Qt.LeftButton:
-            
-            size = self.brush_size
-            x = event.pos().x() - size // 2
-            y = event.pos().y() - size // 2
-
-            
-            x = max(0, min(x, self.width() - size))
-            y = max(0, min(y, self.height() - size))
-
-            w = self.width()
-            h = self.height()
-            size =  min(size, min(w,h))
-
-            self.rectangles.append((x, y, size, QColor(self.brush_color)))
-            self.is_first_half = not self.is_first_half
-            self.update()
-            return "some success message"
-    """
+   
 
     #this function decides where to drawn the rectangle and determines its size
     def left_mouse_button_pressed(self, x: int, y: int, r_channel:bool, g_channel:bool, b_channel:bool):#this is called from the outside the class
