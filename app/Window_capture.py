@@ -39,10 +39,14 @@ class CaptureWindow(QtWidgets.QWidget):
         self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
         self.default_color_function = lambda r,g,b: np.stack([r, g, b], axis=-1)#{"r": lambda r,g,b: r, "g": lambda r,g,b: g, "b": lambda r,g,b: b}
         
+        # each element in `swop_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
+        # a rectangle looks like this f"[ [{y}, {x}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
+        self.swop_pixel_areas = None #when initialized it must a numpy array
+
         self.RGB_use_doubles = False
 
-        self.color_methods_execution_order = [1, 2, 3] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
-        self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
+        self.color_methods_execution_order = [1, 2, 3, 4] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
+        self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_swop_pixel_areas] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
         self.setWindowTitle("Color Changer")
         self.setMinimumSize(200, 30)
@@ -76,6 +80,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_drawMask = QPushButton('draw mask',  QtWidgets.QWidget(self))
         self.button_open_captureMask = QPushButton('capture mask',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
+        self.button_open_swopAreas = QPushButton('swop areas',  QtWidgets.QWidget(self))
 
         #<color sliders
         
@@ -178,6 +183,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button0_showHide_widgets)
         
         h_layout.addWidget(self.button_capture_now)
+        h_layout.addWidget(self.button_open_settings)
         h_layout.addWidget(self.label_stack_output)
         h_layout.addWidget(self.checkBox_stack_output)
         h_layout.setAlignment(Qt.AlignLeft)
@@ -185,11 +191,11 @@ class CaptureWindow(QtWidgets.QWidget):
         self.v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()        
-        h_layout.addWidget(self.button1_showHide_widgets)
-        h_layout.addWidget(self.button_open_settings)
+        h_layout.addWidget(self.button1_showHide_widgets)        
         h_layout.addWidget(self.button_open_drawMask)
         h_layout.addWidget(self.button_open_captureMask)
         h_layout.addWidget(self.button_open_convolutionalFilter)
+        h_layout.addWidget(self.button_open_swopAreas)
         self.v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()        
@@ -492,12 +498,60 @@ class CaptureWindow(QtWidgets.QWidget):
         transformed_image = np.dstack((image_red, image_green, image_blue))
         return transformed_image           
     
-    
+
+    def apply_swop_pixel_areas(self, img):
+        
+        if(self.swop_pixel_areas is None):
+            return img
+        
+        for rectangle_pair in self.swop_pixel_areas:
+            
+            first_rectangle = rectangle_pair[0]
+            second_rectangle = rectangle_pair[1]
+
+            frc = first_rectangle[0]#first rectangle coordinates (x, y, size) -> example (150, 340, 50)
+            frr = first_rectangle[1]#first rectangle rgb values (use_r, use_g, use_b) -> example (1,1,0) 
+            src = second_rectangle[0]#second rectangle coordinates (x, y, size) -> example (100, 50, 320)
+            srr = second_rectangle[1]#second rectangle rgb values (use_r, use_g, use_b) -> example (0,0,0)
+
+            #if the any of the recntangle pairs is outside the borders of the image don't apply the swap of areas
+            if( (frc[0]+frc[2]>img.shape[0] or frc[1]+frc[2]>img.shape[1]) or
+                (src[0]+src[2]>img.shape[0] or src[1]+src[2]>img.shape[1])
+                ):
+                return img
+
+            #<swaps the chosen rgb channels from the 2 areas (in this case rectangles)
+            img_first_rectangle = np.array(img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), srr==1])
+            
+            img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), frr==1] = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), frr==1]
+
+            img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), srr==1] = img_first_rectangle
+            #swaps the chosen rgb channels from the 2 areas (in this case rectangles)>
+        
+        return img
+        
+
+    # each element in `swop_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
+    # a rectangle looks like this f"[ [{y}, {x}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
+    def set_swop_pixel_areas(self, swop_pixel_areas : np.array):
+        
+        if(swop_pixel_areas is None):
+            self.swop_pixel_areas = None
+        
+        elif(isinstance(swop_pixel_areas, np.ndarray) and len(swop_pixel_areas.shape) == 4 and swop_pixel_areas.shape[1:] == (2,2,3)):
+            self.swop_pixel_areas = swop_pixel_areas
+
+            print("isinstance(swop_pixel_areas, np.ndarray)", isinstance(swop_pixel_areas, np.ndarray))
+            print("len(swop_pixel_areas.shape) == 4", len(swop_pixel_areas.shape) == 4)
+            print("swop_pixel_areas.shape[1:] == (2,2,3)", swop_pixel_areas.shape[1:] == (2,2,3))
+
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
             
         self.color_functions = None if(color_functions==None or len(color_functions)==0) else color_functions
         self.default_color_function = self.default_color_function if(default_color_function==None) else default_color_function
         self.mask_filters = None if(mask_filters==None or len(mask_filters)==0) else mask_filters
+
+    
 
     def remove_mask(self):
 

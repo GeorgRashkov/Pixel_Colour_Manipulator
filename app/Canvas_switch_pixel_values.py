@@ -14,7 +14,7 @@ class DrawingWidget(QWidget):
         self.last_point = QPointF()
         self.rectangles  = []  # each item has (x, y, size, color)
         
-        self.brush_color = QColor(0, 0, 0)
+        self.brush_color = QColor(255, 255, 255)
         self.brush_size = 5 #initial brush size
         self.brush_min_size = 5
         self.brush_max_size = 200

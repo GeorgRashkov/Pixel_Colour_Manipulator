@@ -3,7 +3,7 @@ from PyQt5.QtGui import QColor, QImage
 import sys
 import numpy as np
 import dxcam
-import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask#, Windows_for_switching_pixel_values
+import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask, Windows_for_switching_pixel_values
 
 import Number_format_checker
 import Canvas
@@ -14,10 +14,10 @@ class MainApp:
 
         #<in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        #self.Windows_for_switching_pixel_values = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
-        #self.Windows_for_switching_pixel_values.show_form_window()
-        #self.Windows_for_switching_pixel_values.show_canvas_window()
-        #return
+        self.Windows_swop_pixel_areas = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
+        self.Windows_swop_pixel_areas.form_window.button_apply_swop_areas.clicked.connect(self.apply_swop_pixel_areas)
+        self.Windows_swop_pixel_areas.form_window.button_remove_swop_areas.clicked.connect(self.remove_swop_pixel_areas)
+        
 
         #in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
 
@@ -33,6 +33,7 @@ class MainApp:
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
+        self.capture_window.button_open_swopAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         
         #settings window
         self.settings_window = Window_settings.FormWindow_Settings()
@@ -89,6 +90,18 @@ class MainApp:
     
     def open_window_covolutional_filter(self):
         self.convolutional_filter_window.show()
+    
+    def open_windows_swop_pixel_areas(self):
+        self.Windows_swop_pixel_areas.show_form_window()
+        self.Windows_swop_pixel_areas.show_canvas_window()
+
+    def apply_swop_pixel_areas(self):
+        
+        swop_pixel_areas = self.Windows_swop_pixel_areas.get_swoped_areas()#the result will be a numpy array
+        self.capture_window.set_swop_pixel_areas(swop_pixel_areas=swop_pixel_areas)
+    
+    def remove_swop_pixel_areas(self):
+        self.capture_window.set_swop_pixel_areas(None)
         
 
     def apply_settings(self):

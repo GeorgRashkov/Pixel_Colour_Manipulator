@@ -47,6 +47,8 @@ class FormWindow_Settings(QWidget):
         #elements - set min and max values for the sliders on the window capture>
 
         #<elements - execution sequence of the functions for setting the pixel values
+        self.allowed_colour_functions_values = ["1", "2", "3", "4"]
+        
         self.label_color_functions_sequence = QLabel("Color functions sequence")
         
         self.label_sliders_execution_index = QLabel("RGB Funcs")
@@ -70,10 +72,18 @@ class FormWindow_Settings(QWidget):
         self.textBox_otherColorFunctions_execution_index.setMaximumWidth(15)
         self.textBox_otherColorFunctions_execution_index.setValidator(colour_funcs_sequence_validator)
 
+        self.label_swopPixelAreas_execution_index = QLabel("Swop areas")
+        textBox_swopPixelAreas_execution_index_txt = "4"
+        self.textBox_swopPixelAreas_execution_index = QLineEdit(textBox_swopPixelAreas_execution_index_txt)
+        self.textBox_swopPixelAreas_execution_index.setMaxLength(1)
+        self.textBox_swopPixelAreas_execution_index.setMaximumWidth(15)
+        self.textBox_swopPixelAreas_execution_index.setValidator(colour_funcs_sequence_validator)
+
         self.color_functions_execution_order = [
             int(textBox_sliders_execution_index_txt), 
             int(textBox_convolution_execution_index_txt), 
-            int(textBox_otherColorFunctions_execution_index_txt)
+            int(textBox_otherColorFunctions_execution_index_txt),
+            int(textBox_swopPixelAreas_execution_index_txt)
         ]
         #elements - execution sequence of the functions for setting the pixel values>
 
@@ -127,6 +137,9 @@ class FormWindow_Settings(QWidget):
 
         h_layout.addWidget(self.label_otherColorFunctions_execution_index)
         h_layout.addWidget(self.textBox_otherColorFunctions_execution_index)
+
+        h_layout.addWidget(self.label_swopPixelAreas_execution_index)
+        h_layout.addWidget(self.textBox_swopPixelAreas_execution_index)
 
         v_layout.addLayout(h_layout)
 
@@ -182,14 +195,13 @@ class FormWindow_Settings(QWidget):
     
 
     def check_color_functions_sequence_values(self):
-        allowed_values = ["1", "2", "3"]
 
         if(
-            self.textBox_sliders_execution_index.text() not in allowed_values or
-            self.textBox_convolution_execution_index.text() not in allowed_values or
-            self.textBox_otherColorFunctions_execution_index.text() not in allowed_values
+            self.textBox_sliders_execution_index.text() not in self.allowed_colour_functions_values or
+            self.textBox_convolution_execution_index.text() not in self.allowed_colour_functions_values or
+            self.textBox_otherColorFunctions_execution_index.text() not in self.allowed_colour_functions_values
             ):
-            print(f"Error: one or more of the entered color functions indexes was not found! The allowed indexes are:\n{allowed_values}")
+            print(f"Error: one or more of the entered color functions indexes was not found! The allowed indexes are:\n{self.allowed_colour_functions_values}")
             return False
         
         if(
@@ -204,7 +216,7 @@ class FormWindow_Settings(QWidget):
     
     def set_color_function_execution_order(self):
                 
-        execution_indexes = [int(self.textBox_sliders_execution_index.text()),  int(self.textBox_convolution_execution_index.text()), int(self.textBox_otherColorFunctions_execution_index.text())]
+        execution_indexes = [int(self.textBox_sliders_execution_index.text()),  int(self.textBox_convolution_execution_index.text()), int(self.textBox_otherColorFunctions_execution_index.text()), int(self.textBox_swopPixelAreas_execution_index.text())]
         color_func_index = 1
 
         for execution_index in execution_indexes:

@@ -17,14 +17,17 @@ class FormWindow_SwichPixelValies(QWidget):
         self.r_check_box = QCheckBox()
         self.r_label = QLabel("red channel")
         self.r_label.setBuddy(self.r_check_box)
+        self.r_check_box.setChecked(True)
 
         self.g_check_box = QCheckBox()
         self.g_label = QLabel("green channel")
         self.g_label.setBuddy(self.g_check_box)
+        self.g_check_box.setChecked(True)
 
         self.b_check_box = QCheckBox()
         self.b_label = QLabel("blue channel")
         self.b_label.setBuddy(self.b_check_box)
+        self.b_check_box.setChecked(True)
         #RGB check boxes>
 
         self.text_area = Text_area()
@@ -32,7 +35,8 @@ class FormWindow_SwichPixelValies(QWidget):
         self.button_update_canvas = QPushButton("Update canvas")
         self.button_update_canvas_and_text_area = QPushButton("Update canvas and text")
         self.button_clear_canvas = QPushButton("Clear canvas")
-        self.button_apply = QPushButton("Apply")
+        self.button_apply_swop_areas = QPushButton("Apply areas")
+        self.button_remove_swop_areas = QPushButton("Remove areas")
         
 
 
@@ -57,7 +61,11 @@ class FormWindow_SwichPixelValies(QWidget):
         h_layout.addWidget(self.button_update_canvas)
         h_layout.addWidget(self.button_update_canvas_and_text_area)
         h_layout.addWidget(self.button_clear_canvas)
-        h_layout.addWidget(self.button_apply)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_apply_swop_areas)
+        h_layout.addWidget(self.button_remove_swop_areas)
         v_layout.addLayout(h_layout)
 
         self.setLayout(v_layout)

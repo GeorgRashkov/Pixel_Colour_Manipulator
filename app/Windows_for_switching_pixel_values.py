@@ -3,6 +3,7 @@ import Window_canvas, Canvas_switch_pixel_values, Window_switch_pixel_values
 from PyQt5.QtCore import Qt
 
 import ast
+import numpy as np
 
 import Check_input_for_switching_pixel_values
 
@@ -17,7 +18,9 @@ class Windows_for_switching_pixel_values:
         self.form_window.button_update_canvas_and_text_area.clicked.connect(lambda: self.update_canvas(True))
         self.form_window.button_clear_canvas.clicked.connect(self.clear_canvas)
         
-        self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)        
+        self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
+        
+        self.swop_pixel_areas = []      
     
     def clear_canvas(self):
         self.canvas_window.canvas.clear()
@@ -40,14 +43,16 @@ class Windows_for_switching_pixel_values:
         
         canvas_width = self.canvas_window.canvas.width()
         canvas_height = self.canvas_window.canvas.height()
-        wrong_rectangle_pair_indexes = Check_input_for_switching_pixel_values.get_wrong_rectangle_pair_indexes(canvas_width = canvas_width, canvas_height = canvas_height, rectangle_pairs = rectangle_pairs, rgb_channel_allowed_values = [0,1])
+        wrong_rectangle_pairs_indexes = Check_input_for_switching_pixel_values.get_wrong_rectangle_pair_indexes(canvas_width = canvas_width, canvas_height = canvas_height, rectangle_pairs = rectangle_pairs, rgb_channel_allowed_values = [0,1])
 
         
-        correct_rectangle_pairs = [v for i, v in enumerate(rectangle_pairs) if i not in wrong_rectangle_pair_indexes]
+        correct_rectangle_pairs = [v for i, v in enumerate(rectangle_pairs) if i not in wrong_rectangle_pairs_indexes]
         self.delete_insert_rectangles_to_canvas(correct_rectangle_pairs)
         
         if(update_text == True):
             self.update_text_area(correct_rectangle_pairs)
+        
+        self.swop_pixel_areas = correct_rectangle_pairs
         
     
     def delete_insert_rectangles_to_canvas(self, rectangle_pairs: list):
@@ -88,7 +93,6 @@ class Windows_for_switching_pixel_values:
             x, y, size = self.canvas_window.canvas.left_mouse_button_pressed(x = x, y = y, r_channel=use_red, g_channel=use_green, b_channel=use_blue)
 
             #< append the coordinates of the drawn rectangle to the text area
-            #text = f"{[[x, y, size], [int(use_red), int(use_green), int(use_blue)]]}"
             text = f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]"
 
             if(self.canvas_window.canvas.is_first_half == True):
@@ -99,6 +103,23 @@ class Windows_for_switching_pixel_values:
                 self.form_window.text_area.append_on_same_line(text)               
             #append the coordinates of the drawn rectangle to the text area >
 
-            self.canvas_window.canvas.is_first_half = not self.canvas_window.canvas.is_first_half            
+            self.canvas_window.canvas.is_first_half = not self.canvas_window.canvas.is_first_half    
+
+
+    def get_swoped_areas(self):
+        
+        self.update_canvas(update_text=True)# assures that only valid swop areas are passed
+
+        if(len(self.swop_pixel_areas) == 0):#avoids empty list errors which will happen when `swop_pixel_areas` is empty and is used with `np.array(self.swop_pixel_areas[:,:,0,0])`
+            return np.array([])
+
+        #the areas will be tranformed into a numpy array; for each rectangle the places of `x` are swopped with those of `y` (this is what a rectangle looks like f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]")
+        #the reason for swopping `x` and `y` values is because the image wich will use the swop areas will be a "numpy.ndarray" with shape (Height, Width, 3[RGB])` (`x` must correspond to `Width` while `y` must correpond to `Height`)
+        swop_pixel_areas = np.array(self.swop_pixel_areas)
+        helper = np.array(swop_pixel_areas[:,:,0,0])
+        swop_pixel_areas[:,:,0,0] = swop_pixel_areas[:,:,0,1] 
+        swop_pixel_areas[:,:,0,1] = helper      
+
+        return swop_pixel_areas
             
             
