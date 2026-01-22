@@ -1,16 +1,16 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
-import Canvas    
+ 
 
 
 class CanvasWindow(QWidget):
-    def __init__(self):
+    def __init__(self, canvas):
         super().__init__()
 
         
         self.setMinimumSize(100, 30)
         self.resize(400, 400)
         
-        self.canvas = Canvas.DrawingWidget()
+        self.canvas = canvas
         self.setWindowTitle(self.canvas.get_window_title())
         
         layout = QVBoxLayout()

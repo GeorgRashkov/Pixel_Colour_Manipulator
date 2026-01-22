@@ -3,13 +3,23 @@ from PyQt5.QtGui import QColor, QImage
 import sys
 import numpy as np
 import dxcam
-import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask
+import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask#, Windows_for_switching_pixel_values
 
 import Number_format_checker
+import Canvas
 
 class MainApp: 
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
+
+        #<in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        #self.Windows_for_switching_pixel_values = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
+        #self.Windows_for_switching_pixel_values.show_form_window()
+        #self.Windows_for_switching_pixel_values.show_canvas_window()
+        #return
+
+        #in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
 
         #screen
         self.screen = self.app.primaryScreen()
@@ -34,7 +44,8 @@ class MainApp:
         self.convolutional_filter_window.button_remove_filters.clicked.connect(self.remove_convolutional_filters)
 
         #<form window with canvas window (draw mask)
-        self.canvas_window = Window_canvas.CanvasWindow()
+        canvas = Canvas.DrawingWidget()
+        self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas)
       
         self.mask_ids = [[255, 0, 0], [0, 255, 0],[0, 0, 255], [255, 255, 0],[0, 0, 0], [255, 255, 255]]
         draw_colors = [QColor(255, 0, 0), QColor(0, 255, 0), QColor(0, 0, 255), QColor(255, 255, 0), QColor(0, 0, 0), QColor(255, 255, 255),]
