@@ -1,5 +1,10 @@
 import numpy as np
 
+class RGB_formula_validators:
+    rgb_formula_valid_symbols = ['.','(',')','r','g','b','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
+    rgb_formula_valid_symbols_regex = "[.()rgb+\\-*\\/^%<>=0123456789 |;]"
+    rgb_default_formulas_for_swap_areas = "r->[r] g->[g] b->[b]  |  r->[r] g->[g] b->[b];"
+
 def check_RGB_formula_format(rgb_formula: str, channel: str):
         
         #<allowed symbols collections

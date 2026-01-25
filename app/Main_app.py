@@ -97,11 +97,11 @@ class MainApp:
 
     def apply_swop_pixel_areas(self):
         
-        swop_pixel_areas = self.Windows_swop_pixel_areas.get_swoped_areas()#the result will be a numpy array
-        self.capture_window.set_swop_pixel_areas(swop_pixel_areas=swop_pixel_areas)
+        swap_pixel_areas, swap_pixel_areas_rgb_formulas = self.Windows_swop_pixel_areas.get_swaped_areas()#the result will be a numpy array
+        self.capture_window.set_swap_pixel_areas(swap_pixel_areas=swap_pixel_areas, swap_pixel_areas_rgb_formulas = swap_pixel_areas_rgb_formulas)
     
     def remove_swop_pixel_areas(self):
-        self.capture_window.set_swop_pixel_areas(None)
+        self.capture_window.set_swap_pixel_areas(swap_pixel_areas = None, swap_pixel_areas_rgb_formulas = None)
         
 
     def apply_settings(self):

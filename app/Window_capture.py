@@ -39,9 +39,14 @@ class CaptureWindow(QtWidgets.QWidget):
         self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
         self.default_color_function = lambda r,g,b: np.stack([r, g, b], axis=-1)#{"r": lambda r,g,b: r, "g": lambda r,g,b: g, "b": lambda r,g,b: b}
         
-        # each element in `swop_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
-        # a rectangle looks like this f"[ [{y}, {x}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
-        self.swop_pixel_areas = None #when initialized it must a numpy array
+        # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
+        # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
+        self.swap_pixel_areas = None #when initialized it must a numpy array
+        
+        #`swap_pixel_areas_rgb_formulas` is a dictionary which has numbers (RGB fomulas ids) for keys and RGB fommulas (represented as lamda functions) for values,
+        # the default key is `0` while the default value is = `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`)
+        self.swap_pixel_areas_rgb_formulas = None
+        
 
         self.RGB_use_doubles = False
 
@@ -501,18 +506,21 @@ class CaptureWindow(QtWidgets.QWidget):
 
     def apply_swop_pixel_areas(self, img):
         
-        if(self.swop_pixel_areas is None):
+        if(self.swap_pixel_areas is None):
             return img
         
-        for rectangle_pair in self.swop_pixel_areas:
+        for rectangle_pair in self.swap_pixel_areas:
             
             first_rectangle = rectangle_pair[0]
             second_rectangle = rectangle_pair[1]
 
             frc = first_rectangle[0]#first rectangle coordinates (x, y, size) -> example (150, 340, 50)
             frr = first_rectangle[1]#first rectangle rgb values (use_r, use_g, use_b) -> example (1,1,0) 
+            fr_rgb_formula_id = first_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
+            
             src = second_rectangle[0]#second rectangle coordinates (x, y, size) -> example (100, 50, 320)
             srr = second_rectangle[1]#second rectangle rgb values (use_r, use_g, use_b) -> example (0,0,0)
+            sr_rgb_formula_id = second_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
 
             #if the any of the recntangle pairs is outside the borders of the image don't apply the swap of areas
             if( (frc[0]+frc[2]>img.shape[0] or frc[1]+frc[2]>img.shape[1]) or
@@ -527,23 +535,41 @@ class CaptureWindow(QtWidgets.QWidget):
 
             img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), srr==1] = img_first_rectangle
             #swaps the chosen rgb channels from the 2 areas (in this case rectangles)>
+
+            #<apply rgb functions to swap areas
+            if(fr_rgb_formula_id != 0):
+                r_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 0]
+                g_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 1]
+                b_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 2]
+                img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2])] = self.swap_pixel_areas_rgb_formulas[fr_rgb_formula_id](r_img_first_rectangle, g_img_first_rectangle, b_img_first_rectangle)
+            
+            if(sr_rgb_formula_id != 0):
+                r_img_second_rectangle =  img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 0]
+                g_img_second_rectangle = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 1]
+                b_img_second_rectangle = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 2]
+                img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2])] = self.swap_pixel_areas_rgb_formulas[sr_rgb_formula_id](r_img_second_rectangle, g_img_second_rectangle, b_img_second_rectangle)
+            #apply rgb functions to swap areas>
         
         return img
-        
+    
 
-    # each element in `swop_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
-    # a rectangle looks like this f"[ [{y}, {x}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
-    def set_swop_pixel_areas(self, swop_pixel_areas : np.array):
+    # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles),
+    # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle);
+    #`swap_pixel_areas_rgb_formulas` is a dictionary which has numbers (RGB fomulas ids) for keys and RGB fommulas (represented as lamda functions) for values,
+    # the default key is `0` while the default value is = `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`)
+    def set_swap_pixel_areas(self, swap_pixel_areas : np.array, swap_pixel_areas_rgb_formulas:dict):
         
-        if(swop_pixel_areas is None):
-            self.swop_pixel_areas = None
+        if(swap_pixel_areas is None or swap_pixel_areas_rgb_formulas is None):
+            self.swap_pixel_areas = None
+            self.swap_pixel_areas_rgb_formulas = None
         
-        elif(isinstance(swop_pixel_areas, np.ndarray) and len(swop_pixel_areas.shape) == 4 and swop_pixel_areas.shape[1:] == (2,2,3)):
-            self.swop_pixel_areas = swop_pixel_areas
+        elif(isinstance(swap_pixel_areas, np.ndarray) and len(swap_pixel_areas.shape) == 4 and swap_pixel_areas.shape[1:] == (2,3,3)):
+            self.swap_pixel_areas = swap_pixel_areas
+            self.swap_pixel_areas_rgb_formulas = swap_pixel_areas_rgb_formulas
 
-            print("isinstance(swop_pixel_areas, np.ndarray)", isinstance(swop_pixel_areas, np.ndarray))
-            print("len(swop_pixel_areas.shape) == 4", len(swop_pixel_areas.shape) == 4)
-            print("swop_pixel_areas.shape[1:] == (2,2,3)", swop_pixel_areas.shape[1:] == (2,2,3))
+            print("isinstance(swop_pixel_areas, np.ndarray)", isinstance(swap_pixel_areas, np.ndarray))
+            print("len(swop_pixel_areas.shape) == 4", len(swap_pixel_areas.shape) == 4)
+            print("swop_pixel_areas.shape[1:] == (2,2,3)", swap_pixel_areas.shape[1:] == (2,3,3))
 
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
             
