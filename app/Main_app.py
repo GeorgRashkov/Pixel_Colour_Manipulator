@@ -12,14 +12,7 @@ class MainApp:
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
 
-        #<in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        self.Windows_swop_pixel_areas = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
-        self.Windows_swop_pixel_areas.form_window.button_apply_swop_areas.clicked.connect(self.apply_swop_pixel_areas)
-        self.Windows_swop_pixel_areas.form_window.button_remove_swop_areas.clicked.connect(self.remove_swop_pixel_areas)
-        
-
-        #in testing state!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+       
 
         #screen
         self.screen = self.app.primaryScreen()
@@ -71,6 +64,12 @@ class MainApp:
             self.form_window_capture_mask.forms[i].button_for_seting_color_variables.clicked.connect(self.apply_capture_mask)
         
         #form window (create mask from capture window)>
+
+        #swap pixel areas window
+        self.Windows_swop_pixel_areas = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
+        self.Windows_swop_pixel_areas.form_window.button_apply_swop_areas.clicked.connect(self.apply_swop_pixel_areas)
+        self.Windows_swop_pixel_areas.form_window.button_remove_swop_areas.clicked.connect(self.remove_swop_pixel_areas)
+        
     
         self.capture_window.show()
         sys.exit(self.app.exec_())

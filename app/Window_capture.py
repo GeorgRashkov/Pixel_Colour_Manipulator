@@ -503,8 +503,8 @@ class CaptureWindow(QtWidgets.QWidget):
         transformed_image = np.dstack((image_red, image_green, image_blue))
         return transformed_image           
     
-
-    def apply_swop_pixel_areas(self, img):
+    """after you make sure that ` def apply_swop_pixel_areas` is working without issues you can delete this code
+    def apply_swop_pixel_areas_v1(self, img):
         
         if(self.swap_pixel_areas is None):
             return img
@@ -526,7 +526,8 @@ class CaptureWindow(QtWidgets.QWidget):
             if( (frc[0]+frc[2]>img.shape[0] or frc[1]+frc[2]>img.shape[1]) or
                 (src[0]+src[2]>img.shape[0] or src[1]+src[2]>img.shape[1])
                 ):
-                return img
+                continue
+                #return img
 
             #<swaps the chosen rgb channels from the 2 areas (in this case rectangles)
             img_first_rectangle = np.array(img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), srr==1])
@@ -551,7 +552,110 @@ class CaptureWindow(QtWidgets.QWidget):
             #apply rgb functions to swap areas>
         
         return img
+    """
     
+    def apply_swop_pixel_areas(self, img):
+        
+        if(self.swap_pixel_areas is None):
+            return img
+        
+        for rectangle_pair in self.swap_pixel_areas:
+            
+            first_rectangle = rectangle_pair[0]
+            second_rectangle = rectangle_pair[1]
+
+            frc = first_rectangle[0]#first rectangle coordinates (x, y, size) -> example (150, 340, 50)
+            frr = first_rectangle[1]#first rectangle rgb values (use_r, use_g, use_b) -> example (1,1,0) 
+            fr_rgb_formula_id = first_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
+            
+            src = second_rectangle[0]#second rectangle coordinates (x, y, size) -> example (100, 50, 320)
+            srr = second_rectangle[1]#second rectangle rgb values (use_r, use_g, use_b) -> example (0,0,0)
+            sr_rgb_formula_id = second_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
+            
+            
+
+            #img coordinates
+            img_height = img.shape[0]
+            img_width = img.shape[1]
+
+            #<first rectangle coordinates
+            fr_x_left = frc[0]
+            fr_x_left = fr_x_left if fr_x_left > 0 else 0
+            
+            fr_x_right = frc[0] + frc[2]
+            fr_x_right = fr_x_right if fr_x_right < img_width else img_width
+            
+            fr_y_up = frc[1]
+            fr_y_up = fr_y_up if fr_y_up > 0 else 0
+            
+            fr_y_down = frc[1] + frc[2]
+            fr_y_down = fr_y_down if fr_y_down < img_height else img_height
+            #first rectangle coordinates>
+            
+            #<second rectangle coordinates
+            sr_x_left = src[0]
+            sr_x_left = sr_x_left if sr_x_left > 0 else 0
+            
+            sr_x_right = src[0] + src[2]
+            sr_x_right = sr_x_right if sr_x_right < img_width else img_width
+            
+            sr_y_up = src[1]
+            sr_y_up = sr_y_up if sr_y_up > 0 else 0
+            
+            sr_y_down = src[1] + frc[2]
+            sr_y_down = sr_y_down if sr_y_down < img_height else img_height
+            #second rectangle coordinates>
+
+            if((fr_x_left > img_width or fr_y_up > img_height) or 
+               (sr_x_left > img_width or sr_y_up > img_height)):
+                continue
+
+            #<make sure the rectangles have the same size
+            
+            fr_width = fr_x_right - fr_x_left
+            fr_height = fr_y_down - fr_y_up
+
+            sr_width = sr_x_right - sr_x_left
+            sr_height = sr_y_down - sr_y_up
+
+            #make the width of the rectangles be the same
+            if(fr_width != sr_width):    
+                width_difference = fr_width - sr_width
+                if(width_difference > 0):
+                    fr_x_right -= width_difference
+                else:
+                    sr_x_right += width_difference
+            
+            #make the height of the rectangles be the same
+            if(fr_height != sr_height):   
+                height_difference = fr_height - sr_height
+                if(height_difference > 0):
+                    fr_y_down -= height_difference
+                else:
+                    sr_y_down += height_difference
+
+            #make sure the rectangles have the same size>
+
+            #swaps the chosen rgb channels from the 2 areas (in this case rectangles)
+            img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==1 ])
+            img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==1 ] = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==1]
+            img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==1] = img_first_rectangle
+
+            #<apply rgb functions to swap areas
+            if(fr_rgb_formula_id != 0):
+                r_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 0]
+                g_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 1]
+                b_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 2]
+                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right] = self.swap_pixel_areas_rgb_formulas[fr_rgb_formula_id](r_img_first_rectangle, g_img_first_rectangle, b_img_first_rectangle)
+
+            if(sr_rgb_formula_id != 0):
+                r_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 0]
+                g_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 1]
+                b_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 2]
+                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right] = self.swap_pixel_areas_rgb_formulas[sr_rgb_formula_id](r_img_second_rectangle, g_img_second_rectangle, b_img_second_rectangle)
+            #apply rgb functions to swap areas>
+        
+        return img
 
     # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles),
     # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle);
