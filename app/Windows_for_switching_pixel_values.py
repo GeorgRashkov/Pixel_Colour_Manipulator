@@ -135,13 +135,10 @@ class Windows_for_switching_pixel_values:
         if(len(self.swap_pixel_areas) == 0):#avoids empty list errors which will happen when `swap_pixel_areas` is empty and is used with `np.array(self.swap_pixel_areas[:,:,0,0])`
             return np.array([]), {}
 
-        #the areas will be tranformed into a numpy array; for each rectangle the places of `x` are swapped with those of `y` (this is what a rectangle looks like f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]")
-        #the reason for swapping `x` and `y` values is because the image wich will use the swap areas will be a "numpy.ndarray" with shape (Height, Width, 3[RGB])` (`x` must correspond to `Width` while `y` must correpond to `Height`)
+        #the areas will be tranformed into a numpy array; this is what a rectangle looks like `f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]"`
+        
         self.make_swap_pixel_areas_compatible_for_numpy()
-        swap_pixel_areas = np.array(self.swap_pixel_areas)
-        helper = np.array(swap_pixel_areas[:,:,0,0])
-        swap_pixel_areas[:,:,0,0] = swap_pixel_areas[:,:,0,1] 
-        swap_pixel_areas[:,:,0,1] = helper   
+        swap_pixel_areas = np.array(self.swap_pixel_areas)   
 
 
         # assures that only valid rgb functions will be used
