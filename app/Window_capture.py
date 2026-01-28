@@ -637,9 +637,16 @@ class CaptureWindow(QtWidgets.QWidget):
             #make sure the rectangles have the same size>
 
             #swaps the chosen rgb channels from the 2 areas (in this case rectangles)
-            img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==1 ])
-            img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==1 ] = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==1]
-            img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==1] = img_first_rectangle
+            if((frr==1).any() or (srr==1).any()):
+                img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==1 ])
+                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==1 ] = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==1]
+                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==1] = img_first_rectangle
+            
+            if((frr==2).any() or (srr==2).any()):
+                img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==2 ])
+                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==2 ] += img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==2]
+                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==2] += img_first_rectangle
+
 
             #<apply rgb functions to swap areas
             if(fr_rgb_formula_id != 0):

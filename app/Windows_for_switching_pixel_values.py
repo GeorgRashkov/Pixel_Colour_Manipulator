@@ -60,7 +60,7 @@ class Windows_for_switching_pixel_values:
         
         canvas_width = self.canvas_window.canvas.width()
         canvas_height = self.canvas_window.canvas.height()
-        wrong_rectangle_pairs_indexes = Check_input_for_switching_pixel_values.get_wrong_rectangle_pair_indexes(canvas_width = canvas_width, canvas_height = canvas_height, rectangle_pairs = rectangle_pairs, rgb_channel_allowed_values = [0,1])
+        wrong_rectangle_pairs_indexes = Check_input_for_switching_pixel_values.get_wrong_rectangle_pair_indexes(canvas_width = canvas_width, canvas_height = canvas_height, rectangle_pairs = rectangle_pairs, rgb_channel_allowed_values = [0, 1, 2])
 
         
         correct_rectangle_pairs = [v for i, v in enumerate(rectangle_pairs) if i not in wrong_rectangle_pairs_indexes]
