@@ -82,7 +82,7 @@ print("---------------------------------")
 
 
 
-
+"""
 import numpy as np
 
 img = np.array(
@@ -180,3 +180,83 @@ print("---------------------------------")
 print("img.shape[0]")
 print(img.shape[0])
 print("---------------------------------")
+
+
+
+
+
+
+
+
+
+"""
+
+import numpy as np
+
+img = np.array([ [[[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]]], [[[11,22,33],[110,220,35]],[[55,77,99],[150,170,190]]] ], dtype=np.uint8)
+
+rgb_formula1 = "np.stack([ r[0 if 0<areas_count else 0]+g, g, b ], axis=-1)"
+rgb_function1 = eval(f"lambda r,g,b,areas_count: {rgb_formula1}")
+
+transformed_img1 = rgb_function1(img[:,:,:,0], img[:,:,:,1], img[:,:,:,2], img.shape[0])
+
+
+
+rgb_formula2 = "np.stack([ r+g, g, b ], axis=-1)"
+rgb_function2 = eval(f"lambda r,g,b,areas_count: {rgb_formula2}")
+
+transformed_img2 = rgb_function2(img[:,:,:,0], img[:,:,:,1], img[:,:,:,2], img.shape[0])
+
+
+print("transformed_img1:red") 
+print(transformed_img1[:,:,:,0])
+print("-------------------------------------")
+print("transformed_img2:red") 
+print(transformed_img2[:,:,:,0])
+print("-------------------------------------")
+
+print("transformed_img1.shape") 
+print(transformed_img1.shape)
+print("transformed_img2.shape") 
+print(transformed_img2.shape)
+    
+
+print("-------------------------------------")
+print("-------------------------------------")
+print("-------------------------------------")
+
+
+img = np.array([   [ [[1,2,3],[10,20,30]], [[1,2,3],[10,20,30]], [[5,7,9],[50,70,90]]],   [ [[11,22,33],[110,220,35]], [[55,77,99],[150,170,190]], [[1,2,3],[10,20,30]]  ] ], dtype=np.uint8)
+print("img[:,:,:,1]")
+print(img[:,:,:,1])
+print("-------------------------------------")
+print("img[:,:,:,0]")
+print(img[:,:,:,0])
+print("-------------------------------------")
+print("img[:,:,:,0]+img[:,:,:,1]")
+print(img[:,:,:,0]+img[:,:,:,1])
+print("-------------------------------------")
+print("img[:,:,:,0][0]")
+print(img[:,:,:,0][0])
+print("-------------------------------------")
+print("img[:,:,:,0][0]+img[:,:,:,1][0]")
+print(img[:,:,:,0][0]+img[:,:,:,1][0])
+print("-------------------------------------")
+print("-------------------------------------")
+print("-------------------------------------")
+print("-------------------------------------")
+
+
+print("img[:,:,:,0][0]")
+print(img[:,:,:,0][0])
+print("-------------------------------------")
+print("img[:,:,0,1][0]")
+print(img[:,:,0,1][0])
+print("-------------------------------------")
+print("img[:,:,:,0][0] + img[:,:,0,1][0]")
+print(img[:,:,:,0][0] + img[:,:,0,1][0])
+
+
+
+
+

@@ -1,0 +1,54 @@
+[[id],[x,y],[w,h],[ids],[rgb_func_id], [movement_id, size_id]]
+
+[[1], [10,50] [300, 300], [1,2,3,4,5], [7], [1,2] ]
+[{id}[1], {x,y}[10,50] {width, height}[300, 300], {area ids}[1,2,3,4,5], {RGB function id}[7], {move and resize ids}[1,2] ]
+
+
+Things to check when creating rectangle - find the lowest not used area Id; check the format of the text box containing the Ids of the areas; check the format of the text box containing the Id of the RGB function.
+
+Things to check when applying the pixel swap areas - check the format of the 2 text areas containing the pixel swap areas and the RGB functions; check if any of the rectangles are outside the bounds of the canvas and remove those that are outside; check if the RGB function Id is presented in the text area containing the RGB functions
+
+
+
+
+
+
+[
+movement_id,
+[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]],
+[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]],
+[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]]
+];
+
+
+[
+size_id,
+[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
+[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
+[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
+];
+
+
+
+rgb functions
+{ |1|  r->[ r ]  g->[ g ]  b->[ b ] }
+{ |2|  r->[ r[3] ]  g->[ g[12] ]  b->[ b ] }
+
+
+
+
+rgb function: {25:{r:r+g,}}
+
+Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2] ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30], p_y:[20,30,50]}
+
+Animation0 (group) {id: 25; type:group; a_ids:[5,3]} {id: 30; type:group; a_ids:[2,3]}`the changes of this animation will be applied per image grab`
+
+Animation1 (x,y,w,h) {id:2, type:x; initial_value:2; increment:10; grabs_num:1; border_x:20; border_y:50}
+Animation2 (p_ids, p_x, p_y) {id:3, type:p_ids; initial_value: 1; values:[[1,2,3],[2,5],[1,6,8,2]]; increment:10; grabs_num:1}
+Animation3 (f_id) {id:5, type:f_id; initial_value: 1; f_ids:[1,2,5,7,3]; increment:10; grabs_num:1}
+
+class Area_applier:
+  {id:pa_obj, id:pa_obj}
+  {id:f_lambda, id:pa_obj}
+  {id:ga_obj, id:ga_obj}
+  {id:a_obj, id:a_obj}
