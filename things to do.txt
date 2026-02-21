@@ -1,33 +1,5 @@
-[[id],[x,y],[w,h],[ids],[rgb_func_id], [movement_id, size_id]]
-
-[[1], [10,50] [300, 300], [1,2,3,4,5], [7], [1,2] ]
-[{id}[1], {x,y}[10,50] {width, height}[300, 300], {area ids}[1,2,3,4,5], {RGB function id}[7], {move and resize ids}[1,2] ]
-
-
-Things to check when creating rectangle - find the lowest not used area Id; check the format of the text box containing the Ids of the areas; check the format of the text box containing the Id of the RGB function.
-
-Things to check when applying the pixel swap areas - check the format of the 2 text areas containing the pixel swap areas and the RGB functions; check if any of the rectangles are outside the bounds of the canvas and remove those that are outside; check if the RGB function Id is presented in the text area containing the RGB functions
-
-
-
-
-
-
-[
-movement_id,
-[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]],
-[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]],
-[[x, y], [x_move, y_move], [x_grabs, y_grabs], [x_perctange_margin, y_perctange_margin]]
-];
-
-
-[
-size_id,
-[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
-[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
-[[w, h], [w_move, h_move], [w_grabs, h_grabs], [w_min, h_min], [w_max, h_max]],
-];
-
+rgb formula
+lambda r,g,b,areas_count: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)
 
 
 rgb functions
@@ -35,20 +7,41 @@ rgb functions
 { |2|  r->[ r[3] ]  g->[ g[12] ]  b->[ b ] }
 
 
+Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2}
 
-
-rgb function: {25:{r:r+g,}}
-
-Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2] ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30], p_y:[20,30,50]}
-
-Animation0 (group) {id: 25; type:group; a_ids:[5,3]} {id: 30; type:group; a_ids:[2,3]}`the changes of this animation will be applied per image grab`
+Animation0 (group) {id: 25; type:group; a_ids:[5,3]} {id: 30; type:group; a_ids:[2,3]}`the changes of animations will be applied per image grab`
 
 Animation1 (x,y,w,h) {id:2, type:x; initial_value:2; increment:10; grabs_num:1; border_x:20; border_y:50}
 Animation2 (p_ids, p_x, p_y) {id:3, type:p_ids; initial_value: 1; values:[[1,2,3],[2,5],[1,6,8,2]]; increment:10; grabs_num:1}
-Animation3 (f_id) {id:5, type:f_id; initial_value: 1; f_ids:[1,2,5,7,3]; increment:10; grabs_num:1}
+Animation3 (f_id, img_in_v, img_out_v, img_out_stack) {id:5, type:f_id; initial_value:1; ids:[1,2,5,7,3]; increment:10; grabs_num:1}
 
 class Area_applier:
   {id:pa_obj, id:pa_obj}
-  {id:f_lambda, id:pa_obj}
+  {id:f_lambda, id:f_lambda}
   {id:ga_obj, id:ga_obj}
   {id:a_obj, id:a_obj}
+
+
+
+
+
+
+Pixel area elements:
+x, y -> location
+w, h -> size
+a_ids -> animation ids; when the first animation finishes the second animation starts than the third and so on; when the last animation finishes the first is executed; execution order is determined by the placement of the ids not the actual values of the ids
+ag_ids -> animation groups ids; for each dxcam grab all animations inside the animation group id are executed in a sequence 
+f_id -> the RGB function id; the RGB function takes as input parameters (R,G,B); each parameter for it's colour channel contains the pixel areas where each area contains the channel values for the width and height of the area; the areas must have the same width and height before being passed to the RGB function; the areas can be ids of other pixel areas or they can be created by using the p_x and p_y coordinates
+p_ids -> contains the pixel area ids which will passed to f_id
+p_x, p_y -> contains coordinates determining the top left corner of pixel areas; the coordinates may match completely, partially or not at all any of the areas covered by p_ids
+img_in_v -> determines the version of the input image which will be passed to f_id (the pixel values inside the areas created by p_ids, p_x and p_y are defined by the version of the input image) 
+img_out_v -> determines the version of the image to which the changed pixel values will be applied; there can be up to 10 image versions
+img_out_stack -> determines the count of image versions to which the changed pixel values will be applied; the first version is img_out_v, the next version is img_out_v + 1 and so on 
+
+
+Animation1 elements: 
+type - determines the pixel area parameter which will be changed to create to simulate an animation
+initial_value - this is the value which will be used for setting the value of the pixel area parameter when the animation begins
+increment - determines how big the change will be
+grabs_num - determines the number of grabs by dxcam before performing the animation; it's something like a frequency (determined by the number of dxcam grabs) of the animation
+border_x, border_y - when any of the corners of the area reaches those values the animation will end and the next animation will be executed 

@@ -13,15 +13,10 @@ class MainApp:
         self.app = QtWidgets.QApplication(sys.argv)
 
         #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        """"""
-        self.swap_pixel_values_controller = Z_Swap_pixel_values_controller.Swap_pixel_values_controller()
-        self.swap_pixel_values_controller.show_form_window()
-        self.swap_pixel_values_controller.show_canvas_window()
-       
+        
+        self.swap_pixel_values_controller = Z_Swap_pixel_values_controller.Swap_pixel_values_controller()       
         self.swap_pixel_values_controller.form_window.button_apply_swap_areas.clicked.connect(self.apply_swap_pixel_areas)
-        self.swap_pixel_values_controller.form_window.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)
-
-        return
+        self.swap_pixel_values_controller.form_window.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)        
         
         #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
        
@@ -77,58 +72,23 @@ class MainApp:
         
         #form window (create mask from capture window)>
 
+        """
         #swap pixel areas window
         self.Windows_swop_pixel_areas = Windows_for_switching_pixel_values.Windows_for_switching_pixel_values()
         self.Windows_swop_pixel_areas.form_window.button_apply_swop_areas.clicked.connect(self.apply_swop_pixel_areas)
         self.Windows_swop_pixel_areas.form_window.button_remove_swop_areas.clicked.connect(self.remove_swop_pixel_areas)
-        
+        """
     
         self.capture_window.show()
         sys.exit(self.app.exec_())
     
     #< in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def apply_swap_pixel_areas(self):
-        print("--------------------------------------------------------------------------------------------")
-        print("--------------------------------------------------------------------------------------------")
-        print("--------------------------------------------------------------------------------------------")
-        swap_pixel_areas = self.swap_pixel_values_controller.get_swaped_areas()#the result will be a list of type "Pixel_area"
-        for swap_pixel_area in swap_pixel_areas:
-            
-            print("id", swap_pixel_area.id)
-            
-            print("x", swap_pixel_area.x)
-            print("y", swap_pixel_area.y)
-           
-            print("width", swap_pixel_area.width)
-            print("height", swap_pixel_area.height)
-            
-            print("pixel_areas_ids", swap_pixel_area.pixel_areas_ids )
+        pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
+        self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
 
-            print("rgb_function_str", swap_pixel_area.rgb_function_str)
-
-            print("--------------------------------------------------------------------------------------------")
-           
-    
-    def remove_swap_pixel_areas():
-        a=5
-
-
-    class Pixel_area_Copy_to_watch_and_test:
-    
-        def __init__(self, id:int, x:int, y:int, width:int, height:int, pixel_areas_ids:list, red_func:str, green_func:str, blue_func:str):
-            self.id = id
-            self.x = x
-            self.y = y
-            self.width = width
-            self.height = height
-            self.pixel_areas_ids = pixel_areas_ids
-                
-
-            self.rgb_function_str = f"lambda r,g,b,areas_count: np.stack([{red_func},{green_func},{blue_func}], axis=-1)"
-            self.rgb_function = eval(self.rgb_function_str)
-
-            self.move_class_instance = None
-            self.resize_class_instance = None
+    def remove_swap_pixel_areas(self):
+        self.capture_window.remove_pixel_areas_manipulator()
     # in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
 
 
@@ -151,16 +111,9 @@ class MainApp:
         self.convolutional_filter_window.show()
     
     def open_windows_swop_pixel_areas(self):
-        self.Windows_swop_pixel_areas.show_form_window()
-        self.Windows_swop_pixel_areas.show_canvas_window()
-
-    def apply_swop_pixel_areas(self):
-        
-        swap_pixel_areas, swap_pixel_areas_rgb_formulas = self.Windows_swop_pixel_areas.get_swaped_areas()#the result will be a numpy array
-        self.capture_window.set_swap_pixel_areas(swap_pixel_areas=swap_pixel_areas, swap_pixel_areas_rgb_formulas = swap_pixel_areas_rgb_formulas)
-    
-    def remove_swop_pixel_areas(self):
-        self.capture_window.set_swap_pixel_areas(swap_pixel_areas = None, swap_pixel_areas_rgb_formulas = None)
+        self.swap_pixel_values_controller.show_form_window()
+        self.swap_pixel_values_controller.show_canvas_window()
+       
         
 
     def apply_settings(self):

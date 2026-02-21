@@ -17,11 +17,8 @@ class FormWindow_SwapPixelValues(QWidget):
         self.setMinimumSize(100, 100)
         self.resize(800, 500)             
         
-        self.text_area_swap_pixel_areas = Text_area(allowed_symbols_regex="[0-9\\[\\], ]")
+        self.text_area_swap_pixel_areas = QTextEdit() #Text_area(allowed_symbols_regex="[0-9\\[\\], ]")
         self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
-
-        self.button_update_canvas = QPushButton("Update canvas")
-        self.button_update_canvas_and_text_area = QPushButton("Update canvas and text")
 
         int_validator = QIntValidator(0, 999_999)
 
@@ -116,33 +113,65 @@ class FormWindow_SwapPixelValues(QWidget):
         
         #<values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas
 
-        self.label_area_ids = QLabel("Area ids")
-        self.text_box_area_ids = QLineEdit()        
-        self.label_area_ids.setBuddy(self.text_box_area_ids)
+        #list of animation ids
+        self.label_animation_ids = QLabel("a_ids")
+        self.text_box_animation_ids = QLineEdit()        
+        self.label_animation_ids.setBuddy(self.text_box_animation_ids)
 
-        self.label_rgb_formula_id = QLabel("RGB formula ID")
+        #list of the ids of groups of animations (a group of animations is an object which contains the ids of 1 or more animations)
+        self.label_animations_group_ids = QLabel("ag_ids")
+        self.text_box_animations_group_ids = QLineEdit()        
+        self.label_animations_group_ids.setBuddy(self.text_box_animations_group_ids)
+
+
+        #the id of the RGB formula
+        self.label_rgb_formula_id = QLabel("f_id")
         self.text_box_rgb_formula_id = QLineEdit()
         self.text_box_rgb_formula_id.setValidator(int_validator)
         self.label_rgb_formula_id.setBuddy(self.text_box_rgb_formula_id)
 
-        self.label_movement_id = QLabel("Movement ID")
-        self.text_box_movement_id = QLineEdit()
-        self.text_box_movement_id.setValidator(int_validator)
-        self.label_movement_id.setBuddy(self.text_box_movement_id)
+        #contains the pixel area ids which will passed to the RGB formula
+        self.label_pixel_area_ids_as_input_for_rgb_func = QLabel("p_ids")
+        self.text_box_pixel_area_ids_as_input_for_rgb_func = QLineEdit()
+        self.label_pixel_area_ids_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_ids_as_input_for_rgb_func)
 
+        #this is a list which contains the horizontal position of the top left corner of not defined pixel areas which will passed to the RGB formula
+        self.label_pixel_area_x_locations_as_input_for_rgb_func = QLabel("p_x")
+        self.text_box_pixel_area_x_locations_as_input_for_rgb_func = QLineEdit()
+        self.label_pixel_area_x_locations_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_x_locations_as_input_for_rgb_func)
 
-        self.label_resize_id = QLabel("Resize ID")
-        self.text_box_resize_id = QLineEdit()
-        self.text_box_resize_id.setValidator(int_validator)
-        self.label_resize_id.setBuddy(self.text_box_movement_id)
+        #this is a list which contains the vertical position of the top left corner of not defined pixel areas which will passed to the RGB formula
+        self.label_pixel_area_y_locations_as_input_for_rgb_func = QLabel("p_y")
+        self.text_box_pixel_area_y_locations_as_input_for_rgb_func = QLineEdit()
+        self.label_pixel_area_y_locations_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_y_locations_as_input_for_rgb_func)
+        
+        #determines the version of the input image which will be passed to the RGB formula
+        self.label_image_version_as_input_for_rgb_func = QLabel("img_in_v")
+        self.text_box_image_version_as_input_for_rgb_func = QLineEdit()
+        self.text_box_image_version_as_input_for_rgb_func.setValidator(int_validator)
+        self.label_image_version_as_input_for_rgb_func.setBuddy(self.text_box_image_version_as_input_for_rgb_func)
+
+        #determines the version of the image to which the changed pixel values will be applied
+        self.label_image_version_as_output_from_rgb_func = QLabel("img_out_v")
+        self.text_box_image_version_as_output_from_rgb_func = QLineEdit()
+        self.text_box_image_version_as_output_from_rgb_func.setValidator(int_validator)
+        self.label_image_version_as_output_from_rgb_func.setBuddy(self.text_box_image_version_as_output_from_rgb_func)
+
+        #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on
+        self.label_image_version_as_output_from_rgb_func_stack = QLabel("img_out_v")
+        self.text_box_image_version_as_output_from_rgb_func_stack = QLineEdit()
+        self.text_box_image_version_as_output_from_rgb_func_stack.setValidator(int_validator)
+        self.label_image_version_as_output_from_rgb_func_stack.setBuddy(self.text_box_image_version_as_output_from_rgb_func_stack)
+
 
         #values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas>
 
 
 
-        self.button_clear_canvas = QPushButton("Clear canvas")
+        
         self.button_apply_swap_areas = QPushButton("Apply areas")
         self.button_remove_swap_areas = QPushButton("Remove areas")
+        self.button_clear_canvas = QPushButton("Clear canvas")
         
 
 
@@ -152,13 +181,6 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.text_area_swap_pixel_areas)
         h_layout.addWidget(self.text_area_rgb_formulas)
-        v_layout.addLayout(h_layout)
-
-
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(self.button_update_canvas)
-        h_layout.addWidget(self.button_update_canvas_and_text_area)
-        h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)
 
 
@@ -201,17 +223,33 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout = QHBoxLayout()
         h_layout.setAlignment(Qt.AlignLeft)
 
-        h_layout.addWidget(self.label_area_ids)
-        h_layout.addWidget(self.text_box_area_ids)
+        h_layout.addWidget(self.label_animation_ids)
+        h_layout.addWidget(self.text_box_animation_ids)
+
+        h_layout.addWidget(self.label_animations_group_ids)
+        h_layout.addWidget(self.text_box_animations_group_ids)
 
         h_layout.addWidget(self.label_rgb_formula_id)
         h_layout.addWidget(self.text_box_rgb_formula_id)
 
-        h_layout.addWidget(self.label_movement_id)
-        h_layout.addWidget(self.text_box_movement_id)
+        h_layout.addWidget(self.label_pixel_area_ids_as_input_for_rgb_func)
+        h_layout.addWidget(self.text_box_pixel_area_ids_as_input_for_rgb_func)
 
-        h_layout.addWidget(self.label_resize_id)
-        h_layout.addWidget(self.text_box_resize_id)
+        h_layout.addWidget(self.label_pixel_area_x_locations_as_input_for_rgb_func)
+        h_layout.addWidget(self.text_box_pixel_area_x_locations_as_input_for_rgb_func)
+
+        h_layout.addWidget(self.label_pixel_area_y_locations_as_input_for_rgb_func)
+        h_layout.addWidget(self.text_box_pixel_area_y_locations_as_input_for_rgb_func)
+
+        h_layout.addWidget(self.label_image_version_as_input_for_rgb_func)
+        h_layout.addWidget(self.text_box_image_version_as_input_for_rgb_func)
+
+        h_layout.addWidget(self.label_image_version_as_output_from_rgb_func)
+        h_layout.addWidget(self.text_box_image_version_as_output_from_rgb_func)
+
+        h_layout.addWidget(self.label_image_version_as_output_from_rgb_func_stack)
+        h_layout.addWidget(self.text_box_image_version_as_output_from_rgb_func_stack)
+       
 
         v_layout.addLayout(h_layout) 
        
@@ -220,6 +258,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_swap_areas)
         h_layout.addWidget(self.button_remove_swap_areas)
+        h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)
 
         self.setLayout(v_layout)

@@ -9,7 +9,7 @@ import Check_input_for_switching_pixel_values
 
 from Number_format_checker import check_for_positive_int_format
 
-import RGB_formula_class
+import Z_RGB_formula as Z_RGB_formula
 
 class Windows_for_switching_pixel_values: 
     
@@ -32,7 +32,7 @@ class Windows_for_switching_pixel_values:
         self.rgb_formulas_strings = {}#this is a dictionary which has numbers (ids) for keys and dictionaries for values; the inner dictionaries contain the RGB channels with their RGB functions represented as strings
         self.rgb_formulas_strings[0] = {"r":"r", "g":"g", "b":"b"}#this is the default RGB function id `0` with it's default RGB function which is represented by inner dictionary which has RGB channels for keys and channles' functions for values
         
-        self.default_rgb_lambda_formula = RGB_formula_class.RGB_formula_class().rgb_function
+        self.default_rgb_lambda_formula = Z_RGB_formula.RGB_formula().rgb_function
         self.rgb_formulas_lambda_funcs = {}#this is a dictionary which has numbers (ids) for keys and RGB fommulas (represented as lamda functions) for values
         
         self.rgb_funcs_str = ""
@@ -251,7 +251,7 @@ class Windows_for_switching_pixel_values:
             if( (needed_id in existing_rgb_fomulas_ids) and (needed_id not in selected_ids)):
                 
                 rgb_formula_dict = self.rgb_formulas_strings[needed_id]
-                rgb_formula_object = RGB_formula_class.RGB_formula_class(red_func = rgb_formula_dict["r"], green_func = rgb_formula_dict["g"], blue_func = rgb_formula_dict["b"])
+                rgb_formula_object = Z_RGB_formula.RGB_formula(red_func = rgb_formula_dict["r"], green_func = rgb_formula_dict["g"], blue_func = rgb_formula_dict["b"])
 
                 self.rgb_formulas_lambda_funcs[needed_id] = rgb_formula_object.rgb_function
                 selected_ids.append(needed_id)

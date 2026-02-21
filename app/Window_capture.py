@@ -7,6 +7,7 @@ import cv2
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QLabel
 from PyQt5.QtCore import Qt
 import RGB_formula_elements
+from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
 
 
 class Kernel():
@@ -43,15 +44,20 @@ class CaptureWindow(QtWidgets.QWidget):
         # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
         self.swap_pixel_areas = None #when initialized it must a numpy array
         
+
+
+        self.pixel_areas_manipulator:Pixel_areas_manipulator = None
+        """
         #`swap_pixel_areas_rgb_formulas` is a dictionary which has numbers (RGB fomulas ids) for keys and RGB fommulas (represented as lamda functions) for values,
         # the default key is `0` while the default value is = `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`)
         self.swap_pixel_areas_rgb_formulas = None
+        """        
         
 
         self.RGB_use_doubles = False
 
         self.color_methods_execution_order = [1, 2, 3, 4] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
-        self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_swop_pixel_areas] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
+        self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
         self.setWindowTitle("Color Changer")
         self.setMinimumSize(200, 30)
@@ -554,6 +560,23 @@ class CaptureWindow(QtWidgets.QWidget):
         return img
     """
     
+    def apply_pixel_areas_manipulator(self, img):
+
+        if(self.pixel_areas_manipulator is None):
+            return img
+        
+        transformed_image = self.pixel_areas_manipulator.transform_image(img=img)
+        return transformed_image
+    
+    def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
+
+        if(pixel_areas_manipulator is not None):
+            self.pixel_areas_manipulator = pixel_areas_manipulator
+    
+    def remove_pixel_areas_manipulator(self):
+        self.pixel_areas_manipulator = None
+    
+    """
     def apply_swop_pixel_areas(self, img):
         
         if(self.swap_pixel_areas is None):
@@ -688,7 +711,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.default_color_function = self.default_color_function if(default_color_function==None) else default_color_function
         self.mask_filters = None if(mask_filters==None or len(mask_filters)==0) else mask_filters
 
-    
+    """
 
     def remove_mask(self):
 
