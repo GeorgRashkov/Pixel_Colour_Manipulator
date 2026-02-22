@@ -4,7 +4,7 @@ import numpy as np
 
 class Pixel_areas_manipulator:
 
-    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula] ):
+    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], movable_rectangles:bool ):
         
         self.pixel_areas_dict = pixel_areas_dict
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -13,9 +13,13 @@ class Pixel_areas_manipulator:
         self.img_width = 0
         
         self.image_versions_count = 0  #this is the number of image versions defined by the user (when the image is processed there will be 2 additional image versions)   
-        self.max_image_versions = 99
+        self.max_image_versions = 9
 
         self.set_image_versions()
+
+        # in testing state!!!!!!!!!!!!
+        self.movable_rectangles = movable_rectangles 
+        self.rectangles_per_area: dict[int, list[Rectangle]]= None #the main dictionary has key-value pairs for pixel area; the key is the area id while the value is the rectangles which are used by the area  
 
     
 
@@ -52,41 +56,9 @@ class Pixel_areas_manipulator:
 
 
     """
-    #set's proper value for `self.image_versions_count` and for each pixel area set's proper values for `img_in_v`, `img_out_v` and `img_out_stack`
-    def set_image_versions(self):
-
-        are_image_version_values_changed = False
-
-        for pixel_area in self.pixel_areas_dict.values():
-            
-            if(pixel_area.img_in_v >= self.max_image_versions):#the values inside `img_in_v` start from `0`
-                pixel_area.img_in_v = 0
-                are_image_version_values_changed = True
-            
-            if(pixel_area.img_out_v >= self.max_image_versions):#the values inside `img_out_v` start from `0`
-                pixel_area.img_out_v = self.max_image_versions-1
-                are_image_version_values_changed = True
-            
-            #the value of `img_out_stack` will be combined with `img_out_v` in order to determine 
-            #the number of image versions which will be afected after applying the rgb formula           
-            if(pixel_area.img_out_stack == 0):
-                pixel_area.img_out_stack = self.max_image_versions                
-
-
-        for pixel_area in self.pixel_areas_dict.values():                  
-            
-            self.image_versions_count = max(pixel_area.img_in_v+1, pixel_area.img_out_v+1, self.image_versions_count)
-            if(self.image_versions_count == self.max_image_versions):
-                break
-        
-
-        if(are_image_version_values_changed == True):       
-            print(f"warning: the maximum number of image versions is {self.max_image_versions};\n if the value of `img_in_v` is equal or above the max value than 0 will be used;\n if the value of `img_out_v` is equal or above the max value than max-1 will be used")
-
-        """
        
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image(self, img:np) -> np.array:       
+    def transform_image_v1(self, img:np) -> np.array:       
 
         image_versions : list[np.array] = []
         for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
@@ -220,3 +192,163 @@ class Pixel_areas_manipulator:
         area_height = min(height, self.img_height-y)
 
         return (area_width, area_height)
+    
+
+    """
+
+
+
+
+
+#< in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def transform_image(self, img:np) -> np.array:       
+
+        image_versions : list[np.array] = []
+        for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
+            image_versions.append(img.copy())
+
+        #for each area create the rectangles used by the areas only when the size of the input image is not the same as the previous image which was passed to the method
+        must_create_new_rectangles = False
+        if(self.img_width != img.shape[1] or self.img_height != img.shape[0]):
+            self.img_width = img.shape[1]
+            self.img_height = img.shape[0]
+            must_create_new_rectangles = True
+            self.rectangles_per_area = {}
+        
+        
+        
+
+        for pixel_area in  self.pixel_areas_dict.values():
+            
+            rgb_formula_id = pixel_area.f_id
+            if(rgb_formula_id not in self.rgb_formulas_dict.keys()):#execute this code if the rgb formula id (of the current pixel area) does not exist
+                continue
+            
+            image_version_input = image_versions[pixel_area.img_in_v]
+            pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles)#this is a numpy array of shape (AREA, Height, Width, 3[RGB])
+            if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no rectangles were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
+                continue
+            
+            #the rgb formula is this `eval(f"lambda r,g,b,areas_count: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
+            rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
+            rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0])
+
+            starting_image_version = pixel_area.img_out_v
+            ending_image_version = pixel_area.img_out_v + pixel_area.img_out_stack
+            for i in range(starting_image_version, ending_image_version):
+                if(i > self.image_versions_count):
+                    break
+                
+                rectangle = self.rectangles_per_area[pixel_area.id][0]#the first rectangle used by the area is the rectangle of the area itself
+                image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
+
+            #make sure the last image version (the special one) is always updated
+            image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
+       
+        
+        return image_versions[-1]#always returns the last image version (the special one)
+
+
+    #creates and returns the image pixel areas (as numpy array of shape (AREA, Height, Width, 3[RGB])) obtinaed from the the values of `id`, `p_ids`, `p_x`, `p_y` of the input pixel area
+    def get_image_areas_as_parameters_for_rgb_formula(self, pixel_area_input:Pixel_area, img:np, must_create_new_rectangles:bool) -> np:
+        
+        rectangles = None
+        if(must_create_new_rectangles == True):
+            rectangles = self.get_rectangles_used_by_area(pixel_area_input=pixel_area_input)
+            self.rectangles_per_area[pixel_area_input.id] = rectangles
+        else:
+            rectangles = self.rectangles_per_area[pixel_area_input.id]
+
+        areas_from_img:list[np.array] = []
+
+        #if the top left corner of the input pixel area is outside the image execute this code
+        if(rectangles is None or len(rectangles) == 0):
+            return np.array([])
+        
+
+        for rec in rectangles:
+            area_from_img = img[rec.y : rec.y + rec.h, rec.x : rec.x + rec.w, : ]
+            areas_from_img.append(area_from_img)
+
+        return np.array(areas_from_img)
+
+
+    def get_rectangles_used_by_area(self, pixel_area_input:Pixel_area) -> list["Rectangle"]:
+        
+        rectangles: list[Rectangle] = []
+
+        rectangle = self.get_proper_rectangle(x = pixel_area_input.x, y = pixel_area_input.y, width = pixel_area_input.w, height = pixel_area_input.h)
+        if(rectangle is None):
+            return None
+        
+        rectangles.append(rectangle)        
+
+        if(pixel_area_input.p_ids is not None):
+            #cycle through the areas from the input pixel area whose id was found in `p_ids`
+            for pixel_area_id in pixel_area_input.p_ids:
+
+                #check only those pixel areas which have an existing id
+                if(pixel_area_id in self.pixel_areas_dict.keys()):
+                    pixel_area = self.pixel_areas_dict[pixel_area_id]
+
+                    rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
+                    if(rectangle is not None):
+                        rectangles.append(rectangle)
+                       
+        
+        #those image areas are taken from the top left corners obtined from the values of `p_x` and `p_y` of the input pixel area
+        if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
+            anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
+            for i in range(0, anonymous_areas_count):                
+
+                rectangle = self.get_proper_rectangle(x = pixel_area_input.p_x[i], y = pixel_area_input.p_y[i], width = pixel_area_input.w, height = pixel_area_input.h)
+                if(rectangle is not None):
+                    rectangles.append(rectangle)
+        
+        #make sure all rectangles have the same width and height
+        min_width = min(retangle.w for retangle in rectangles)
+        min_height = min(retangle.h for retangle in rectangles)
+        for rec in rectangles:
+            rec.w = min_width
+            rec.h = min_height
+
+        return rectangles
+
+
+    def get_proper_rectangle(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+        
+        #execute this code if the top left corner is outside the canvas (executed only if the rectangles are not able to move)
+        if( (self.img_width <= x or self.img_height <= y) and self.movable_rectangles == False ):
+            return None
+        
+        #set the values of `x` and `y` before setting the width and height (executed only if the rectangles are able to move)
+        if(self.movable_rectangles == True):
+
+            right_corner_x = x + width
+            if(right_corner_x > self.img_width):
+                x = max(0, x - (right_corner_x - self.img_width))
+            
+            right_corner_y = y + height
+            if(right_corner_y > self.img_height):
+                y = max(0, y - (right_corner_y - self.img_height))
+            
+        #make sure the width and height are not getting outside the cnavas
+        width = min(width, self.img_width-x)
+        height = min(height, self.img_height-y)
+
+        rectangle = Rectangle(x=x, y=y, w=width, h=height)
+
+        return rectangle
+
+
+
+
+class Rectangle():
+    def __init__(self, x, y, w, h):
+        
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h

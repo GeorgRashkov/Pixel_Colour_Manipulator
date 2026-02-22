@@ -418,7 +418,7 @@ class Swap_pixel_values_controller:
         
         #pixel areas>
 
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict)
+        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, movable_rectangles=self.form_window.checkBox_movable_areas.isChecked())
 
         
         

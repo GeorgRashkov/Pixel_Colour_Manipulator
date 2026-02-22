@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox
 )
 import re
 from PyQt5.QtCore import Qt
@@ -21,6 +21,12 @@ class FormWindow_SwapPixelValues(QWidget):
         self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
 
         int_validator = QIntValidator(0, 999_999)
+
+        #<checkbox elements
+        self.label_movable_areas = QLabel("movable areas")
+        self.checkBox_movable_areas = QCheckBox()
+        self.label_movable_areas.setBuddy(self.checkBox_movable_areas)
+        #checkbox elements>
 
         #<elements - size arguments for the brush in the canvas window
 
@@ -177,6 +183,12 @@ class FormWindow_SwapPixelValues(QWidget):
 
 
         v_layout = QVBoxLayout()
+
+        h_layout = QHBoxLayout()
+        h_layout.setAlignment(Qt.AlignLeft)
+        h_layout.addWidget(self.label_movable_areas)
+        h_layout.addWidget(self.checkBox_movable_areas)
+        v_layout.addLayout(h_layout)
         
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.text_area_swap_pixel_areas)
