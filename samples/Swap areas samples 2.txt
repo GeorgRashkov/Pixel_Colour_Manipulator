@@ -1,0 +1,165 @@
+#<sample 1 (10 rectangle pairs with different rgb formulas; all rectangles are placed in the same area)
+
+{id:1; x:0; y:0; w:1000; h:1000; img_out_v:1; f_id:1; p_ids:[2]}
+{id:2; x:0; y:0; w:1000; h:1000; img_out_v:2; f_id:15; p_ids:[1]}
+
+{id:3; x:0; y:0; w:1000; h:1000; img_out_v:3; f_id:3; p_ids:[4]}
+{id:4; x:0; y:0; w:1000; h:1000; img_out_v:4; f_id:8; p_ids:[3]}
+
+{id:5; x:0; y:0; w:1000; h:1000; img_out_v:5; f_id:25; p_ids:[6]}
+{id:6; x:0; y:0; w:1000; h:1000; img_out_v:6; f_id:16; p_ids:[5]}
+
+{id:7; x:0; y:0; w:1000; h:1000; img_out_v:7; f_id:7; p_ids:[8]}
+{id:8; x:0; y:0; w:1000; h:1000; img_out_v:8; f_id:8; p_ids:[7]}
+
+{id:9; x:0; y:0; w:1000; h:1000; img_out_v:9; f_id:13; p_ids:[10]}
+{id:10; x:0; y:0; w:1000; h:1000; img_out_v:10; f_id:19; p_ids:[9]}
+
+{id:11; x:0; y:0; w:1000; h:1000; img_out_v:11; f_id:35; p_ids:[12]}
+{id:12; x:0; y:0; w:1000; h:1000; img_out_v:12; f_id:17; p_ids:[11]}
+
+{id:13; x:0; y:0; w:1000; h:1000; img_out_v:13; f_id:14; p_ids:[14]}
+{id:14; x:0; y:0; w:1000; h:1000; img_out_v:14; f_id:18; p_ids:[13]}
+
+{id:15; x:0; y:0; w:1000; h:1000; img_out_v:15; f_id:29; p_ids:[16]}
+{id:16; x:0; y:0; w:1000; h:1000; img_out_v:16; f_id:1; p_ids:[15]}
+
+{id:17; x:0; y:0; w:1000; h:1000; img_out_v:17; f_id:23; p_ids:[18]}
+{id:18; x:0; y:0; w:1000; h:1000; img_out_v:18; f_id:2; p_ids:[17]}
+
+{id:19; x:0; y:0; w:1000; h:1000; img_out_v:19; f_id:11; p_ids:[20]}
+{id:20; x:0; y:0; w:1000; h:1000; img_out_v:20; f_id:6; p_ids:[19]}
+
+
+
+{ |1|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b ] }
+
+{ |2|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-r ] }
+
+{ |3|  r->[ 255-b ]  g->[ 255-g ]  b->[ 255-r ] }
+
+{ |4|  r->[ 255-r ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |5|  r->[ r ]  g->[ r ]  b->[ r ] }
+
+{ |6|  r->[ g ]  g->[ r ]  b->[ b ] }
+
+{ |7|  r->[ (b+r)*0.5 ]  g->[ 255-(g+b)*0.5 ]  b->[ b-g ] }
+
+{ |8|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g-b ] }
+
+{ |9|  r->[ (r>50)*100+g*0.8 ]  g->[ b ]  b->[ b-(g+r>100)*70 ] }
+
+
+
+{ |15|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |25|  r->[ r[1] ]  g->[ r ]  b->[ r ] }
+
+{ |16|  r->[ g ]  g->[ r ]  b->[ b[1] ] }
+
+{ |13|  r->[ 255-b ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |19|  r->[ (r[1]>50)*100+g[1]*0.8 ]  g->[ b ]  b->[ b[1]-(g[1]+r[1]>100)*70 ] }
+
+{ |35|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |17|  r->[ (b[1]+r[1])*0.5 ]  g->[ 255-(g[1]+b[1])*0.5 ]  b->[ b-g ] }
+
+{ |14|  r->[ 255-r[1] ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |18|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g[1]-b[1] ] }
+
+{ |29|  r->[ (r>50)*100+g*0.8 ]  g->[ b[1] ]  b->[ b-(g+r>100)*70 ] }
+
+{ |23|  r->[ 255-b[1] ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |11|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b[1] ] }
+
+#sample 1 (10 rectangle pairs with different rgb formulas; all rectangles are placed in the same area)>
+
+
+
+
+
+
+#<sample 2 (10 rectangle pairs with different rgb formulas; rectangle pairs are placed in the same area however the rectangles in rectangle pair are placed one under the other)
+
+{id:1; x:0; y:0; w:1000; h:500; img_out_v:1; f_id:1; p_ids:[2]}
+{id:2; x:0; y:500; w:1000; h:500; img_out_v:2; f_id:15; p_ids:[1]}
+
+{id:3;  x:0; y:0; w:1000; h:500; img_out_v:3; f_id:3; p_ids:[4]}
+{id:4; x:0; y:500; w:1000; h:500; img_out_v:4; f_id:8; p_ids:[3]}
+
+{id:5; x:0; y:0; w:1000; h:500; img_out_v:5; f_id:25; p_ids:[6]}
+{id:6;  x:0; y:500; w:1000; h:500; img_out_v:6; f_id:16; p_ids:[5]}
+
+{id:7; x:0; y:0; w:1000; h:500; img_out_v:7; f_id:7; p_ids:[8]}
+{id:8; x:0; y:500; w:1000; h:500; img_out_v:8; f_id:8; p_ids:[7]}
+
+{id:9;  x:0; y:0; w:1000; h:500; img_out_v:9; f_id:13; p_ids:[10]}
+{id:10; x:0; y:500; w:1000; h:500; img_out_v:10; f_id:19; p_ids:[9]}
+
+{id:11;  x:0; y:0; w:1000; h:500; img_out_v:11; f_id:35; p_ids:[12]}
+{id:12;  x:0; y:500; w:1000; h:500; img_out_v:12; f_id:17; p_ids:[11]}
+
+{id:13; x:0; y:0; w:1000; h:500; img_out_v:13; f_id:14; p_ids:[14]}
+{id:14;  x:0; y:500; w:1000; h:500; img_out_v:14; f_id:18; p_ids:[13]}
+
+{id:15;  x:0; y:0; w:1000; h:500; img_out_v:15; f_id:29; p_ids:[16]}
+{id:16;  x:0; y:500; w:1000; h:500; img_out_v:16; f_id:1; p_ids:[15]}
+
+{id:17;  x:0; y:0; w:1000; h:500; img_out_v:17; f_id:23; p_ids:[18]}
+{id:18;  x:0; y:500; w:1000; h:500; img_out_v:18; f_id:2; p_ids:[17]}
+
+{id:19;  x:0; y:0; w:1000; h:500; img_out_v:19; f_id:11; p_ids:[20]}
+{id:20; x:0; y:500; w:1000; h:500; img_out_v:20; f_id:6; p_ids:[19]}
+
+
+
+{ |1|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b ] }
+
+{ |2|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-r ] }
+
+{ |3|  r->[ 255-b ]  g->[ 255-g ]  b->[ 255-r ] }
+
+{ |4|  r->[ 255-r ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |5|  r->[ r ]  g->[ r ]  b->[ r ] }
+
+{ |6|  r->[ g ]  g->[ r ]  b->[ b ] }
+
+{ |7|  r->[ (b+r)*0.5 ]  g->[ 255-(g+b)*0.5 ]  b->[ b-g ] }
+
+{ |8|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g-b ] }
+
+{ |9|  r->[ (r>50)*100+g*0.8 ]  g->[ b ]  b->[ b-(g+r>100)*70 ] }
+
+
+
+{ |15|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |25|  r->[ r[1] ]  g->[ r ]  b->[ r ] }
+
+{ |16|  r->[ g ]  g->[ r ]  b->[ b[1] ] }
+
+{ |13|  r->[ 255-b ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |19|  r->[ (r[1]>50)*100+g[1]*0.8 ]  g->[ b ]  b->[ b[1]-(g[1]+r[1]>100)*70 ] }
+
+{ |35|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |17|  r->[ (b[1]+r[1])*0.5 ]  g->[ 255-(g[1]+b[1])*0.5 ]  b->[ b-g ] }
+
+{ |14|  r->[ 255-r[1] ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |18|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g[1]-b[1] ] }
+
+{ |29|  r->[ (r>50)*100+g*0.8 ]  g->[ b[1] ]  b->[ b-(g+r>100)*70 ] }
+
+{ |23|  r->[ 255-b[1] ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |11|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b[1] ] }
+
+#sample 2 (10 rectangle pairs with different rgb formulas; rectangle pairs are placed in the same area however the rectangles in rectangle pair are placed one under the other)>
+
