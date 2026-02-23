@@ -1,10 +1,11 @@
 from Z_Pixel_area import Pixel_area
 from Z_RGB_formula import RGB_formula
 import numpy as np
+from Z_Image_version_controller import Image_version_controller
 
 class Pixel_areas_manipulator:
 
-    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], movable_rectangles:bool ):
+    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], movable_rectangles:bool):
         
         self.pixel_areas_dict = pixel_areas_dict
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -13,7 +14,7 @@ class Pixel_areas_manipulator:
         self.img_width = 0
         
         self.image_versions_count = 0  #this is the number of image versions defined by the user (when the image is processed there will be 2 additional image versions)   
-        self.max_image_versions = 9
+        self.max_image_versions = 99
 
         self.set_image_versions()
 
@@ -21,7 +22,12 @@ class Pixel_areas_manipulator:
         self.movable_rectangles = movable_rectangles 
         self.rectangles_per_area: dict[int, list[Rectangle]]= None #the main dictionary has key-value pairs for pixel area; the key is the area id while the value is the rectangles which are used by the area  
 
-    
+        self.image_versions_controller = None
+        
+    def create_image_version_controller(self, image_version_start_index:int = 0, image_version_increment:int = 1, image_version_swap_frequency:int = 1):
+        self.image_versions_controller = Image_version_controller(image_version_start_index = image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count = self.image_versions_count+2)
+
+
 
     #set's proper value for `self.image_versions_count` and for each pixel area set's proper values for `img_in_v`, `img_out_v` and `img_out_stack`
     def set_image_versions(self):
@@ -246,9 +252,10 @@ class Pixel_areas_manipulator:
 
             #make sure the last image version (the special one) is always updated
             image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
-       
-        
-        return image_versions[-1]#always returns the last image version (the special one)
+
+        #determine the image version to return (the first and the last image versions are special ones)
+        output_image_version_index = -1 if self.image_versions_controller is None else self.image_versions_controller.get_next_image_version_index()
+        return image_versions[output_image_version_index]
 
 
     #creates and returns the image pixel areas (as numpy array of shape (AREA, Height, Width, 3[RGB])) obtinaed from the the values of `id`, `p_ids`, `p_x`, `p_y` of the input pixel area

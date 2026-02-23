@@ -22,11 +22,33 @@ class FormWindow_SwapPixelValues(QWidget):
 
         int_validator = QIntValidator(0, 999_999)
 
-        #<checkbox elements
+        #<settings for pixel areas
         self.label_movable_areas = QLabel("movable areas")
         self.checkBox_movable_areas = QCheckBox()
         self.label_movable_areas.setBuddy(self.checkBox_movable_areas)
-        #checkbox elements>
+        #settings for pixel areas>
+
+        #<settings for output image versions        
+        
+        self.label_image_version_start_index = QLabel("image version start index")
+        self.textBox_image_version_start_index = QLineEdit()
+        self.textBox_image_version_start_index.setValidator(int_validator)
+        self.textBox_image_version_start_index.setMaxLength(2)
+        self.label_image_version_start_index.setBuddy(self.textBox_image_version_start_index)
+
+        self.label_image_version_increment = QLabel("image version increment")
+        self.textBox_image_version_increment = QLineEdit()
+        self.textBox_image_version_increment.setValidator(int_validator)
+        self.textBox_image_version_increment.setMaxLength(2)
+        self.label_image_version_increment.setBuddy(self.textBox_image_version_increment)
+
+        self.label_image_version_swap_frequency = QLabel("image version swap frequency")
+        self.textBox_image_version_swap_frequency = QLineEdit()
+        self.textBox_image_version_swap_frequency.setValidator(int_validator)
+        self.textBox_image_version_swap_frequency.setMaxLength(2)
+        self.label_image_version_swap_frequency.setBuddy(self.textBox_image_version_swap_frequency)
+        
+        #settings for output image versions>
 
         #<elements - size arguments for the brush in the canvas window
 
@@ -189,6 +211,17 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.label_movable_areas)
         h_layout.addWidget(self.checkBox_movable_areas)
         v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.setAlignment(Qt.AlignLeft)
+        h_layout.addWidget(self.label_image_version_start_index)
+        h_layout.addWidget(self.textBox_image_version_start_index)
+        h_layout.addWidget(self.label_image_version_increment)
+        h_layout.addWidget(self.textBox_image_version_increment)
+        h_layout.addWidget(self.label_image_version_swap_frequency)
+        h_layout.addWidget(self.textBox_image_version_swap_frequency)
+        v_layout.addLayout(h_layout)
+       
         
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.text_area_swap_pixel_areas)

@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 
 import ast
 
-from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, check_str_format_for_lists_of_lists_of_ints
+from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, check_for_int_format
 from Z_RGB_formula_checker import check_rgb_formulas_format_for_pixel_areas, get_closing_square_bracket
 
 from Z_RGB_formula import RGB_formula
@@ -419,10 +419,43 @@ class Swap_pixel_values_controller:
         #pixel areas>
 
         pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, movable_rectangles=self.form_window.checkBox_movable_areas.isChecked())
+        self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
 
         
         
         return pixel_areas_manipulator
+    
+
+    def should_create_image_version_contoller(self):
+
+        if(self.form_window.textBox_image_version_start_index.text()=="" and self.form_window.textBox_image_version_increment.text()=="" and self.form_window.textBox_image_version_swap_frequency.text()==""):
+            return False
+
+        error_message = ""
+        if(check_for_int_format(txt_value=self.form_window.textBox_image_version_start_index.text()) == False):
+            error_message += "the field with the image version start index was in wrong format (only int values whether positive or negative are allowed); "
+        if(check_for_int_format(txt_value=self.form_window.textBox_image_version_increment.text()) == False):
+            error_message += "the field with the image version increment was in wrong format (only int values whether positive or negative are allowed); "
+        if(check_for_positive_int_format(txt_value=self.form_window.textBox_image_version_swap_frequency.text()) == False):
+            error_message += "the field with the image version frequency was in wrong format (only positive int values are allowed); "
+        
+        if(error_message != ""):
+            error_message = "warning: the program will not apply your image version settings due to the following error/s: " + error_message
+            return False
+
+        return True
+    
+    def try_to_create_image_version_controller(self, pixel_areas_manipulator:Pixel_areas_manipulator):
+        
+        if(self.should_create_image_version_contoller()==True):
+            
+            image_version_start_index = 0 if self.form_window.textBox_image_version_start_index.text() == "" else int(self.form_window.textBox_image_version_start_index.text())
+            image_version_increment = 1 if self.form_window.textBox_image_version_increment.text() == "" else int(self.form_window.textBox_image_version_increment.text())
+            image_version_swap_frequency = 1 if self.form_window.textBox_image_version_swap_frequency.text() == "" else int(self.form_window.textBox_image_version_swap_frequency.text())
+            
+            pixel_areas_manipulator.create_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
+        
+            
     
     #creates a dictonary which has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
     #the input parameter `rgb_formulas_for_pixel_areas` must be in a valid format before calling the function
