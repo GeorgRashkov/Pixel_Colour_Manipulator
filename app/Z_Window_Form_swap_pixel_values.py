@@ -20,7 +20,9 @@ class FormWindow_SwapPixelValues(QWidget):
         self.text_area_swap_pixel_areas = QTextEdit() #Text_area(allowed_symbols_regex="[0-9\\[\\], ]")
         self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
 
-        int_validator = QIntValidator(0, 999_999)
+        positive_int_validator = QIntValidator(0, 999_999)
+        int_validator = QIntValidator(-999_999, 999_999)
+        
 
         #<settings for pixel areas
         self.label_movable_areas = QLabel("movable areas")
@@ -33,19 +35,19 @@ class FormWindow_SwapPixelValues(QWidget):
         self.label_image_version_start_index = QLabel("image version start index")
         self.textBox_image_version_start_index = QLineEdit()
         self.textBox_image_version_start_index.setValidator(int_validator)
-        self.textBox_image_version_start_index.setMaxLength(2)
+        self.textBox_image_version_start_index.setMaxLength(3)
         self.label_image_version_start_index.setBuddy(self.textBox_image_version_start_index)
 
         self.label_image_version_increment = QLabel("image version increment")
         self.textBox_image_version_increment = QLineEdit()
         self.textBox_image_version_increment.setValidator(int_validator)
-        self.textBox_image_version_increment.setMaxLength(2)
+        self.textBox_image_version_increment.setMaxLength(3)
         self.label_image_version_increment.setBuddy(self.textBox_image_version_increment)
 
         self.label_image_version_swap_frequency = QLabel("image version swap frequency")
         self.textBox_image_version_swap_frequency = QLineEdit()
-        self.textBox_image_version_swap_frequency.setValidator(int_validator)
-        self.textBox_image_version_swap_frequency.setMaxLength(2)
+        self.textBox_image_version_swap_frequency.setValidator(positive_int_validator)
+        self.textBox_image_version_swap_frequency.setMaxLength(3)
         self.label_image_version_swap_frequency.setBuddy(self.textBox_image_version_swap_frequency)
         
         #settings for output image versions>
@@ -57,18 +59,18 @@ class FormWindow_SwapPixelValues(QWidget):
         
         self.label_brush_width_min_value = QLabel("min")
         self.textBox_brush_width_min_value = QLineEdit("1")
-        self.textBox_brush_width_min_value.setValidator(int_validator)
+        self.textBox_brush_width_min_value.setValidator(positive_int_validator)
         self.textBox_brush_width_min_value.setMaxLength(3)
 
         self.lable_brush_width_max_value = QLabel("max")
         self.textBox_brush_width_max_value = QLineEdit("999")
         self.textBox_brush_width_max_value.setMaxLength(3)
-        self.textBox_brush_width_max_value.setValidator(int_validator)
+        self.textBox_brush_width_max_value.setValidator(positive_int_validator)
 
         self.lable_brush_width_delta = QLabel("increment")
         self.textBox_brush_width_delta = QLineEdit("50")
         self.textBox_brush_width_delta.setMaxLength(3)
-        self.textBox_brush_width_delta.setValidator(int_validator)
+        self.textBox_brush_width_delta.setValidator(positive_int_validator)
        
 
         self.button_apply_brush_width_changes = QPushButton("OK")
@@ -79,19 +81,19 @@ class FormWindow_SwapPixelValues(QWidget):
         
         self.label_brush_height_min_value = QLabel("min")
         self.textBox_brush_height_min_value = QLineEdit("1")
-        self.textBox_brush_height_min_value.setValidator(int_validator)
+        self.textBox_brush_height_min_value.setValidator(positive_int_validator)
         self.textBox_brush_height_min_value.setMaxLength(3)
       
 
         self.lable_brush_height_max_value = QLabel("max")
         self.textBox_brush_height_max_value = QLineEdit("999")
         self.textBox_brush_height_max_value.setMaxLength(3)
-        self.textBox_brush_height_max_value.setValidator(int_validator)
+        self.textBox_brush_height_max_value.setValidator(positive_int_validator)
 
         self.lable_brush_height_delta = QLabel("increment")
         self.textBox_brush_height_delta = QLineEdit("50")
         self.textBox_brush_height_delta.setMaxLength(3)
-        self.textBox_brush_height_delta.setValidator(int_validator)
+        self.textBox_brush_height_delta.setValidator(positive_int_validator)
        
 
         self.button_apply_brush_height_changes = QPushButton("OK")
@@ -102,13 +104,13 @@ class FormWindow_SwapPixelValues(QWidget):
         
         self.label_brush_width_set = QLabel("width")
         self.textBox_brush_width_set = QLineEdit("100")
-        self.textBox_brush_width_set.setValidator(int_validator)
+        self.textBox_brush_width_set.setValidator(positive_int_validator)
         self.textBox_brush_width_set.setMaxLength(3)
 
         self.label_brush_height_set = QLabel("height")
         self.textBox_brush_height_set = QLineEdit("100")
         self.textBox_brush_height_set.setMaxLength(3)
-        self.textBox_brush_height_set.setValidator(int_validator)
+        self.textBox_brush_height_set.setValidator(positive_int_validator)
 
         self.button_set_brush_size = QPushButton("OK")
 
@@ -155,7 +157,7 @@ class FormWindow_SwapPixelValues(QWidget):
         #the id of the RGB formula
         self.label_rgb_formula_id = QLabel("f_id")
         self.text_box_rgb_formula_id = QLineEdit()
-        self.text_box_rgb_formula_id.setValidator(int_validator)
+        self.text_box_rgb_formula_id.setValidator(positive_int_validator)
         self.label_rgb_formula_id.setBuddy(self.text_box_rgb_formula_id)
 
         #contains the pixel area ids which will passed to the RGB formula
@@ -176,19 +178,19 @@ class FormWindow_SwapPixelValues(QWidget):
         #determines the version of the input image which will be passed to the RGB formula
         self.label_image_version_as_input_for_rgb_func = QLabel("img_in_v")
         self.text_box_image_version_as_input_for_rgb_func = QLineEdit()
-        self.text_box_image_version_as_input_for_rgb_func.setValidator(int_validator)
+        self.text_box_image_version_as_input_for_rgb_func.setValidator(positive_int_validator)
         self.label_image_version_as_input_for_rgb_func.setBuddy(self.text_box_image_version_as_input_for_rgb_func)
 
         #determines the version of the image to which the changed pixel values will be applied
         self.label_image_version_as_output_from_rgb_func = QLabel("img_out_v")
         self.text_box_image_version_as_output_from_rgb_func = QLineEdit()
-        self.text_box_image_version_as_output_from_rgb_func.setValidator(int_validator)
+        self.text_box_image_version_as_output_from_rgb_func.setValidator(positive_int_validator)
         self.label_image_version_as_output_from_rgb_func.setBuddy(self.text_box_image_version_as_output_from_rgb_func)
 
         #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on
         self.label_image_version_as_output_from_rgb_func_stack = QLabel("img_out_v")
         self.text_box_image_version_as_output_from_rgb_func_stack = QLineEdit()
-        self.text_box_image_version_as_output_from_rgb_func_stack.setValidator(int_validator)
+        self.text_box_image_version_as_output_from_rgb_func_stack.setValidator(positive_int_validator)
         self.label_image_version_as_output_from_rgb_func_stack.setBuddy(self.text_box_image_version_as_output_from_rgb_func_stack)
 
 

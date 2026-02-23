@@ -441,6 +441,7 @@ class Swap_pixel_values_controller:
         
         if(error_message != ""):
             error_message = "warning: the program will not apply your image version settings due to the following error/s: " + error_message
+            print(error_message)
             return False
 
         return True
