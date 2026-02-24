@@ -2,10 +2,11 @@ from Z_Pixel_area import Pixel_area
 from Z_RGB_formula import RGB_formula
 import numpy as np
 from Z_Image_version_controller import Image_version_controller
+from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 
 class Pixel_areas_manipulator:
 
-    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], movable_rectangles:bool):
+    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window):
         
         self.pixel_areas_dict = pixel_areas_dict
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -19,16 +20,30 @@ class Pixel_areas_manipulator:
         self.set_image_versions()
 
         # in testing state!!!!!!!!!!!!
-        self.movable_rectangles = movable_rectangles 
+        self.areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window = areas_behiour_when_resizing_main_window
+
+        #self.movable_rectangles = movable_rectangles 
         self.rectangles_per_area: dict[int, list[Rectangle]]= None #the main dictionary has key-value pairs for pixel area; the key is the area id while the value is the rectangles which are used by the area  
 
         self.image_versions_controller = None
-        
+        self.initial_image_width = 100
+        self.initial_image_height = 100
+
+    #this function must be called from outside
+    #this method must be called always when the desired output image version from the manipulator is different from the last version
     def create_image_version_controller(self, image_version_start_index:int = 0, image_version_increment:int = 1, image_version_swap_frequency:int = 1):
         self.image_versions_controller = Image_version_controller(image_version_start_index = image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count = self.image_versions_count+2)
 
+    #this function must be called from outside
+    #this method must be called always when resize behaviour of the areas is set to `Keep_aspect_ratio`
+    def set_aspect_ratio(self, initial_image_width, initial_image_height):
+
+        self.initial_image_width = initial_image_width
+        self.initial_image_height = initial_image_height
 
 
+
+    #< functions for setting the image versions
     #set's proper value for `self.image_versions_count` and for each pixel area set's proper values for `img_in_v`, `img_out_v` and `img_out_stack`
     def set_image_versions(self):
 
@@ -59,156 +74,13 @@ class Pixel_areas_manipulator:
             print(f"warning: the maximum number of image versions is {self.max_image_versions};\n if the value of `img_in_v` is equal or above the max value than the special last image version will be used;\n if the value of `img_out_v` is equal or above the max value than the special last image version will be used")
 
         self.image_versions_count = image_versions_count
+    #functions for setting the image versions>
 
 
-    """
-       
+
+    #this is the main function for applying the manipulator on an image
+    #this function must be called from outside
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image_v1(self, img:np) -> np.array:       
-
-        image_versions : list[np.array] = []
-        for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
-            image_versions.append(img.copy())
-
-
-        self.img_width = img.shape[1]
-        self.img_height = img.shape[0]
-        
-
-        for pixel_area in  self.pixel_areas_dict.values():
-            
-            rgb_formula_id = pixel_area.f_id
-            if(rgb_formula_id not in self.rgb_formulas_dict.keys()):#execute this code if the rgb formula id (of the current pixel area) does not exist
-                continue
-            
-            image_version_input = image_versions[pixel_area.img_in_v]
-            pixel_areas_as_parameters_for_rgb_formula = self.get_pixel_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_version_input)#this is a numpy array of shape (AREA, Height, Width, 3[RGB])
-            if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no image pixel areas were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
-                continue
-            
-            #the rgb formula is this `eval(f"lambda r,g,b,areas_count: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
-            rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
-            rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0])
-
-            starting_image_version = pixel_area.img_out_v
-            ending_image_version = pixel_area.img_out_v + pixel_area.img_out_stack
-            for i in range(starting_image_version, ending_image_version):
-                if(i > self.image_versions_count):
-                    break
-
-                image_versions[i][ pixel_area.y : pixel_area.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], pixel_area.x : pixel_area.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
-
-            #make sure the last image version (the special one) is always updated
-            image_versions[-1][ pixel_area.y : pixel_area.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], pixel_area.x : pixel_area.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
-       
-        
-        return image_versions[-1]#always returns the last image version (the special one)
-
-
-     #creates and returns the image pixel areas (as numpy array of shape (AREA, Height, Width, 3[RGB])) obtinaed from the the values of `id`, `p_ids`, `p_x`, `p_y` of the input pixel area
-    def get_pixel_areas_as_parameters_for_rgb_formula(self, pixel_area_input:Pixel_area, img:np) -> np:
-        
-        areas_from_img:list[np.array] = []
-
-        (area_width, area_height) = self.get_proper_width_and_height_for_areas_used_by_area(pixel_area_input=pixel_area_input)
-
-        #if the top left corner of the input pixel area is outside the image execute this code
-        if(area_width == -1 or area_height == -1):
-            return np.array([])
-        
-        #this image area is created from the input pixel area
-        area_from_img = img[pixel_area_input.y : pixel_area_input.y + area_height, pixel_area_input.x : pixel_area_input.x + area_width, : ]
-        areas_from_img.append(area_from_img)
-        
-        if(pixel_area_input.p_ids is not None):
-            #those image areas are created from the pixel areas whose id was found in `p_ids` of the input pixel area
-            for pixel_area_id in pixel_area_input.p_ids:
-
-                #get only those pixel areas which have an existing id
-                if(pixel_area_id in self.pixel_areas_dict.keys()):
-                    pixel_area = self.pixel_areas_dict[pixel_area_id]
-
-                    #get only those pixel areas whose top left corner is inside the image
-                    if(pixel_area.x < self.img_width and pixel_area.y < self.img_height):                
-                        area_from_img = img[ pixel_area.y : pixel_area.y + area_height, pixel_area.x : pixel_area.x + area_width : ]
-                        areas_from_img.append(area_from_img)
-        
-
-        #those image areas are created from the top left corners obtined from the values of `p_x` and `p_y` of the input pixel area
-        if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
-            anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
-            for i in range(0, anonymous_areas_count):
-
-                #skip the anonymous pixel areas whose top left corner is outside the image
-                if(pixel_area_input.p_x[i] < self.img_width and pixel_area_input.p_y[i] < self.img_height):
-                    area_from_img = img[pixel_area_input.p_y[i] : pixel_area_input.p_y[i] + area_height, pixel_area_input.p_x[i] : pixel_area_input.p_x[i] + area_width, : ]
-                    areas_from_img.append(area_from_img)
-        
-        return np.array(areas_from_img)
-    
-
-    def get_proper_width_and_height_for_areas_used_by_area(self, pixel_area_input:Pixel_area):
-        
-        widths = []
-        heights = []
-
-        (area_width, area_height) = self.get_proper_width_and_height(x = pixel_area_input.x, y = pixel_area_input.y, width = pixel_area_input.w, height = pixel_area_input.h)
-        if(area_width==-1 or area_height ==-1):
-            return -1, -1
-        
-        widths.append(area_width)
-        heights.append(area_height)
-
-        if(pixel_area_input.p_ids is not None):
-            #cycle through the areas from the input pixel area whose id was found in `p_ids`
-            for pixel_area_id in pixel_area_input.p_ids:
-
-                #check only those pixel areas which have an existing id
-                if(pixel_area_id in self.pixel_areas_dict.keys()):
-                    pixel_area = self.pixel_areas_dict[pixel_area_id]
-
-                    (area_width, area_height) = self.get_proper_width_and_height(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
-                    if(area_width!=-1 and area_height !=-1):
-                        widths.append(area_width)
-                        heights.append(area_height)
-        
-        #those image areas are taken from the top left corners obtined from the values of `p_x` and `p_y` of the input pixel area
-        if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
-            anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
-            for i in range(0, anonymous_areas_count):                
-
-                (area_width, area_height) = self.get_proper_width_and_height(x = pixel_area_input.p_x[i], y = pixel_area_input.p_y[i], width = pixel_area_input.w, height = pixel_area_input.h)
-                if(area_width!=-1 and area_height !=-1):
-                    widths.append(area_width)
-                    heights.append(area_height)
-        
-        min_width = min(widths)
-        min_height = min(heights)
-
-        return (min_width, min_height)
-
-
-    def get_proper_width_and_height(self, x:int, y:int, width: int, height: int):
-        
-        #execute this code if the top left corner is outside the canvas 
-        if(self.img_width <= x or self.img_height <= y):
-            return -1, -1
-
-        area_width = min(width, self.img_width-x)
-        area_height = min(height, self.img_height-y)
-
-        return (area_width, area_height)
-    
-
-    """
-
-
-
-
-
-#< in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def transform_image(self, img:np) -> np.array:       
 
         image_versions : list[np.array] = []
@@ -282,6 +154,11 @@ class Pixel_areas_manipulator:
         return np.array(areas_from_img)
 
 
+
+
+
+    #<functions for creating rectangles used by pixel area 
+
     def get_rectangles_used_by_area(self, pixel_area_input:Pixel_area) -> list["Rectangle"]:
         
         rectangles: list[Rectangle] = []
@@ -324,30 +201,70 @@ class Pixel_areas_manipulator:
         return rectangles
 
 
+
     def get_proper_rectangle(self, x:int, y:int, width: int, height: int) -> "Rectangle":
         
-        #execute this code if the top left corner is outside the canvas (executed only if the rectangles are not able to move)
-        if( (self.img_width <= x or self.img_height <= y) and self.movable_rectangles == False ):
+        rectangle = None
+
+        if(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Resize):
+            rectangle = self.get_rectangle_which_can_resize(x=x, y=y, width=width, height=height)
+        
+        elif(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Move):
+            rectangle = self.get_rectangle_which_can_move(x=x, y=y, width=width, height=height)
+        
+        elif(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio):
+           rectangle = self.get_rectangle_which_keeps_aspect_ratio(x=x, y=y, width=width, height=height)
+        
+        return rectangle
+        
+    
+    def get_rectangle_which_can_resize(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+        
+        #execute this code if the top left corner is outside the canvas
+        if(self.img_width <= x or self.img_height <= y):
             return None
+
+        #make sure the width and height are not getting outside the cnavas
+        width = min(width, self.img_width-x)
+        height = min(height, self.img_height-y)
+
+        return Rectangle(x=x, y=y, w=width, h=height)
+
+    
+    def get_rectangle_which_can_move(self, x:int, y:int, width: int, height: int) -> "Rectangle":
         
         #set the values of `x` and `y` before setting the width and height (executed only if the rectangles are able to move)
-        if(self.movable_rectangles == True):
-
-            right_corner_x = x + width
-            if(right_corner_x > self.img_width):
-                x = max(0, x - (right_corner_x - self.img_width))
+        right_corner_x = x + width
+        if(right_corner_x > self.img_width):
+            x = max(0, x - (right_corner_x - self.img_width))
             
-            right_corner_y = y + height
-            if(right_corner_y > self.img_height):
-                y = max(0, y - (right_corner_y - self.img_height))
+        right_corner_y = y + height
+        if(right_corner_y > self.img_height):
+            y = max(0, y - (right_corner_y - self.img_height))
             
         #make sure the width and height are not getting outside the cnavas
         width = min(width, self.img_width-x)
         height = min(height, self.img_height-y)
 
-        rectangle = Rectangle(x=x, y=y, w=width, h=height)
+        return Rectangle(x=x, y=y, w=width, h=height)
 
-        return rectangle
+    
+    def get_rectangle_which_keeps_aspect_ratio(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+        
+        x_ratio = self.img_width/self.initial_image_width
+        y_ratio = self.img_height/self.initial_image_height
+
+        x = round(x*x_ratio)
+        width = round(width*x_ratio)
+
+        y = round(y*y_ratio)
+        height = round(height*y_ratio)
+
+        return Rectangle(x=x, y=y, w=width, h=height)
+
+    #functions for creating rectangles used by pixel area>
+
+
 
 
 

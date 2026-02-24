@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox, QRadioButton
 )
 import re
 from PyQt5.QtCore import Qt
@@ -24,11 +24,14 @@ class FormWindow_SwapPixelValues(QWidget):
         int_validator = QIntValidator(-999_999, 999_999)
         
 
-        #<settings for pixel areas
-        self.label_movable_areas = QLabel("movable areas")
-        self.checkBox_movable_areas = QCheckBox()
-        self.label_movable_areas.setBuddy(self.checkBox_movable_areas)
-        #settings for pixel areas>
+        #<pixel areas behaviour when resizing main window
+        self.label_areas_behaviour_when_resizing_main_window = QLabel("resizing behaviour:")
+
+        self.radioButton_areas_resize = QRadioButton("resize")
+        self.radioButton_areas_move = QRadioButton("move")
+        self.radioButton_areas_keep_aspect_ratio = QRadioButton("keep ratio")
+        self.radioButton_areas_keep_aspect_ratio.setChecked(True)
+        #pixel areas behaviour when resizing main window>
 
         #<settings for output image versions        
         
@@ -208,10 +211,13 @@ class FormWindow_SwapPixelValues(QWidget):
 
         v_layout = QVBoxLayout()
 
+
         h_layout = QHBoxLayout()
         h_layout.setAlignment(Qt.AlignLeft)
-        h_layout.addWidget(self.label_movable_areas)
-        h_layout.addWidget(self.checkBox_movable_areas)
+        h_layout.addWidget(self.label_areas_behaviour_when_resizing_main_window)
+        h_layout.addWidget(self.radioButton_areas_resize)
+        h_layout.addWidget(self.radioButton_areas_move)
+        h_layout.addWidget(self.radioButton_areas_keep_aspect_ratio)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()

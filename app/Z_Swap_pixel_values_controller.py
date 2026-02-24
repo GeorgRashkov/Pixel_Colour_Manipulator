@@ -11,6 +11,7 @@ from Z_RGB_formula import RGB_formula
 from Z_Pixel_area import Pixel_area
 from Z_Pixel_area_initializer import Pixel_area_initializer
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
+from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 
 class Swap_pixel_values_controller: 
     
@@ -418,13 +419,31 @@ class Swap_pixel_values_controller:
         
         #pixel areas>
 
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, movable_rectangles=self.form_window.checkBox_movable_areas.isChecked())
-        self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
 
+        #<pixel area manipulator
+        areas_resize_behaviour = self.get_areas_resize_behaviour()
+        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, areas_behiour_when_resizing_main_window=areas_resize_behaviour)
+        if(areas_resize_behaviour == Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio):
+            pixel_areas_manipulator.set_aspect_ratio(initial_image_width=self.canvas_window.canvas.width(), initial_image_height=self.canvas_window.canvas.height())
+
+        self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
+        #pixel area manipulator>
         
         
         return pixel_areas_manipulator
     
+    def get_areas_resize_behaviour(self) -> Areas_behaviour_when_resizing_main_window:
+        
+        areas_resize_behaviour = None
+
+        if(self.form_window.radioButton_areas_resize.isChecked()):
+            areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Resize
+        elif(self.form_window.radioButton_areas_move.isChecked()):
+            areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Move
+        elif(self.form_window.radioButton_areas_keep_aspect_ratio.isChecked()):
+            areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio
+        
+        return areas_resize_behaviour
 
     def should_create_image_version_contoller(self):
 
