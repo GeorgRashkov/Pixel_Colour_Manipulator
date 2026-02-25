@@ -1,3 +1,5 @@
+import numpy as np
+
 class Pixel_area:
     
     # all input parameters must be integers or lists of integers
@@ -29,6 +31,9 @@ class Pixel_area:
         self.img_in_v = img_in_v #determines the version of the input image which will be passed to the RGB formula
         self.img_out_v = img_out_v #determines the version of the image to which the changed pixel values will be applied
         self.img_out_stack = img_out_stack #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on 
+
+
+        self.area_zeros = np.zeros(shape=(self.h, self.w, 3))
 
     #creates a copy of it;s self    
     def copy(self) -> "Pixel_area":

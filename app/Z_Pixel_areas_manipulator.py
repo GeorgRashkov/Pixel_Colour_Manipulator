@@ -36,6 +36,7 @@ class Pixel_areas_manipulator:
 
     #this function must be called from outside
     #this method must be called always when resize behaviour of the areas is set to `Keep_aspect_ratio`
+    #the values the input parameters must be width and height of the canvas
     def set_aspect_ratio(self, initial_image_width, initial_image_height):
 
         self.initial_image_width = initial_image_width
@@ -120,10 +121,15 @@ class Pixel_areas_manipulator:
                     break
                 
                 rectangle = self.rectangles_per_area[pixel_area.id][0]#the first rectangle used by the area is the rectangle of the area itself
-                image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
+    
+                area_shape = image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ].shape
+                image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result[0:area_shape[0], 0:area_shape[1], :]
+                #image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
 
             #make sure the last image version (the special one) is always updated
-            image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
+            area_shape = image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ].shape
+            image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result[0:area_shape[0], 0:area_shape[1], :]
+            #image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
 
         #determine the image version to return (the first and the last image versions are special ones)
         output_image_version_index = -1 if self.image_versions_controller is None else self.image_versions_controller.get_next_image_version_index()
@@ -145,11 +151,22 @@ class Pixel_areas_manipulator:
         #if the top left corner of the input pixel area is outside the image execute this code
         if(rectangles is None or len(rectangles) == 0):
             return np.array([])
+        elif(must_create_new_rectangles == True):
+            pixel_area_input.area_zeros = np.zeros(shape=(rectangles[0].h, rectangles[0].w, 3))
         
 
         for rec in rectangles:
-            area_from_img = img[rec.y : rec.y + rec.h, rec.x : rec.x + rec.w, : ]
+
+            area_width = min(rectangles[0].w, rec.w)#the first rectangle corresponds to the input pixel area
+            area_height = min(rectangles[0].h, rec.h)#the first rectangle corresponds to the input pixel area
+            
+            area_from_img = pixel_area_input.area_zeros.copy()
+            area_from_img[0:area_height, 0:area_width, :] = img[rec.y : rec.y + area_height, rec.x : rec.x + area_width, :]
+
             areas_from_img.append(area_from_img)
+
+            #area_from_img = img[rec.y : rec.y + rec.h, rec.x : rec.x + rec.w, : ]
+            #areas_from_img.append(area_from_img)
 
         return np.array(areas_from_img)
 
@@ -163,12 +180,17 @@ class Pixel_areas_manipulator:
         
         rectangles: list[Rectangle] = []
 
+
+        #<this is the input pixel area
         rectangle = self.get_proper_rectangle(x = pixel_area_input.x, y = pixel_area_input.y, width = pixel_area_input.w, height = pixel_area_input.h)
         if(rectangle is None):
             return None
         
         rectangles.append(rectangle)        
+        #this is the input pixel area>
 
+
+        #<those are the areas defined by `p_ids` of the input pixel area
         if(pixel_area_input.p_ids is not None):
             #cycle through the areas from the input pixel area whose id was found in `p_ids`
             for pixel_area_id in pixel_area_input.p_ids:
@@ -180,24 +202,38 @@ class Pixel_areas_manipulator:
                     rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
                     if(rectangle is not None):
                         rectangles.append(rectangle)
-                       
+        #those are the areas defined by `p_ids` of the input pixel area>  
+
         
-        #those image areas are taken from the top left corners obtined from the values of `p_x` and `p_y` of the input pixel area
+        #<those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area
         if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
             anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
             for i in range(0, anonymous_areas_count):                
+                
+                anonymous_area_x = pixel_area_input.p_x[i]
+                anonymous_area_y = pixel_area_input.p_y[i]
+                
+                #if the top left corner of the anonymous area is outside the canvas don't create (nor add) rectangle
+                if(anonymous_area_x >= self.initial_image_width or anonymous_area_y >= self.initial_image_height):
+                    continue
 
-                rectangle = self.get_proper_rectangle(x = pixel_area_input.p_x[i], y = pixel_area_input.p_y[i], width = pixel_area_input.w, height = pixel_area_input.h)
+                anonymous_area_width = min(pixel_area_input.w, self.initial_image_width-anonymous_area_x)
+                anonymous_area_height = min(pixel_area_input.h, self.initial_image_height-anonymous_area_y)
+                
+                rectangle = self.get_proper_rectangle(x = anonymous_area_x, y = anonymous_area_y, width = anonymous_area_width, height = anonymous_area_height)
                 if(rectangle is not None):
                     rectangles.append(rectangle)
+        #those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area>
+
         
+        """
         #make sure all rectangles have the same width and height
         min_width = min(retangle.w for retangle in rectangles)
         min_height = min(retangle.h for retangle in rectangles)
         for rec in rectangles:
             rec.w = min_width
             rec.h = min_height
-
+        """
         return rectangles
 
 
@@ -220,11 +256,11 @@ class Pixel_areas_manipulator:
     
     def get_rectangle_which_can_resize(self, x:int, y:int, width: int, height: int) -> "Rectangle":
         
-        #execute this code if the top left corner is outside the canvas
+        #execute this code if the top left corner is outside the image
         if(self.img_width <= x or self.img_height <= y):
             return None
 
-        #make sure the width and height are not getting outside the cnavas
+        #make sure the width and height are not getting outside the image
         width = min(width, self.img_width-x)
         height = min(height, self.img_height-y)
 
@@ -242,7 +278,7 @@ class Pixel_areas_manipulator:
         if(right_corner_y > self.img_height):
             y = max(0, y - (right_corner_y - self.img_height))
             
-        #make sure the width and height are not getting outside the cnavas
+        #make sure the width and height are not getting outside the canvas
         width = min(width, self.img_width-x)
         height = min(height, self.img_height-y)
 
