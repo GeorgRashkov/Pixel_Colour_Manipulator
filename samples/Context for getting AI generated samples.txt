@@ -1,0 +1,95 @@
+I created a custom app which is just a window which get's pixel values under it and applies custom user defined changes to the pixel values. The app allows the user to create areas and rgb functions where each area can have it's own rgb function which will be applied to the capture window. The areas have: 
+id; 
+right corner position defined by `x` and `y`;
+size defined by `w` and `h`;
+parameter `f_id` specifying which rgb function will be used by the area
+parameter `p_ids` specifying which areas will be passed to the rgb function
+
+
+here is a sample containing different areas which will be applied to the capture window
+`
+{id:1; x:0; y:0; w:290; h:290; f_id:1; p_ids:[2]}
+{id:2; x:291; y:4; w:290; h:290; f_id:15; p_ids:[1]}
+
+{id:3; x:583; y:4; w:290; h:290; f_id:3; p_ids:[4]}
+{id:4; x:874; y:2; w:290; h:290; f_id:8; p_ids:[3]}
+
+{id:5; x:1166; y:4; w:290; h:290; f_id:25; p_ids:[6]}
+{id:6; x:0; y:293; w:290; h:290; f_id:16; p_ids:[5]}
+
+{id:7; x:0; y:587; w:290; h:290; f_id:7; p_ids:[8]}
+{id:8; x:4; y:871; w:290; h:290; f_id:8; p_ids:[7]}
+
+{id:9; x:287; y:291; w:290; h:290; f_id:13; p_ids:[10]}
+{id:10; x:295; y:583; w:290; h:290; f_id:19; p_ids:[9]}
+
+{id:11; x:296; y:871; w:290; h:290; f_id:35; p_ids:[12]}
+{id:12; x:585; y:294; w:290; h:290; f_id:17; p_ids:[11]}
+
+{id:13; x:587; y:584; w:290; h:290; f_id:14; p_ids:[14]}
+{id:14; x:589; y:871; w:290; h:290; f_id:18; p_ids:[13]}
+
+{id:15; x:873; y:294; w:290; h:290; f_id:29; p_ids:[16]}
+{id:16; x:1166; y:291; w:290; h:290; f_id:1; p_ids:[15]}
+
+{id:17; x:881; y:584; w:290; h:290; f_id:23; p_ids:[18]}
+{id:18; x:1167; y:577; w:290; h:290; f_id:2; p_ids:[17]}
+
+{id:19; x:879; y:871; w:290; h:290; f_id:11; p_ids:[20]}
+{id:20; x:1168; y:867; w:290; h:290; f_id:6; p_ids:[19]}
+`
+here are the rgb formulas used by the areas 
+`
+
+{ |1|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b ] }
+
+{ |2|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-r ] }
+
+{ |3|  r->[ 255-b ]  g->[ 255-g ]  b->[ 255-r ] }
+
+{ |4|  r->[ 255-r ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |5|  r->[ r ]  g->[ r ]  b->[ r ] }
+
+{ |6|  r->[ g ]  g->[ r ]  b->[ b ] }
+
+{ |7|  r->[ (b+r)*0.5 ]  g->[ 255-(g+b)*0.5 ]  b->[ b-g ] }
+
+{ |8|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g-b ] }
+
+{ |9|  r->[ (r>50)*100+g*0.8 ]  g->[ b ]  b->[ b-(g+r>100)*70 ] }
+
+
+
+{ |15|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |25|  r->[ r[1] ]  g->[ r ]  b->[ r ] }
+
+{ |16|  r->[ g ]  g->[ r ]  b->[ b[1] ] }
+
+{ |13|  r->[ 255-b ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |19|  r->[ (r[1]>50)*100+g[1]*0.8 ]  g->[ b ]  b->[ b[1]-(g[1]+r[1]>100)*70 ] }
+
+{ |35|  r->[ r ]  g->[ r[1] ]  b->[ r[1] ] }
+
+{ |17|  r->[ (b[1]+r[1])*0.5 ]  g->[ 255-(g[1]+b[1])*0.5 ]  b->[ b-g ] }
+
+{ |14|  r->[ 255-r[1] ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |18|  r->[ g+r+g ]  g->[ b+r-g ]  b->[ g[1]-b[1] ] }
+
+{ |29|  r->[ (r>50)*100+g*0.8 ]  g->[ b[1] ]  b->[ b-(g+r>100)*70 ] }
+
+{ |23|  r->[ 255-b[1] ]  g->[ 255-g[1] ]  b->[ 255-r ] }
+
+{ |11|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b[1] ] }
+`
+
+the rgb formulas have:
+id;
+parameter r->[] containing the rgb formula for the red output channel
+parameter g->[] containing the rgb formula for the green output channel
+parameter b->[] containing the rgb formula for the blue output channel
+
+the rgb formulas look like this `eval(f"lambda r,g,b,areas_count: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")` where the input parameters `r`, `g`, `b` contain the RGB pixel values under the capture window; each of the input parameters is a numpy array of shape `Areas, Height, Width` where `Areas` is defined by `p_ids`;  the output of the rgb function is applied only to the area which uses the function (the app makes sure that `r`, `g`, `g` always have the same shape even when the used areas have different width and height values) - for example an area (let's call it main area) which has `f_id:5` and `p_ids[5,10,7]` will call the rgb function which has id 5 and it will pass to the function the `r`,`g`,`b` pixel values under itself and the areas which have ids `5`,`10`,`7` - for instance if `f_id` is `{ |5|  r->[ r[0] ]  g->[ g[1]+g[2] ]  b->[ r[3]-b[0] ] }` this means that the red channel values on the main area will remain unchanged, the green channel values will be obtained from the sum of the green channel values of the first (id 5) and second area (id 10), the blue channel values will be equal to the third area (id 7) minus the main area. Each channel formula must use at least once any of the symbols `r`, `g`, `b` and if they don't have an index after them (which specifies the area index) the app will add `[0]` after them (which are the values under the main area). The rgb formulas a nothing special - they apply some numpy array operations and can take input any of those symbols `['.','(',')','r','g','b','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']` where `^` is transformed to `**` while `=` is transformed to `==` (this is needed because the rgb formula checker is not allowing 2 operation symbols to be placed next to each other). With all this info you should be able to generate another example (use spaces and new lines for readability is they are ignored by the app but don't use tabs) but try to make it a bit different (use other rgb formulas, use different sizes for the areas, make some areas to use 3 or more values in `p_ids`, make some areas to be placed inside other areas by setting the values of `x`, `y`, `w`, `h`). Keep in mind that the pixel values are of type np.uint8 (this means that the sum of 255 and 2 will result in 1).
