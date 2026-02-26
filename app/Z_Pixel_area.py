@@ -32,8 +32,14 @@ class Pixel_area:
         self.img_out_v = img_out_v #determines the version of the image to which the changed pixel values will be applied
         self.img_out_stack = img_out_stack #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on 
 
+        self.area_zeros = None
+        self.set_area_zeros(height = self.h, width = self.w)
 
-        self.area_zeros = np.zeros(shape=(self.h, self.w, 3))
+    def set_area_zeros(self, height, width):
+        self.area_zeros = np.zeros(shape=(height, width, 3), dtype=np.uint8)
+    
+    def get_area_zeros(self):
+        return self.area_zeros.copy()
 
     #creates a copy of it;s self    
     def copy(self) -> "Pixel_area":

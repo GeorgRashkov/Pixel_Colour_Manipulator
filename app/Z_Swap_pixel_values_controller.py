@@ -422,7 +422,7 @@ class Swap_pixel_values_controller:
 
         #<pixel area manipulator
         areas_resize_behaviour = self.get_areas_resize_behaviour()
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, areas_behiour_when_resizing_main_window=areas_resize_behaviour)
+        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window.checkBox_fast_area_creation.isChecked())
         if(areas_resize_behaviour == Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio):
             pixel_areas_manipulator.set_aspect_ratio(initial_image_width=self.canvas_window.canvas.width(), initial_image_height=self.canvas_window.canvas.height())
 
