@@ -156,7 +156,7 @@ class Pixel_areas_manipulator:
         
         rectangles = None
         if(must_create_new_rectangles == True):
-            rectangles = self.get_rectangles_used_by_area__fast(pixel_area_input=pixel_area_input)
+            rectangles = self.get_rectangles_used_by_area(pixel_area_input=pixel_area_input)
             self.rectangles_per_area[pixel_area_input.id] = rectangles
         else:
             rectangles = self.rectangles_per_area[pixel_area_input.id]
@@ -213,57 +213,6 @@ class Pixel_areas_manipulator:
 
     #<functions for creating rectangles used by pixel area 
 
-    def get_rectangles_used_by_area__fast(self, pixel_area_input:Pixel_area) -> list["Rectangle"]:
-        
-        rectangles: list[Rectangle] = []
-
-
-        #<this is the input pixel area
-        rectangle = self.get_proper_rectangle(x = pixel_area_input.x, y = pixel_area_input.y, width = pixel_area_input.w, height = pixel_area_input.h)
-        if(rectangle is None):
-            return None
-        
-        rectangles.append(rectangle)        
-        #this is the input pixel area>
-
-
-        #<those are the areas defined by `p_ids` of the input pixel area
-        if(pixel_area_input.p_ids is not None):
-            #cycle through the areas from the input pixel area whose id was found in `p_ids`
-            for pixel_area_id in pixel_area_input.p_ids:
-
-                #check only those pixel areas which have an existing id
-                if(pixel_area_id in self.pixel_areas_dict.keys()):
-                    pixel_area = self.pixel_areas_dict[pixel_area_id]
-
-                    rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
-                    if(rectangle is not None):
-                        rectangles.append(rectangle)
-        #those are the areas defined by `p_ids` of the input pixel area>  
-
-        
-        #<those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area
-        if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
-            anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
-            for i in range(0, anonymous_areas_count):                
-                
-                rectangle = self.get_proper_rectangle(x = pixel_area_input.p_x[i], y = pixel_area_input.p_y[i], width = pixel_area_input.w, height = pixel_area_input.h)
-                if(rectangle is not None):
-                    rectangles.append(rectangle)
-        #those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area>
-
-        
-        
-        #make sure all rectangles have the same width and height
-        min_width = min(retangle.w for retangle in rectangles)
-        min_height = min(retangle.h for retangle in rectangles)
-        for rec in rectangles:
-            rec.w = min_width
-            rec.h = min_height
-       
-        return rectangles
-
-
     def get_rectangles_used_by_area(self, pixel_area_input:Pixel_area) -> list["Rectangle"]:
         
         rectangles: list[Rectangle] = []
@@ -312,6 +261,14 @@ class Pixel_areas_manipulator:
                 if(rectangle is not None):
                     rectangles.append(rectangle)
         #those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area>
+        
+        if(self.get_inner_areas_fast == True):
+            #make sure all rectangles have the width and height of the smallest one/s
+            min_width = min(retangle.w for retangle in rectangles)
+            min_height = min(retangle.h for retangle in rectangles)
+            for rec in rectangles:
+                rec.w = min_width
+                rec.h = min_height
 
         return rectangles
 
