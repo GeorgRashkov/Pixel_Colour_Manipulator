@@ -5,10 +5,10 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack"]
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
-        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y"]
+        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
     
 
 
@@ -217,18 +217,28 @@ class Pixel_area_initializer:
         img_out_stack = int(area_properties_dict["img_out_stack"]) if area_properties_dict["img_out_stack"] is not None else 1        
         
         #makes the string values into lists of ints
-        a_ids = ast.literal_eval(area_properties_dict["a_ids"]) if area_properties_dict["a_ids"] is not None else None
-        ag_ids = ast.literal_eval(area_properties_dict["ag_ids"])if area_properties_dict["ag_ids"] is not None else None
-        p_ids = ast.literal_eval(area_properties_dict["p_ids"])if area_properties_dict["p_ids"] is not None else None
-        p_x = ast.literal_eval(area_properties_dict["p_x"])if area_properties_dict["p_x"] is not None else None
-        p_y = ast.literal_eval(area_properties_dict["p_y"])if area_properties_dict["p_y"] is not None else None
+        a_ids = ast.literal_eval(area_properties_dict["a_ids"]) if area_properties_dict["a_ids"] is not None else []
+        ag_ids = ast.literal_eval(area_properties_dict["ag_ids"])if area_properties_dict["ag_ids"] is not None else []
+        p_ids = ast.literal_eval(area_properties_dict["p_ids"])if area_properties_dict["p_ids"] is not None else []
+        p_x = ast.literal_eval(area_properties_dict["p_x"])if area_properties_dict["p_x"] is not None else []
+        p_y = ast.literal_eval(area_properties_dict["p_y"])if area_properties_dict["p_y"] is not None else []
+        
+        x_rep_start = ast.literal_eval(area_properties_dict["x_rep_start"]) if area_properties_dict["x_rep_start"] is not None else []
+        y_rep_start = ast.literal_eval(area_properties_dict["y_rep_start"]) if area_properties_dict["y_rep_start"] is not None else []
+        x_rep_end = ast.literal_eval(area_properties_dict["x_rep_end"]) if area_properties_dict["x_rep_end"] is not None else []
+        y_rep_end = ast.literal_eval(area_properties_dict["y_rep_end"]) if area_properties_dict["y_rep_end"] is not None else []
+        x_rep_step = ast.literal_eval(area_properties_dict["x_rep_step"]) if area_properties_dict["x_rep_step"] is not None else []
+        y_rep_step = ast.literal_eval(area_properties_dict["y_rep_step"]) if area_properties_dict["y_rep_step"] is not None else []
+        x_rep_count = ast.literal_eval(area_properties_dict["x_rep_count"]) if area_properties_dict["x_rep_count"] is not None else []
+        y_rep_count = ast.literal_eval(area_properties_dict["y_rep_count"]) if area_properties_dict["y_rep_count"] is not None else []
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
         a_ids = a_ids, ag_ids = ag_ids, 
         f_id = f_id, 
         p_ids = p_ids, p_x = p_x, p_y = p_y, 
-        img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack)
+        img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
+        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count)
 
        
         

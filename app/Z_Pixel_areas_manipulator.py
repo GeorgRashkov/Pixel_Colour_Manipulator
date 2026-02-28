@@ -193,14 +193,87 @@ class Pixel_areas_manipulator:
         elif(must_create_new_rectangles == True):
             pixel_area_input.set_area_zeros(height=rectangles[0].h, width=rectangles[0].w) #area_zeros = np.zeros(shape=(rectangles[0].h, rectangles[0].w, 3))
         
-
+        rec_index = 0
         for rec in rectangles:
 
-            area_width = min(rectangles[0].w, rec.w)#the first rectangle corresponds to the input pixel area
-            area_height = min(rectangles[0].h, rec.h)#the first rectangle corresponds to the input pixel area
+            inner_area_width = min(rectangles[0].w, rec.w)#the first rectangle corresponds to the input pixel area
+            inner_area_height = min(rectangles[0].h, rec.h)#the first rectangle corresponds to the input pixel area
             
-            area_from_img = pixel_area_input.get_area_zeros()#pixel_area_input.area_zeros.copy()
-            area_from_img[0:area_height, 0:area_width, :] = img[rec.y : rec.y + area_height, rec.x : rec.x + area_width, :]
+            area_from_img = pixel_area_input.get_area_zeros()
+
+            #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if(True==True):
+                
+                main_area_width = rectangles[0].w
+                main_area_height = rectangles[0].h
+
+                rep_x_ratio = main_area_width/100
+                rep_y_ratio = main_area_height/100
+                
+                
+                x_rep_start = int(pixel_area_input.x_rep_start[rec_index]*rep_x_ratio)
+                y_rep_start = int(pixel_area_input.y_rep_start[rec_index]*rep_y_ratio)
+
+                x_rep_end = int(pixel_area_input.x_rep_end[rec_index]*rep_x_ratio)
+                y_rep_end = int(pixel_area_input.y_rep_end[rec_index]*rep_y_ratio)
+
+                x_rep_step = int(pixel_area_input.x_rep_step[rec_index]*rep_x_ratio) + inner_area_width
+                y_rep_step = int(pixel_area_input.y_rep_step[rec_index]*rep_y_ratio) + inner_area_height
+
+                x_rep_count = pixel_area_input.x_rep_count[rec_index]
+                y_rep_count = pixel_area_input.y_rep_count[rec_index]
+
+                inner_area_y = y_rep_start
+                inner_area_x = x_rep_start
+
+                inner_area_height_helper = inner_area_height
+                inner_area_width_helper = inner_area_width
+
+                rows_count = 0
+                columns_count = 0
+
+                while(inner_area_y < main_area_height):
+                    
+                    
+                    if(inner_area_y + inner_area_height > y_rep_end):
+                        inner_area_height_helper = y_rep_end - inner_area_y
+                        if(inner_area_height_helper <= 0):
+                            break
+                    else:
+                        inner_area_height_helper = inner_area_height
+                    
+                    while(inner_area_x < main_area_width):
+                        
+                        
+                        if(inner_area_x + inner_area_width > x_rep_end):
+                            inner_area_width_helper = x_rep_end - inner_area_x
+                            if(inner_area_width_helper <= 0):
+                                break
+                        else:
+                            inner_area_width_helper = inner_area_width 
+                                                
+                        area_from_img[inner_area_y: inner_area_y+inner_area_height_helper, inner_area_x:inner_area_x + inner_area_width_helper, :] = img[rec.y : rec.y + inner_area_height_helper, rec.x: rec.x + inner_area_width_helper, :]
+                        inner_area_x += x_rep_step
+
+                        columns_count+=1
+                        if(inner_area_x >= x_rep_end or columns_count >= x_rep_count):
+                            columns_count = 0
+                            break
+                    
+                    inner_area_x = x_rep_start
+                    inner_area_y += y_rep_step
+
+                    rows_count+=1
+                    if(inner_area_y >= y_rep_end  or rows_count >= y_rep_count):
+                        rows_count = 0
+                        break
+
+                rec_index+=1
+            else:
+                area_from_img[0:inner_area_height, 0:inner_area_width, :] = img[rec.y : rec.y + inner_area_height, rec.x : rec.x + inner_area_width, :]
+            #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+            
+            #area_from_img[0:inner_area_height, 0:inner_area_width, :] = img[rec.y : rec.y + inner_area_height, rec.x : rec.x + inner_area_width, :]
 
             areas_from_img.append(area_from_img)
 
@@ -228,38 +301,37 @@ class Pixel_areas_manipulator:
 
 
         #<those are the areas defined by `p_ids` of the input pixel area
-        if(pixel_area_input.p_ids is not None):
-            #cycle through the areas from the input pixel area whose id was found in `p_ids`
-            for pixel_area_id in pixel_area_input.p_ids:
+        
+        #cycle through the areas from the input pixel area whose id was found in `p_ids`
+        for pixel_area_id in pixel_area_input.p_ids:
 
-                #check only those pixel areas which have an existing id
-                if(pixel_area_id in self.pixel_areas_dict.keys()):
-                    pixel_area = self.pixel_areas_dict[pixel_area_id]
+            #check only those pixel areas which have an existing id
+            if(pixel_area_id in self.pixel_areas_dict.keys()):
+                pixel_area = self.pixel_areas_dict[pixel_area_id]
 
-                    rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
-                    if(rectangle is not None):
-                        rectangles.append(rectangle)
+                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
+                if(rectangle is not None):
+                    rectangles.append(rectangle)
         #those are the areas defined by `p_ids` of the input pixel area>  
 
         
         #<those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area
-        if(pixel_area_input.p_x is not None and pixel_area_input.p_y is not None):
-            anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
-            for i in range(0, anonymous_areas_count):                
+        anonymous_areas_count = min(len(pixel_area_input.p_x), len(pixel_area_input.p_y))        
+        for i in range(0, anonymous_areas_count):                
                 
-                anonymous_area_x = pixel_area_input.p_x[i]
-                anonymous_area_y = pixel_area_input.p_y[i]
+            anonymous_area_x = pixel_area_input.p_x[i]
+            anonymous_area_y = pixel_area_input.p_y[i]
                 
-                #if the top left corner of the anonymous area is outside the canvas don't create (nor add) rectangle
-                if(anonymous_area_x >= self.initial_image_width or anonymous_area_y >= self.initial_image_height):
-                    continue
+            #if the top left corner of the anonymous area is outside the canvas don't create (nor add) rectangle
+            if(anonymous_area_x >= self.initial_image_width or anonymous_area_y >= self.initial_image_height):
+                continue
 
-                anonymous_area_width = min(pixel_area_input.w, self.initial_image_width-anonymous_area_x)
-                anonymous_area_height = min(pixel_area_input.h, self.initial_image_height-anonymous_area_y)
+            anonymous_area_width = min(pixel_area_input.w, self.initial_image_width-anonymous_area_x)
+            anonymous_area_height = min(pixel_area_input.h, self.initial_image_height-anonymous_area_y)
                 
-                rectangle = self.get_proper_rectangle(x = anonymous_area_x, y = anonymous_area_y, width = anonymous_area_width, height = anonymous_area_height)
-                if(rectangle is not None):
-                    rectangles.append(rectangle)
+            rectangle = self.get_proper_rectangle(x = anonymous_area_x, y = anonymous_area_y, width = anonymous_area_width, height = anonymous_area_height)
+            if(rectangle is not None):
+                rectangles.append(rectangle)
         #those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the input pixel area>
         
         if(self.get_inner_areas_fast == True):

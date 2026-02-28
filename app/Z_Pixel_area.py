@@ -4,7 +4,8 @@ class Pixel_area:
     
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
-                 f_id:int, p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int):
+                 f_id:int, p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
+                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list):
         
         #area id
         self.id = id
@@ -35,24 +36,42 @@ class Pixel_area:
         self.area_zeros = None
         self.set_area_zeros(height = self.h, width = self.w)
 
+        #<repeat areas arguments
+        used_areas_count = len(self.p_ids) + min(len(self.p_x), len(self.p_y))
+
+        #determines the place in % in the main area from where the inner areas will start being applied
+        self.x_rep_start = [0]#the first value in the list corresponds to the main area
+        self.y_rep_start = [0]#the first value in the list corresponds to the main area
+        
+        #determines the place in % in the main area from where the inner areas will end being applied
+        self.x_rep_end = [100]#the first value in the list corresponds to the main area
+        self.y_rep_end = [100]#the first value in the list corresponds to the main area
+
+        #determines the amount of space in % in the main area which will be skipped when creating duplicates of the used areas
+        self.x_rep_step = [0]#the first value in the list corresponds to the main area
+        self.y_rep_step = [0]#the first value in the list corresponds to the main area
+
+        #determines the max number of columns and rows of the created duplicates
+        self.x_rep_count = [1]
+        self.y_rep_count = [1]
+
+        for i in range(0, used_areas_count):
+            
+            self.x_rep_start.append(0 if i >= len(x_rep_start) else x_rep_start[i])
+            self.y_rep_start.append(0 if i >= len(y_rep_start) else y_rep_start[i])
+
+            self.x_rep_end.append(100 if i >= len(x_rep_end) else x_rep_end[i])
+            self.y_rep_end.append(100 if i >= len(y_rep_end) else y_rep_end[i])
+
+            self.x_rep_step.append(0 if i >= len(x_rep_step) else x_rep_step[i])
+            self.y_rep_step.append(0 if i >= len(y_rep_step) else y_rep_step[i])
+
+            self.x_rep_count.append(1 if i >= len(x_rep_count) else x_rep_count[i])
+            self.y_rep_count.append(1 if i >= len(y_rep_count) else y_rep_count[i])
+        #repeat areas arguments>
+
     def set_area_zeros(self, height, width):
         self.area_zeros = np.zeros(shape=(height, width, 3), dtype=np.uint8)
     
     def get_area_zeros(self):
         return self.area_zeros.copy()
-
-    #creates a copy of it;s self    
-    def copy(self) -> "Pixel_area":
-        pixel_area = Pixel_area(id = self.id, 
-                                x = self.x, y = self.y, w = self.w, h = self.h,
-                                a_ids=self.a_ids, ag_ids=self.ag_ids,
-                                f_id = self.f_id,
-                                p_ids = self.p_ids, p_x=self.p_x, p_y=self.p_y,
-                                img_in_v = self.img_in_v, img_out_v=self.img_out_v, img_out_stack=self.img_out_stack)
-        return pixel_area
-    
-
-
-    def print_size(self):
-        print(f"width:{self.w}")
-        print(f"height:{self.h}")
