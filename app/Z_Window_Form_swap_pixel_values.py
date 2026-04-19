@@ -33,7 +33,6 @@ class FormWindow_SwapPixelValues(QWidget):
         self.radioButton_areas_keep_aspect_ratio.setChecked(True)
 
         self.checkBox_fast_area_creation = QCheckBox("use smallest area size")
-        self.checkBox_fast_area_creation.setChecked(True)
         #pixel areas behaviour when resizing main window>
 
         #<settings for output image versions        

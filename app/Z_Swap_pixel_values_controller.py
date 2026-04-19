@@ -406,7 +406,7 @@ class Swap_pixel_values_controller:
         if(pixel_areas is None or len(pixel_areas)==0):            
             return None          
 
-        pixel_areas = self.update_canvas(pixel_areas=pixel_areas)# get's those areas whose top left corner and bottom left corner are inside the canvas
+        pixel_areas = self.update_canvas(pixel_areas=pixel_areas)# get's those areas whose top left corner and bottom right corner are inside the canvas
         
         #execute this code if all pixel areas with valid format were outside the canvas
         if(pixel_areas is None or len(pixel_areas)==0):            

@@ -7,7 +7,7 @@ rgb functions
 { |2|  r->[ r[3] ]  g->[ g[12] ]  b->[ b ] }
 
 
-Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2}
+Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
 
 Animation0 (group) {id: 25; type:group; a_ids:[5,3]} {id: 30; type:group; a_ids:[2,3]}`the changes of animations will be applied per image grab`
 
@@ -37,6 +37,17 @@ p_x, p_y -> contains coordinates determining the top left corner of pixel areas;
 img_in_v -> determines the version of the input image which will be passed to f_id (the pixel values inside the areas created by p_ids, p_x and p_y are defined by the version of the input image) 
 img_out_v -> determines the version of the image to which the changed pixel values will be applied; there can be up to 10 image versions
 img_out_stack -> determines the count of image versions to which the changed pixel values will be applied; the first version is img_out_v, the next version is img_out_v + 1 and so on 
+x_rep_start, y_rep_start -> when the area has used areas (values for `p_ids`, `p_x`, `p_y`) `x_rep_start` and `y_rep_start` determine the location of the top left corner in the main area when applying the used areas (each used area can be applied at a different location in the main area)
+x_rep_end, y_rep_end -> when the area has used areas (values for `p_ids`, `p_x`, `p_y`) `x_rep_end` and `y_rep_end` determine the size of each applied area in the main area (each used area can be applied with a different size in the main area)
+x_rep_step, y_rep_step -> when the area has used areas (values for `p_ids`, `p_x`, `p_y`) `x_rep_step` and `y_rep_step` determine the empty space between the copies of each applied area  (each used area can be applied with a different empty space between its copies in the main area). 
+x_rep_count, y_rep_count -> when the area has used areas (values for `p_ids`, `p_x`, `p_y`) `x_rep_count` and `y_rep_count` determine the maximum number of copies (horizontally and vertically) of each applied area (each used area can be applied with a different maximum number of copies)
+f_ids_rep -> when the area has used areas (values for `p_ids`, `p_x`, `p_y`) `f_ids_rep` determines the ids of the RGB formulas which will be applied for each applied area in the main area. Each used area can have a different collection of RGB formulas ids - the first RGB formula is applied for the first copy, the second RGB formula is applied for the second copy, etc. When the last RGB formula is applied for the current copy (of the current applied area), the next copy (of the current applied area) will use the first RGB formula, then the next copy (of the current applied area) will use the second RGB formula, etc.
+
+Additional hints:
+The duplication behaviour (creation of copies of any used area) can occur only if the size of the main area is not determined by the smallest used areas' width and height. The creation of copies of any used area in a main area is determined by `x_rep_step`, `y_rep_step`, `x_rep_count` and `y_rep_count`.
+The values of `x_rep_start`, `y_rep_start`, `x_rep_end`, `y_rep_end`, `x_rep_step`, `y_rep_step` are percenatage values relative to the size of the main area - for instance if the variables use the value `[10]` and if the main area has `x`=300, `y`=300, `w`=150, `h`=150 then the duplicates: will start from pixel 315x315 (300+150/100*10 = 300+1.5*10 = 315); will end at pixel 435x435 (300+150-150/100*10 = 450- 1.5*10 = 435); will have empty space between them of exactly 15 pixels (150/100*10=1.5*10=15)
+
+
 
 
 Animation1 elements: 
