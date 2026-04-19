@@ -97,7 +97,25 @@ b->[ b*1.5 ]  }
 
 
 
+#<sample 0.1 - using: 4 areas; 1 area with image versions, replicas and many rgb formulas in another area; 2 additional areas
+{id:20; x:0; y:0; w:73; h:50; f_id:13}
+{id:2; x:0; y:0; w:73; h:50; f_id:100; img_in_v:1}
 
+
+{id:3; x:3; y:53; w:151; h:151; f_id:1}
+{id:4; x:151; y:54; w:151; h:151; f_id:2}
+{id:5; x:3; y:200; w:151; h:151; f_id:3}
+{id:6; x:151; y:200; w:151; h:151; f_id:4}
+
+{id:1; x:0; y:50; w:300; h:300; f_id:100;p_ids:[2];f_ids_rep: [(1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11)];
+x_rep_count:[50]; y_rep_count:[50]; x_rep_step:[15];  y_rep_step:[10]; img_in_v:1 }
+
+
+{id:7; x:170; y:150; w:100; h:100; f_id:19}
+
+{id:8; x:30; y:150; w:100; h:100; f_id:17}
+
+#sample 0.1 - using: 4 areas; 1 area with replicas and many rgb formulas in another area; 2 additional areas>
 
 
 

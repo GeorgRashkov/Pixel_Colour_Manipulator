@@ -33,9 +33,7 @@ class Pixel_area:
         self.img_out_v = img_out_v #determines the version of the image to which the changed pixel values will be applied
         self.img_out_stack = img_out_stack #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on 
 
-        self.area_zeros = None
-        self.set_area_zeros(height = self.h, width = self.w)
-
+        
         #<repeat areas arguments
         used_areas_count = len(self.p_ids) + min(len(self.p_x), len(self.p_y))
 
@@ -87,9 +85,3 @@ class Pixel_area:
 
             self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
         #repeat areas arguments>
-
-    def set_area_zeros(self, height, width):
-        self.area_zeros = np.zeros(shape=(height, width, 3), dtype=np.uint8)
-    
-    def get_area_zeros(self):
-        return self.area_zeros.copy()
