@@ -90,7 +90,7 @@ class Pixel_areas_manipulator:
         for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
             image_versions.append(img.copy())
 
-        #for each area create the rectangles used by the areas only when the size of the input image is not the same as the previous image which was passed to the method
+        #for each area create the rectangles used by the areas only when the size of the input image is not the same as the size of the previous image which was passed to the method
         must_create_new_rectangles = False
         if(self.img_width != img.shape[1] or self.img_height != img.shape[0]):
             self.img_width = img.shape[1]
@@ -232,6 +232,7 @@ class Pixel_areas_manipulator:
                 rows_count = 0
                 columns_count = 0
 
+                rep_index = 0 #this is the index of the replicas created by the current used area (rectangle)
                 while(inner_area_y < main_area_height):
                     
                     
@@ -251,8 +252,36 @@ class Pixel_areas_manipulator:
                                 break
                         else:
                             inner_area_width_helper = inner_area_width 
-                                                
+                                      
                         area_from_img[inner_area_y: inner_area_y+inner_area_height_helper, inner_area_x:inner_area_x + inner_area_width_helper, :] = img[rec.y : rec.y + inner_area_height_helper, rec.x: rec.x + inner_area_width_helper, :]
+                        
+
+
+                        #<in testing state !!!
+                       
+                        if(True==True):
+                            #make sure the current used area (rectangle) has a collection of ids of RGB formulas
+                            if(len(pixel_area_input.f_ids_rep) > rec_index):
+                                #make sure the collection of ids of RGB formulas for the current used area (rectangle) is not empty
+                                if(len(pixel_area_input.f_ids_rep[rec_index]) > 0):
+
+                                    rgb_formula_index = rep_index % len(pixel_area_input.f_ids_rep[rec_index])
+                                    rgb_formula_id = pixel_area_input.f_ids_rep[rec_index][rgb_formula_index]
+                                    
+                                    if(rgb_formula_id in self.rgb_formulas_dict.keys()):
+                                        
+                                        rep_area = img[rec.y : rec.y + inner_area_height_helper, rec.x: rec.x + inner_area_width_helper, :]
+                                        rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
+                                        rgb_formula = self.rgb_formulas_dict[rgb_formula_id].rgb_function
+                                        rgb_formula_result = rgb_formula(r = rep_area[:,:,:,0], g = rep_area[:,:,:,1], b = rep_area[:,:,:,2], areas_count = 1)
+                                        area_from_img[inner_area_y: inner_area_y + inner_area_height_helper, inner_area_x:inner_area_x + inner_area_width_helper, :] = rgb_formula_result
+
+                                        
+                            
+                        rep_index+=1
+                        
+                        #in testing state !!!>
+
                         inner_area_x += x_rep_step
 
                         columns_count+=1

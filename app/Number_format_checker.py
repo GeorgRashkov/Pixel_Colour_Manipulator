@@ -143,7 +143,7 @@ def check_for_leading_zeros(txt_value:str):
     return True
 
 
-def check_numbers_from_string(txt_value, separator:str, search_for_floats:bool = False, search_for_positives_only:bool = True, max_numbers = None, min_numbers = None):
+def check_numbers_from_string(txt_value:str, separator:str, search_for_floats:bool = False, search_for_positives_only:bool = True, max_numbers = None, min_numbers = None):
 
     elements = txt_value.split(separator)#creates a list of strings using the separator
     if("" in elements):
@@ -174,6 +174,48 @@ def check_numbers_from_string(txt_value, separator:str, search_for_floats:bool =
             return False
     
     return True
+
+def check_lists_of_numbers_from_string(txt_value:str, outer_separator:str, inner_separator:str, opening_bracket_symbol:str, closing_bracket_symbol:str, search_for_floats:bool = False, search_for_positives_only:bool = True, max_numbers = None, min_numbers = None):
+
+    valid_opening_brackets = ["(","[","{"]
+    valid_closing_brackets = [")","]","}"]
+
+    if (inner_separator == outer_separator):
+        raise ValueError("the inner separator must be different from outer separator")
+    elif(opening_bracket_symbol not in valid_opening_brackets):
+        raise ValueError(f"the openning bracket must be one of those values {valid_opening_brackets}")
+    elif(closing_bracket_symbol not in valid_closing_brackets):
+        raise ValueError(f"the closing bracket must be one of those values {valid_closing_brackets}")
+
+    elements = txt_value.split(outer_separator)#creates a list of strings using the separator; if the input is in valid format each element obtained from the split will be string which is a collection of ints separated by `inner_separator` (empty collections are also valid as long as they have the proper openning and closing bracket)
+    if("" in elements):
+        return False
+
+    if(max_numbers is not None):
+        if(len(elements) > max_numbers):
+            return False
+    
+    if(min_numbers is not None):
+        if(len(elements) < min_numbers):
+            return False
+    
+    #cycling trough the collections (each element is a string which will be a collection of ints if the format is correct)
+    for element in elements:
+        
+        #the collection must contain at least the opening and closing bracket
+        if(len(element)<2):
+            return False
+        elif(element[0]!=opening_bracket_symbol or element[-1]!=closing_bracket_symbol):
+            return False
+        elif(len(element)==2):#empty collections are valid if the have the proper openning and closing bracket
+            continue
+        
+        is_element_in_valid_format = check_numbers_from_string(txt_value=element[1:-1], separator=inner_separator,search_for_floats=search_for_floats, search_for_positives_only=search_for_positives_only, max_numbers=max_numbers, min_numbers=min_numbers)
+        if(is_element_in_valid_format==False):
+            return False
+    
+    return True
+
 
 
 

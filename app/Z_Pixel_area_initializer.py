@@ -1,20 +1,21 @@
 from Z_Pixel_area import Pixel_area
 import ast
-from Number_format_checker import check_for_positive_int_format, check_numbers_from_string
+from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, check_lists_of_numbers_from_string
 
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep"]
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
         self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep"]
     
 
 
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
-    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2}
+    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
     def create_pixel_areas(self, text:str) -> list[Pixel_area]:#returns a list  of objects of type `Pixel_area`
 
         is_format_correct = self.check_pixel_areas_str(text = text)
@@ -33,7 +34,7 @@ class Pixel_area_initializer:
 
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
-    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2}
+    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
     def check_pixel_areas_str(self, text:str):
 
         pixel_areas_rows = self.get_areas_rows(text=text)
@@ -169,7 +170,7 @@ class Pixel_area_initializer:
                     if(is_format_valid == False):
                         return f"the value of the area property `{area_property_name}` is in wrong format (only numbers are allowed)"
 
-            elif(area_property_name in self.area_properties_with_list_of_ints_value):
+            elif(area_property_name in self.area_properties_with_list_of_ints_value or area_property_name in self.area_properties_with_list_of_list_of_ints_value):
                 
                 if(area_property_value[0]!= "[" or area_property_value[-1]!="]"):
                     return f"the value of the area property `{area_property_name}` must start with `[` and end with `]`"
@@ -177,9 +178,15 @@ class Pixel_area_initializer:
                     return f"the list of the area property `{area_property_name}` is empty; if you don't want to use the property - delete it"
 
                 area_property_value = area_property_value[1:len(area_property_value)-1]
-                is_format_valid = check_numbers_from_string(txt_value=area_property_value,separator=",")
-                if(is_format_valid == False):
-                    return f"the value of the area property `{area_property_name}` is in wrong format (only numbers and commas are allowed)"
+                if(area_property_name in self.area_properties_with_list_of_ints_value):
+                    is_format_valid = check_numbers_from_string(txt_value=area_property_value,separator=",")
+                    if(is_format_valid == False):
+                        return f"the value of the area property `{area_property_name}` is in wrong format (only numbers and commas are allowed)"
+                elif(area_property_name in self.area_properties_with_list_of_list_of_ints_value):
+                    area_property_value = area_property_value.replace("),",");")
+                    is_format_valid = check_lists_of_numbers_from_string(txt_value=area_property_value, outer_separator=";", inner_separator=",", opening_bracket_symbol="(", closing_bracket_symbol=")")
+                    if(is_format_valid == False):
+                        return f"the value of the area property `{area_property_name}` is in wrong format; the values inside the square brackets must be collections (each collection must start with `(` and end with `)`) of integers separated by comma"
         
         return ""
     
@@ -231,6 +238,14 @@ class Pixel_area_initializer:
         y_rep_step = ast.literal_eval(area_properties_dict["y_rep_step"]) if area_properties_dict["y_rep_step"] is not None else []
         x_rep_count = ast.literal_eval(area_properties_dict["x_rep_count"]) if area_properties_dict["x_rep_count"] is not None else []
         y_rep_count = ast.literal_eval(area_properties_dict["y_rep_count"]) if area_properties_dict["y_rep_count"] is not None else []
+        
+        f_ids_rep = []
+        if area_properties_dict["f_ids_rep"] is not None:
+
+            #the result is list of strings which will be something like that `["[1,2]","[]","[5,2,5,2]","[1]"]`
+            collections_of_f_ids = area_properties_dict["f_ids_rep"][1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
+            for collection_of_f_ids in collections_of_f_ids:
+                f_ids_rep.append(ast.literal_eval(collection_of_f_ids))
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
@@ -238,7 +253,7 @@ class Pixel_area_initializer:
         f_id = f_id, 
         p_ids = p_ids, p_x = p_x, p_y = p_y, 
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
-        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count)
+        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count, f_ids_rep=f_ids_rep)
 
        
         
