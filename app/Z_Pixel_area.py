@@ -5,7 +5,7 @@ class Pixel_area:
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
                  f_id:int, p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
-                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list):
+                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list, rotations_rep:list):
         
         #area id
         self.id = id
@@ -69,6 +69,8 @@ class Pixel_area:
         `
         """
 
+        self.rotations_rep = [[]]
+
         for i in range(0, used_areas_count):
             
             self.x_rep_start.append(0 if i >= len(x_rep_start) else x_rep_start[i])
@@ -84,4 +86,5 @@ class Pixel_area:
             self.y_rep_count.append(1 if i >= len(y_rep_count) else y_rep_count[i])
 
             self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
+            self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
         #repeat areas arguments>

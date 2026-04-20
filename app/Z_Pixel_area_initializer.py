@@ -5,11 +5,11 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep"]
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep", "rotations_rep"]
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
         self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
-        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep"]
+        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
     
 
 
@@ -239,6 +239,7 @@ class Pixel_area_initializer:
         x_rep_count = ast.literal_eval(area_properties_dict["x_rep_count"]) if area_properties_dict["x_rep_count"] is not None else []
         y_rep_count = ast.literal_eval(area_properties_dict["y_rep_count"]) if area_properties_dict["y_rep_count"] is not None else []
         
+        """
         f_ids_rep = []
         if area_properties_dict["f_ids_rep"] is not None:
 
@@ -246,6 +247,9 @@ class Pixel_area_initializer:
             collections_of_f_ids = area_properties_dict["f_ids_rep"][1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
             for collection_of_f_ids in collections_of_f_ids:
                 f_ids_rep.append(ast.literal_eval(collection_of_f_ids))
+        """
+        f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep"])
+        rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep"])
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
@@ -253,11 +257,24 @@ class Pixel_area_initializer:
         f_id = f_id, 
         p_ids = p_ids, p_x = p_x, p_y = p_y, 
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
-        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count, f_ids_rep=f_ids_rep)
+        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count, f_ids_rep=f_ids_rep, rotations_rep=rotations_rep)
 
        
         
         return pixel_area
+    
+    def get__area_property_with_list_of_lists_of_ints_value(self, area_property:str):
+
+        main_list = []
+        if area_property is not None:
+
+            #the result is list of strings which will be something like that `["[1,2]","[]","[5,2,5,2]","[1]"]`
+            collections_of_f_ids = area_property[1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
+            for collection_of_f_ids in collections_of_f_ids:
+                main_list.append(ast.literal_eval(collection_of_f_ids))
+
+        return main_list
+
 
                 
 
