@@ -704,14 +704,14 @@ class CaptureWindow(QtWidgets.QWidget):
             print("isinstance(swop_pixel_areas, np.ndarray)", isinstance(swap_pixel_areas, np.ndarray))
             print("len(swop_pixel_areas.shape) == 4", len(swap_pixel_areas.shape) == 4)
             print("swop_pixel_areas.shape[1:] == (2,2,3)", swap_pixel_areas.shape[1:] == (2,3,3))
-
+    """
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
             
         self.color_functions = None if(color_functions==None or len(color_functions)==0) else color_functions
         self.default_color_function = self.default_color_function if(default_color_function==None) else default_color_function
         self.mask_filters = None if(mask_filters==None or len(mask_filters)==0) else mask_filters
 
-    """
+    
 
     def remove_mask(self):
 
