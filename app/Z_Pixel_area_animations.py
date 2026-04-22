@@ -1,0 +1,320 @@
+import numpy as np
+
+from Z_Pixel_area import Pixel_area
+
+class Pixel_area_animation_group():
+    
+    def __init__(self, id:int, a_ids:list[int]):
+        self.id = id
+        self.a_ids = a_ids
+
+
+# the class must not be intantiated; use its children for creating objects
+class Pixel_area_animation():
+    
+    def __init__(self, id:int, a_type:str, increment:int, frequency:int):
+        
+        self.id = id #the id of the animation
+        self.a_type = a_type #the animation type
+        self.increment = increment #the size of the change (the increment can be positive or negative, however if it value is zero there will be no animation)
+        self.frequency = frequency #the number of grabs before applying the animation
+        self.calls = 0
+    
+    #this function must remain emtpy
+    def apply_animation(self, pixel_area:Pixel_area, img:np):
+        pass
+
+
+class Pixel_area__move_or_resize(Pixel_area_animation):
+
+    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_value:int, border:int, border_exact:int, values:list[int], values_exact:list[int]):
+
+        Pixel_area_animation.__init__(id=id, a_type=a_type, increment=increment, frequency=frequency)
+        self.initial_value = initial_value
+        self.border = border #set's a padding (in percentage with respect to the image size) between the area and the image; when the border is crossed then the next time the animation is apllied one of those [x,y,w,h] will be set to the initial value 
+        self.border_exact = border_exact #for moving animation - set's a padding (in pixels) between the area and the image; for resizing animation - set's the minimum or maximum size which the area can have; when the border is crossed then the next time the animation is apllied one of those [x,y,w,h] will be set to the initial value  
+
+        self.values = values #the location animation can be presented as percentage values based on the image size (if so the border parameters will be ignored)
+        self.values_exact = values_exact #the location animation can be presented as exact pixel values (if so the border parameters will be ignored)
+        self.current_index_for__values = initial_value
+       
+    def apply_animation(self, pixel_area:Pixel_area, img:np):
+        
+        # the animation will never be applied 
+        if(self.increment == 0):
+            return
+
+        if(self.calls < self.frequency):
+            self.calls+=1
+            return
+        
+        img_width = img.shape[1]
+        img_height = img.shape[0]
+
+        if(len(self.values) > 0):
+            self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+
+            if(self.a_type == "x"):            
+                pixel_area.x = img_width/100 * self.values[self.current_index_for__values]
+            
+            elif(self.a_type == "y"):            
+                pixel_area.y = img_height/100 * self.values[self.current_index_for__values]
+            
+            elif(self.a_type == "w"):            
+                pixel_area.w = img_width/100 * self.values[self.current_index_for__values]
+            
+            elif(self.a_type == "h"):            
+                pixel_area.h = img_height/100 * self.values[self.current_index_for__values]
+        
+        elif(len(self.values_exact) > 0):
+            self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values_exact)
+
+            if(self.a_type == "x"):            
+                pixel_area.x = self.values_exact[self.current_index_for__values]
+            
+            elif(self.a_type == "y"):            
+                pixel_area.y = self.values_exact[self.current_index_for__values]
+            
+            elif(self.a_type == "w"):            
+                pixel_area.w = self.values_exact[self.current_index_for__values]
+            
+            elif(self.a_type == "h"):            
+                pixel_area.h = self.values_exact[self.current_index_for__values]
+
+        else:
+            if(self.a_type == "x"):            
+                self.change_x(pixel_area=pixel_area, img=img)
+            
+            elif(self.a_type == "y"):            
+                self.change_y(pixel_area=pixel_area, img=img)
+            
+            elif(self.a_type == "w"):            
+                self.change_width(pixel_area=pixel_area, img=img)
+            
+            elif(self.a_type == "h"):            
+                self.change_height(pixel_area=pixel_area, img=img)       
+
+        self.calls = 0
+    
+
+
+    def change_x(self, pixel_area:Pixel_area, img:np):
+
+        img_width = img.shape[1]
+        
+        #move the area to the left side of the image
+        if(self.increment < 0):
+            
+            img_left_border = max(img_width/100*self.border, self.border_exact)
+
+            #this occurs when the area is already at (or outside) the left border of the image
+            if(pixel_area.x <= img_left_border):
+                pixel_area.x = self.initial_value
+            
+            else:
+                new_x_value = pixel_area.x + self.increment
+                
+                #make sure the animation will not make the area to appear outside the left border of the image
+                if(new_x_value < img_left_border):
+                    new_x_value = img_left_border
+                
+                pixel_area.x = new_x_value
+        
+        #move the area to the right side of the image
+        elif(self.increment > 0):
+
+            area_right_corner_location = pixel_area.x + pixel_area.w
+
+            img_right_border = min(img_width/100*self.border, self.border_exact)
+                        
+            #this occurs when the area is already at (or outside) the right border of the image
+            if(area_right_corner_location >= img_right_border):
+                pixel_area.x = self.initial_value
+            
+            else:
+                new_x_value = pixel_area.x + self.increment
+                
+                #make sure the animation will not make the area to appear outside the right border of the image                    
+                if(new_x_value + pixel_area.w > img_right_border):
+                    new_x_value = img_right_border - pixel_area.w
+                
+                pixel_area.x = new_x_value
+
+    
+    def change_y(self, pixel_area:Pixel_area, img:np):
+        
+        img_height = img.shape[0]
+        
+        #move the area to the top side of the image
+        if(self.increment < 0):
+            
+            img_top_border = max(img_height/100*self.border, self.border_exact)
+
+            #this occurs when the area is already at (or outside) the top border of the image
+            if(pixel_area.y <= img_top_border):
+                pixel_area.y = self.initial_value
+            
+            else:
+                new_y_value = pixel_area.y + self.increment
+                
+                #make sure the animation will not make the area to appear outside the top border of the image
+                if(new_y_value < img_top_border):
+                    new_y_value = img_top_border
+                
+                pixel_area.y = new_y_value
+        
+        #move the area to the down side of the image
+        elif(self.increment > 0):
+
+            area_bottom_corner_location = pixel_area.y + pixel_area.h
+                        
+            img_bottom_border = min(img_height/100*self.border, self.border_exact)
+
+            #this occurs when the area is already at (or outside) the bottom border of the image
+            if(area_bottom_corner_location >= img_bottom_border):
+                pixel_area.y = self.initial_value
+            
+            else:
+                new_y_value = pixel_area.y + self.increment
+                
+                #make sure the animation will not make the area to appear under the bottom border of the image                   
+                if(new_y_value + pixel_area.h > img_bottom_border):
+                    new_y_value = img_bottom_border - pixel_area.h
+                
+                pixel_area.y = new_y_value
+    
+
+    def change_width(self, pixel_area:Pixel_area, img:np):
+
+        img_width = img.shape[1]
+
+        #decrease the area width
+        if(self.increment < 0):
+            
+            area_min_width_border = max(img_width/100*self.border, self.border_exact)
+
+            #this occurs when the area width is already equal to (or smaller than) the minimum width it can have
+            if(pixel_area.w <= area_min_width_border):
+                pixel_area.w = self.initial_value
+            
+            else:
+                #make sure the animation will not make the area width smaller than the minimum width it can have; also make sure the area width is positive
+                pixel_area.w = max(pixel_area.w + self.increment, area_min_width_border, 1)
+
+                                        
+        #increase the area width
+        elif(self.increment > 0):
+            
+            area_max_width_border = min(img_width/100*self.border, self.border_exact)
+            
+            #this occurs when the area width is already equal to (or bigger than) the maximum width it can have
+            if(pixel_area.w >= area_max_width_border):
+                pixel_area.w = self.initial_value
+            
+            else:
+                #make sure the animation will not make the area width bigger than the maximum width it can have; also make sure the area width is positive              
+                pixel_area.w = max(min(pixel_area.w + self.increment, area_max_width_border), 1)
+
+    
+    def change_height(self, pixel_area:Pixel_area, img:np):
+
+        img_height = img.shape[1]
+
+        #decrease the area height
+        if(self.increment < 0):
+            
+            area_min_height_border = max(img_height/100*self.border, self.border_exact)
+
+            #this occurs when the area height is already equal to (or smaller than) the minimum height it can have
+            if(pixel_area.h <= area_min_height_border):
+                pixel_area.h = self.initial_value
+            
+            else:
+                #make sure the animation will not make the area height smaller than the minimum height it can have; also make sure the area height is positive
+                pixel_area.h = max(pixel_area.h + self.increment, area_min_height_border, 1)
+
+                                        
+        #increase the area height
+        elif(self.increment > 0):
+            
+            area_max_height_border = min(img_height/100*self.border, self.border_exact)
+            
+            #this occurs when the area height is already equal to (or bigger than) the maximum height it can have
+            if(pixel_area.h >= area_max_height_border):
+                pixel_area.h = self.initial_value
+            
+            else:
+                #make sure the animation will not make the area height bigger than the maximum height it can have; also make sure the area height is positive              
+                pixel_area.h = max(min(pixel_area.h + self.increment, area_max_height_border), 1)
+        
+        
+
+
+class Pixel_area__change_used_areas(Pixel_area_animation):
+
+    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_index:int, values:list[list[int]]):
+
+        Pixel_area_animation.__init__(id=id, a_type=a_type, increment=increment, frequency=frequency)
+        self.initial_index = initial_index
+        self.values = values
+       
+        self.current_index_for__values = initial_index
+    
+    def apply_animation(self, pixel_area:Pixel_area, img:np):
+        
+        if(len(self.values) == 0):
+            return
+
+        if(self.calls < self.frequency):
+            self.calls+=1
+            return
+
+        self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+
+        if(self.a_type == "p_ids"):            
+           pixel_area.p_ids = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "p_x"):            
+           pixel_area.p_x = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "p_y"):            
+            pixel_area.p_y = self.values[self.current_index_for__values]      
+
+        self.calls = 0
+
+
+
+class Pixel_area__change_rgbId_or_imgVersion(Pixel_area_animation):
+
+    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_index:int, values:list[int]):
+
+        Pixel_area_animation.__init__(id=id, a_type=a_type, increment=increment, frequency=frequency)
+        self.initial_index = initial_index
+        self.values = values
+
+        self.current_index_for__values = initial_index
+       
+    def apply_animation(self, pixel_area:Pixel_area, img:np):
+        
+        if(len(self.values) == 0):
+            return
+
+        if(self.calls < self.frequency):
+            self.calls+=1
+            return
+
+        self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+
+        if(self.a_type == "f_id"):            
+           pixel_area.f_id = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "img_in_v"):            
+           pixel_area.img_in_v = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "img_out_v"):            
+           pixel_area.img_out_v = max(self.values[self.current_index_for__values], 1)#make sure the first image version will never be modified
+        
+        elif(self.a_type == "img_out_stack"):            
+            pixel_area.img_out_stack = self.values[self.current_index_for__values]     
+
+        self.calls = 0
