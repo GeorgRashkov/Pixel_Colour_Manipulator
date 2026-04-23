@@ -12,11 +12,22 @@ class Pixel_area_animation_group():
 # the class must not be intantiated; use its children for creating objects
 class Pixel_area_animation():
     
-    def __init__(self, id:int, a_type:str, increment:int, frequency:int):
+    def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int):
         
+        valid_animation_types = ["x", "y", "w", "h",  
+                                 "p_x", "p_y", "p_ids",                                
+                                 "img_in_v", "img_out_v", "img_out_stack",
+                                 "f_id"]
+        
+        if(a_type not in valid_animation_types):
+            raise Exception("invalid animation type")
+
         self.id = id #the id of the animation
         self.a_type = a_type #the animation type
-        self.increment = increment #the size of the change (the increment can be positive or negative, however if it value is zero there will be no animation)
+        self.step = step #the size of the change (the step can be positive or negative, however if it value is zero there will be no animation)
+        self.step_img_s = step_img_s #the size of the change represented as percentage relative to the image size(width or height); the step can be positive or negative, however if it value is zero there will be no animation
+        self.step_img_w = step_img_w #the size of the change represented as percentage relative to the image width; the step can be positive or negative, however if it value is zero there will be no animation
+        self.step_img_h = step_img_h #the size of the change represented as percentage relative to the image height; the step can be positive or negative, however if it value is zero there will be no animation
         self.frequency = frequency #the number of grabs before applying the animation
         self.calls = 0
     
@@ -24,13 +35,34 @@ class Pixel_area_animation():
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
     def apply_animation(self, pixel_area:Pixel_area, img:np) -> bool:
         return False
+    
+    def get_animation_step(self, img:np) -> int:
+        
+        img_width = img.shape[1]
+        img_height = img.shape[0]
+
+        step = self.step
+
+        if(self.step_img_w != 0):
+            step += img_width/100 * self.step_img_w
+        if(self.step_img_h != 0):
+            step += img_height/100 * self.step_img_h
+
+        if(self.a_type == "x" or self.a_type=="w"):
+            step += img_width/100 * self.step_img_s
+        elif(self.a_type == "y" or self.a_type=="h"):
+            step += img_height/100 * self.step_img_s
+        else:
+            step += min(img_width, img_height)/100 * self.step_img_s
+        
+        return int(step)
 
 
 class Pixel_area__move_or_resize(Pixel_area_animation):
 
-    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_value:int, border:int, border_exact:int, values:list[int], values_exact:list[int]):
+    def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int, initial_value:int, border:int, border_exact:int, values:list[int], values_exact:list[int]):
 
-        Pixel_area_animation.__init__(self, id=id, a_type=a_type, increment=increment, frequency=frequency)
+        Pixel_area_animation.__init__(self, id=id, a_type=a_type, step=step, step_img_s=step_img_s, step_img_w=step_img_w, step_img_h=step_img_h, frequency=frequency)
         self.initial_value = initial_value
         self.border = border #set's a padding (in percentage with respect to the image size) between the area and the image; when the border is crossed then the next time the animation is apllied one of those [x,y,w,h] will be set to the initial value 
         self.border_exact = border_exact #for moving animation - set's a padding (in pixels) between the area and the image; for resizing animation - set's the minimum or maximum size which the area can have; when the border is crossed then the next time the animation is apllied one of those [x,y,w,h] will be set to the initial value  
@@ -42,8 +74,10 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
     def apply_animation(self, pixel_area:Pixel_area, img:np) -> bool:
         
+        step = self.get_animation_step(img=img)
+
         # the animation will never be applied 
-        if(self.increment == 0):
+        if(step == 0):
             return True
 
         if(self.calls < self.frequency):
@@ -57,10 +91,10 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
 
         if(len(self.values) > 0):
 
-            if(self.current_index_for__values + self.increment >= len(self.values)-1):
+            if(self.current_index_for__values + step >= len(self.values)-1):
                 did_animation_reached_the_end = True
 
-            self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+            self.current_index_for__values = (self.current_index_for__values + step) % len(self.values)
 
             if(self.a_type == "x"):            
                 pixel_area.x = int(img_width/100 * self.values[self.current_index_for__values])
@@ -76,10 +110,10 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
         
         elif(len(self.values_exact) > 0):
 
-            if(self.current_index_for__values + self.increment >= len(self.values_exact)-1):
+            if(self.current_index_for__values + step >= len(self.values_exact)-1):
                 did_animation_reached_the_end = True
 
-            self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values_exact)
+            self.current_index_for__values = (self.current_index_for__values + step) % len(self.values_exact)
 
             if(self.a_type == "x"):            
                 pixel_area.x = self.values_exact[self.current_index_for__values]
@@ -95,33 +129,34 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
 
         else:
             if(self.a_type == "x"):            
-                did_animation_reached_the_end = self.change_x(pixel_area=pixel_area, img=img)
+                did_animation_reached_the_end = self.change_x(pixel_area=pixel_area, img=img, step=step)
             
             elif(self.a_type == "y"):            
-                did_animation_reached_the_end = self.change_y(pixel_area=pixel_area, img=img)
+                did_animation_reached_the_end = self.change_y(pixel_area=pixel_area, img=img, step=step)
             
             elif(self.a_type == "w"):            
-                did_animation_reached_the_end = self.change_width(pixel_area=pixel_area, img=img)
+                did_animation_reached_the_end = self.change_width(pixel_area=pixel_area, img=img, step=step)
             
             elif(self.a_type == "h"):            
-                did_animation_reached_the_end = self.change_height(pixel_area=pixel_area, img=img)       
+                did_animation_reached_the_end = self.change_height(pixel_area=pixel_area, img=img, step=step)       
 
         self.calls = 1
 
         return did_animation_reached_the_end
     
 
+
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
-    def change_x(self, pixel_area:Pixel_area, img:np) -> bool:
+    def change_x(self, pixel_area:Pixel_area, img:np, step:int) -> bool:
         
         did_animation_reached_the_end = False
 
         img_width = img.shape[1]
         
         #move the area to the left side of the image
-        if(self.increment < 0):
+        if(step < 0):
             
-            img_left_border = max(img_width/100*self.border, self.border_exact, 0)
+            img_left_border = int(max(img_width/100*self.border, self.border_exact, 0))
 
             #this occurs when the area is already at (or outside) the left border of the image
             if(pixel_area.x <= img_left_border):
@@ -129,7 +164,7 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
 
             else:
-                new_x_value = pixel_area.x + self.increment
+                new_x_value = pixel_area.x + step
                 
                 #make sure the animation will not make the area to appear outside the left border of the image
                 if(new_x_value <= img_left_border):
@@ -139,11 +174,11 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 pixel_area.x = new_x_value
         
         #move the area to the right side of the image
-        elif(self.increment > 0):
+        elif(step > 0):
 
             area_right_corner_location = pixel_area.x + pixel_area.w
 
-            img_right_border = min(img_width/100*self.border, self.border_exact)
+            img_right_border = int(min(img_width/100*self.border, self.border_exact))
                         
             #this occurs when the area is already at (or outside) the right border of the image
             if(area_right_corner_location >= img_right_border):
@@ -151,7 +186,7 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                new_x_value = pixel_area.x + self.increment
+                new_x_value = pixel_area.x + step
                 
                 #make sure the animation will not make the area to appear outside the right border of the image                    
                 if(new_x_value + pixel_area.w >= img_right_border):
@@ -165,16 +200,16 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
 
 
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
-    def change_y(self, pixel_area:Pixel_area, img:np) -> bool:
+    def change_y(self, pixel_area:Pixel_area, img:np, step:int) -> bool:
         
         did_animation_reached_the_end = False
 
         img_height = img.shape[0]
         
         #move the area to the top side of the image
-        if(self.increment < 0):
+        if(step < 0):
             
-            img_top_border = max(img_height/100*self.border, self.border_exact, 0)
+            img_top_border = int(max(img_height/100*self.border, self.border_exact, 0))
 
             #this occurs when the area is already at (or outside) the top border of the image
             if(pixel_area.y <= img_top_border):
@@ -182,7 +217,7 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                new_y_value = pixel_area.y + self.increment
+                new_y_value = pixel_area.y + step
                 
                 #make sure the animation will not make the area to appear outside the top border of the image
                 if(new_y_value <= img_top_border):
@@ -192,11 +227,11 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 pixel_area.y = new_y_value
         
         #move the area to the down side of the image
-        elif(self.increment > 0):
+        elif(step > 0):
 
             area_bottom_corner_location = pixel_area.y + pixel_area.h
                         
-            img_bottom_border = min(img_height/100*self.border, self.border_exact)
+            img_bottom_border = int(min(img_height/100*self.border, self.border_exact))
 
             #this occurs when the area is already at (or outside) the bottom border of the image
             if(area_bottom_corner_location >= img_bottom_border):
@@ -204,7 +239,7 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                new_y_value = pixel_area.y + self.increment
+                new_y_value = pixel_area.y + step
                 
                 #make sure the animation will not make the area to appear under the bottom border of the image                   
                 if(new_y_value + pixel_area.h >= img_bottom_border):
@@ -218,16 +253,16 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
     
 
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
-    def change_width(self, pixel_area:Pixel_area, img:np) -> bool:
+    def change_width(self, pixel_area:Pixel_area, img:np, step:int) -> bool:
 
         did_animation_reached_the_end = False
 
         img_width = img.shape[1]
 
         #decrease the area width
-        if(self.increment < 0):
+        if(step < 0):
             
-            area_min_width_border = max(img_width/100*self.border, self.border_exact, 1)
+            area_min_width_border = int(max(img_width/100*self.border, self.border_exact, 1))
 
             #this occurs when the area width is already equal to (or smaller than) the minimum width it can have
             if(pixel_area.w <= area_min_width_border):
@@ -235,17 +270,17 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                if(pixel_area.w + self.increment <= area_min_width_border):
+                if(pixel_area.w + step <= area_min_width_border):
                     did_animation_reached_the_end = True 
 
                 #make sure the animation will not make the area width smaller than the minimum width it can have; also make sure the area width is positive
-                pixel_area.w = max(pixel_area.w + self.increment, area_min_width_border, 1)
+                pixel_area.w = max(pixel_area.w + step, area_min_width_border, 1)
 
                                         
         #increase the area width
-        elif(self.increment > 0):
+        elif(step > 0):
             
-            area_max_width_border = min(img_width/100*self.border, self.border_exact)
+            area_max_width_border = int(min(img_width/100*self.border, self.border_exact))
             
             #this occurs when the area width is already equal to (or bigger than) the maximum width it can have
             if(pixel_area.w >= area_max_width_border):
@@ -253,27 +288,27 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                if(pixel_area.w + self.increment >= area_max_width_border):
+                if(pixel_area.w + step >= area_max_width_border):
                     did_animation_reached_the_end = True 
 
                 #make sure the animation will not make the area width bigger than the maximum width it can have; also make sure the area width is positive              
-                pixel_area.w = max(min(pixel_area.w + self.increment, area_max_width_border), 1)
+                pixel_area.w = max(min(pixel_area.w + step, area_max_width_border), 1)
 
         pixel_area.w = int(pixel_area.w)
         return did_animation_reached_the_end
     
 
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
-    def change_height(self, pixel_area:Pixel_area, img:np) -> bool:
+    def change_height(self, pixel_area:Pixel_area, img:np, step:int) -> bool:
 
         did_animation_reached_the_end = False
 
         img_height = img.shape[1]
 
         #decrease the area height
-        if(self.increment < 0):
+        if(step < 0):
             
-            area_min_height_border = max(img_height/100*self.border, self.border_exact, 1)
+            area_min_height_border = int(max(img_height/100*self.border, self.border_exact, 1))
 
             #this occurs when the area height is already equal to (or smaller than) the minimum height it can have
             if(pixel_area.h <= area_min_height_border):
@@ -281,17 +316,17 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                if(pixel_area.h + self.increment <= area_min_height_border):
+                if(pixel_area.h + step <= area_min_height_border):
                     did_animation_reached_the_end = True 
 
                 #make sure the animation will not make the area height smaller than the minimum height it can have; also make sure the area height is positive
-                pixel_area.h = max(pixel_area.h + self.increment, area_min_height_border, 1)
+                pixel_area.h = max(pixel_area.h + step, area_min_height_border, 1)
 
                                         
         #increase the area height
-        elif(self.increment > 0):
+        elif(step > 0):
             
-            area_max_height_border = min(img_height/100*self.border, self.border_exact)
+            area_max_height_border = int(min(img_height/100*self.border, self.border_exact))
             
             #this occurs when the area height is already equal to (or bigger than) the maximum height it can have
             if(pixel_area.h >= area_max_height_border):
@@ -299,11 +334,11 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
                 did_animation_reached_the_end = True
             
             else:
-                if(pixel_area.h + self.increment >= area_max_height_border):
+                if(pixel_area.h + step >= area_max_height_border):
                     did_animation_reached_the_end = True
 
                 #make sure the animation will not make the area height bigger than the maximum height it can have; also make sure the area height is positive              
-                pixel_area.h = max(min(pixel_area.h + self.increment, area_max_height_border), 1)
+                pixel_area.h = max(min(pixel_area.h + step, area_max_height_border), 1)
         
         pixel_area.h = int(pixel_area.h)
         return did_animation_reached_the_end
@@ -313,9 +348,9 @@ class Pixel_area__move_or_resize(Pixel_area_animation):
 
 class Pixel_area__change_used_areas(Pixel_area_animation):
 
-    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_index:int, values:list[list[int]]):
+    def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int, initial_index:int, values:list[list[int]]):
 
-        Pixel_area_animation.__init__(self, id=id, a_type=a_type, increment=increment, frequency=frequency)
+        Pixel_area_animation.__init__(self, id=id, a_type=a_type, step=step, step_img_s=step_img_s, step_img_w=step_img_w, step_img_h=step_img_h, frequency=frequency)
         self.initial_index = initial_index
         self.values = values
        
@@ -324,7 +359,9 @@ class Pixel_area__change_used_areas(Pixel_area_animation):
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
     def apply_animation(self, pixel_area:Pixel_area, img:np) -> bool:
         
-        if(len(self.values) == 0):
+        step = self.get_animation_step(img=img)
+
+        if(len(self.values) == 0 or step==0):
             return True
 
         if(self.calls < self.frequency):
@@ -332,10 +369,10 @@ class Pixel_area__change_used_areas(Pixel_area_animation):
             return False
         
         did_animation_reached_the_end = False
-        if(self.current_index_for__values + self.increment >= len(self.values)-1):
+        if(self.current_index_for__values + step >= len(self.values)-1):
                 did_animation_reached_the_end = True
 
-        self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+        self.current_index_for__values = (self.current_index_for__values + step) % len(self.values)
 
         if(self.a_type == "p_ids"):            
            pixel_area.p_ids = self.values[self.current_index_for__values]
@@ -346,7 +383,7 @@ class Pixel_area__change_used_areas(Pixel_area_animation):
         elif(self.a_type == "p_y"):            
             pixel_area.p_y = self.values[self.current_index_for__values]      
 
-        self.calls = 0
+        self.calls = 1
 
         return did_animation_reached_the_end
 
@@ -354,9 +391,9 @@ class Pixel_area__change_used_areas(Pixel_area_animation):
 
 class Pixel_area__change_rgbId_or_imgVersion(Pixel_area_animation):
 
-    def __init__(self, id:int, a_type:str, increment:int, frequency:int, initial_index:int, values:list[int]):
+    def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int, initial_index:int, values:list[int]):
 
-        Pixel_area_animation.__init__(self, id=id, a_type=a_type, increment=increment, frequency=frequency)
+        Pixel_area_animation.__init__(self, id=id, a_type=a_type, step=step, step_img_s=step_img_s, step_img_w=step_img_w, step_img_h=step_img_h,  frequency=frequency)
         self.initial_index = initial_index
         self.values = values
 
@@ -365,7 +402,9 @@ class Pixel_area__change_rgbId_or_imgVersion(Pixel_area_animation):
     #the return value will indicate if the animation reached the end (occurs when crossing the border)
     def apply_animation(self, pixel_area:Pixel_area, img:np) -> bool:
         
-        if(len(self.values) == 0):
+        step = self.get_animation_step(img=img)
+
+        if(len(self.values) == 0 or step == 0):
             return True
 
         if(self.calls < self.frequency):
@@ -373,10 +412,10 @@ class Pixel_area__change_rgbId_or_imgVersion(Pixel_area_animation):
             return False
         
         did_animation_reached_the_end = False
-        if(self.current_index_for__values + self.increment >= len(self.values)-1):
+        if(self.current_index_for__values + step >= len(self.values)-1):
                 did_animation_reached_the_end = True
 
-        self.current_index_for__values = (self.current_index_for__values + self.increment) % len(self.values)
+        self.current_index_for__values = (self.current_index_for__values + step) % len(self.values)
 
         if(self.a_type == "f_id"):            
            pixel_area.f_id = self.values[self.current_index_for__values]
@@ -390,6 +429,6 @@ class Pixel_area__change_rgbId_or_imgVersion(Pixel_area_animation):
         elif(self.a_type == "img_out_stack"):            
             pixel_area.img_out_stack = self.values[self.current_index_for__values]     
 
-        self.calls = 0
+        self.calls = 1
 
         return did_animation_reached_the_end
