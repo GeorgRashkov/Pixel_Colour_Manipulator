@@ -20,25 +20,25 @@ class Pixel_area_animation_manipulator():
         #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         pixel_areas_animations = {
 
-            1: Pixel_area__move_or_resize(id=1, a_type="x", increment=5, frequency=5, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
-            2: Pixel_area__move_or_resize(id=2, a_type="x", increment=5, frequency=5, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
-            3: Pixel_area__move_or_resize(id=3, a_type="x", increment=-5, frequency=5, initial_value = 90, border=-10, border_exact=-5_000, values=[], values_exact=[]),
+            1: Pixel_area__move_or_resize(id=1, a_type="x", increment=15, frequency=1, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
+            2: Pixel_area__move_or_resize(id=2, a_type="x", increment=15, frequency=1, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
+            3: Pixel_area__move_or_resize(id=3, a_type="x", increment=-15, frequency=1, initial_value = 90, border=-100, border_exact=-5_000, values=[], values_exact=[]),
             
-            4: Pixel_area__move_or_resize(id=4, a_type="y", increment=5, frequency=5, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
-            5: Pixel_area__move_or_resize(id=5, a_type="y", increment=5, frequency=5, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
-            6: Pixel_area__move_or_resize(id=6, a_type="y", increment=-5, frequency=5, initial_value = 90, border=-10, border_exact=-5_000, values=[], values_exact=[]),
+            4: Pixel_area__move_or_resize(id=4, a_type="y", increment=15, frequency=1, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
+            5: Pixel_area__move_or_resize(id=5, a_type="y", increment=15, frequency=1, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
+            6: Pixel_area__move_or_resize(id=6, a_type="y", increment=-15, frequency=1, initial_value = 90, border=-100, border_exact=-5_000, values=[], values_exact=[]),
             
-            7: Pixel_area__move_or_resize(id=7, a_type="w", increment=2, frequency=5, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
-            8: Pixel_area__move_or_resize(id=8, a_type="w", increment=-2, frequency=5, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
-            9: Pixel_area__move_or_resize(id=9, a_type="w", increment=-2, frequency=5, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
+            7: Pixel_area__move_or_resize(id=7, a_type="w", increment=12, frequency=1, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
+            8: Pixel_area__move_or_resize(id=8, a_type="w", increment=-12, frequency=1, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
+            9: Pixel_area__move_or_resize(id=9, a_type="w", increment=-12, frequency=1, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
             
-            10: Pixel_area__move_or_resize(id=10, a_type="h", increment=2, frequency=5, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
-            11: Pixel_area__move_or_resize(id=11, a_type="h", increment=-2, frequency=5, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
-            12: Pixel_area__move_or_resize(id=12, a_type="h", increment=-2, frequency=5, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
+            10: Pixel_area__move_or_resize(id=10, a_type="h", increment=12, frequency=1, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
+            11: Pixel_area__move_or_resize(id=11, a_type="h", increment=-12, frequency=1, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
+            12: Pixel_area__move_or_resize(id=12, a_type="h", increment=-12, frequency=1, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
                         
             
             
-            100: Pixel_area__change_rgbId_or_imgVersion(id=100, a_type="f_id", increment=1, frequency=20, initial_value = 1, ids=[1,2,3,4,5])
+            100: Pixel_area__change_rgbId_or_imgVersion(id=100, a_type="f_id", increment=11, frequency=1, initial_index = 1, values=[1,2,3,4,5,6,7,8,9,10])
         }
         self.pixel_areas_animations = pixel_areas_animations
 
@@ -53,10 +53,17 @@ class Pixel_area_animation_manipulator():
     
     def apply_animations(self, pixel_area:Pixel_area, img:np):
         
+        #make sure the pixel area is never tracked if it doesn't have any animations
+        if(len(pixel_area.a_ids)==0 and len(pixel_area.ag_ids)==0):
+            return
+        
+
         #make sure the pixel area and the indexes for `a_ids` and `ag_ids` of the pixel area are tracked
         if(pixel_area.id not in self.pixel_areas_ids_width_animation_indexes.keys()):
             self.pixel_areas_ids_width_animation_indexes[pixel_area.id] = { "a_ids":0,"ag_ids":0 }
         
+
+        did_animation_reached_the_end = True
 
         #apply the current animation in `a_ids` used by the pixel area
         if(len(pixel_area.a_ids) > 0):
@@ -64,12 +71,15 @@ class Pixel_area_animation_manipulator():
             current_animation_id = pixel_area.a_ids[current_animation_index]
 
             if(current_animation_id in self.pixel_areas_animations.keys()):
-                self.pixel_areas_animations[current_animation_id].apply_animation(pixel_area=pixel_area, img=img)
+                did_animation_reached_the_end = self.pixel_areas_animations[current_animation_id].apply_animation(pixel_area=pixel_area, img=img)
 
-            self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"]+=1
-            if(self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"] >= len(pixel_area.a_ids)):
-                self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"] = 0
+            if(did_animation_reached_the_end == True):
+                self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"]+=1
+                if(self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"] >= len(pixel_area.a_ids)):
+                    self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["a_ids"] = 0
         
+
+        did_animation_reached_the_end = True
 
         #apply the animations in the current animation group in `ag_ids` used by the pixel area
         if(len(pixel_area.ag_ids) > 0):
@@ -81,11 +91,12 @@ class Pixel_area_animation_manipulator():
                 animations_ids = self.pixel_areas_animations_groups[current_animations_group_id].a_ids
                 for animation_id in animations_ids:
                     if(animation_id in self.pixel_areas_animations.keys()):
-                        self.pixel_areas_animations[animation_id].apply_animation(pixel_area=pixel_area, img=img)
+                        did_animation_reached_the_end = did_animation_reached_the_end and self.pixel_areas_animations[animation_id].apply_animation(pixel_area=pixel_area, img=img)
 
-            self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"]+=1
-            if(self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"] >= len(pixel_area.ag_ids)):
-                self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"] = 0
+            if(did_animation_reached_the_end == True):
+                self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"]+=1
+                if(self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"] >= len(pixel_area.ag_ids)):
+                    self.pixel_areas_ids_width_animation_indexes[pixel_area.id]["ag_ids"] = 0
         
 
 
