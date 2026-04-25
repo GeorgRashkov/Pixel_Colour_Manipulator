@@ -7,13 +7,25 @@ rgb functions
 { |2|  r->[ r[3] ]  g->[ g[12] ]  b->[ b ] }
 
 
-Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
+Pixel area: {id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:[1,2,5], y_rep_count:[5,20], f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3,100)], rotations_rep:[(1,2,3)(2,7),(3,5)]}
 
-Animation0 (group) {id: 25; type:group; a_ids:[5,3]} {id: 30; type:group; a_ids:[2,3]}`the changes of animations will be applied per image grab`
+Animation (group) {id: 25; a_ids:[5,3]} {id: 30; a_ids:[2,3]}`the changes of animations will be applied per image grabs defined by the frequency`
 
-Animation1 (x,y,w,h) {id:2, type:x; initial_value:2; increment:10; grabs_num:1; border_x:20; border_y:50}
-Animation2 (p_ids, p_x, p_y) {id:3, type:p_ids; initial_value: 1; values:[[1,2,3],[2,5],[1,6,8,2]]; increment:10; grabs_num:1}
-Animation3 (f_id, img_in_v, img_out_v, img_out_stack) {id:5, type:f_id; initial_value:1; ids:[1,2,5,7,3]; increment:10; grabs_num:1}
+Animation0 (acts like an abstract class inherited by all animations, except group animation) {id:4; a_type:x; step:10, step_img_s:1, step_img_w:0, step_img_h:2, frequency:10}
+
+Animation1 (animates only x,y,w,h) (x,y,w,h) {id:2; a_type:w; step:2; step_img_s:3; step_img_w:7; step_img_h:-6; frequency:1; initial_value:20; border:20; border_exact:50; values:[]; values_exact:[]} 
+
+Animation2  (animates pixel area properties which are integer except for x,y,w,h (f_id, img_in_v, img_out_v, img_out_stack) {id:5; a_type:f_id; step:100; step_img_s:0; step_img_w:0; step_img_h:0; frequency:1; values:[1,2,5,7,3]}
+
+Animation3 (animates pixel area properties which are list of ints) (p_ids, p_x, p_y) {id:3; a_type:p_ids; step:10; step_img_s:-5; step_img_w:0; step_img_h:0; frequency:3; values:[(1,2,3),(2,5),(1,6,8,2)]}
+
+
+Additional hints:
+
+For Animation1 `values` and `values_exact` can be emtpy or they can cotain integers; when they are emtpy, the size or location will be specified by applying the sum of the steps directly to x,y,w,h; if one them has at least one value the sum of the steps will used to set the index for them - if `values` is empty but `values_exact` is not the index will be used for getting the new location/size value from `values_exact`, however if both collections have at least one element the index will be used for getting the new location/size value from `values`
+
+For Animation2 or Animation3 if `values` is empty, the animations will not execute as this collection specifies the values to change in order to achieve animation
+
 
 class Area_applier:
   {id:pa_obj, id:pa_obj}

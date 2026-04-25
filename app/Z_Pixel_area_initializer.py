@@ -11,7 +11,7 @@ class Pixel_area_initializer:
         self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
         self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
     
-
+        self.id = "id"
 
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
@@ -44,12 +44,14 @@ class Pixel_area_initializer:
         row_index = 0
         for row in pixel_areas_rows:
 
-            pixel_area_id = self.get_pixel_area_id(text=row,row_index=row_index)
-            if(pixel_area_id == None):                
+            error_message = self.check_pixel_area_id(text=row,row_index=row_index)
+            if(error_message != ""):
+                print(error_message)                
                 return False
             
             error_message = self.check_pixel_area_format(text=row)
             if(error_message != ""):
+                pixel_area_id = self.get_pixel_area_property_value(text=row, area_property_name=self.id)
                 error_message = f"error: the pixel area with id {pixel_area_id} is in wrong format; " + error_message
                 print(error_message)
                 return False
@@ -93,42 +95,62 @@ class Pixel_area_initializer:
             index+=1
         
         return rows
+   
     
     #the text input must be a pixel area notation (the row content inside `{}`)
-    def get_pixel_area_id(self, text:str, row_index:int):
+    def check_pixel_area_id(self, text:str, row_index:int) -> str:
         
         area_properties = text.split(";")
         ids_counter = 0
-        id_value = None
-
+        error_message = ""
+        
         for area_property in area_properties:
             
             if(ids_counter > 1):
-                print(f"error: the area at row {row_index} has many ids")
-                return None
+                error_message = f"error: the area at row {row_index} has many ids"
+                break
 
             area_key_value = area_property.split(":")
             area_property_name = area_key_value[0]
 
-            if(area_property_name == "id"):
+            if(area_property_name == self.id):
                 
                 if(len(area_key_value)<2):
-                    print(f"error: the area at row {row_index} has id with no value")
-                    return None
+                    error_message = f"error: the area at row {row_index} has id with no value"
+                    break
                 
                 if(len(area_key_value)>2):
-                    print(f"error: the area at row {row_index} has id with many values")
-                    return None
+                    error_message = f"error: the area at row {row_index} has id with many values"
+                    break
 
                 id_value = area_key_value[1]
                 is_format_valid = check_for_positive_int_format(txt_value=id_value, is_zero_allowed=True)
                 if(is_format_valid == False):
-                    print(f"error: the value of the id in the area at row {row_index} is in wrong format (only numbers are allowed)")
-                    return None
+                    error_message = f"error: the value of the id in the area at row {row_index} is in wrong format (only numbers are allowed)"
+                    break
                 
                 ids_counter+=1
         
-        return id_value
+        if(ids_counter < 1):
+            error_message = f"error: the area at row {row_index} has no id"
+        elif(ids_counter > 1):
+            error_message = f"error: the area at row {row_index} has many ids"
+
+        return error_message
+    
+    #the text input must be a pixel area notation (the row content inside `{}`)
+    #the function get's the value of the property but it doesn't make any validation checks
+    def get_pixel_area_property_value(self, text:str, area_property_name:str) -> str:
+
+        area_properties = text.split(";")
+
+        for area_property in area_properties:
+
+            area_key_value = area_property.split(":")
+            if(area_property_name == area_key_value[0]):
+                return area_key_value[1]
+        
+        return ""
 
     #the text input must be a pixel area notation (the row content inside `{}`)
     def check_pixel_area_format(self, text:str):
@@ -187,7 +209,7 @@ class Pixel_area_initializer:
                     is_format_valid = check_lists_of_numbers_from_string(txt_value=area_property_value, outer_separator=";", inner_separator=",", opening_bracket_symbol="(", closing_bracket_symbol=")")
                     if(is_format_valid == False):
                         return f"the value of the area property `{area_property_name}` is in wrong format; the values inside the square brackets must be collections (each collection must start with `(` and end with `)`) of integers separated by comma"
-        
+    
         return ""
     
     #the text input must be a pixel area notation (the row content inside `{}`)
@@ -239,15 +261,7 @@ class Pixel_area_initializer:
         x_rep_count = ast.literal_eval(area_properties_dict["x_rep_count"]) if area_properties_dict["x_rep_count"] is not None else []
         y_rep_count = ast.literal_eval(area_properties_dict["y_rep_count"]) if area_properties_dict["y_rep_count"] is not None else []
         
-        """
-        f_ids_rep = []
-        if area_properties_dict["f_ids_rep"] is not None:
-
-            #the result is list of strings which will be something like that `["[1,2]","[]","[5,2,5,2]","[1]"]`
-            collections_of_f_ids = area_properties_dict["f_ids_rep"][1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
-            for collection_of_f_ids in collections_of_f_ids:
-                f_ids_rep.append(ast.literal_eval(collection_of_f_ids))
-        """
+       
         f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep"])
         rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep"])
 
