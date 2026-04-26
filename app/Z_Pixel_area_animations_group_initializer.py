@@ -198,7 +198,7 @@ class Pixel_area_animation_groups_initializer:
                 elif(len(animation_group_property_value)<3):
                     return f"the list of the animation group property `{animation_group_property_name}` is empty; if you don't want to use the property - delete it"
                 
-                area_property_value = area_property_value[1:len(area_property_value)-1]
+                animation_group_property_value = animation_group_property_value[1:len(animation_group_property_value)-1]
 
                 is_format_valid = check_numbers_from_string(txt_value=animation_group_property_value,separator=",")
                 if(is_format_valid == False):

@@ -15,8 +15,8 @@ class MainApp:
         #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         self.swap_pixel_values_controller = Z_Swap_pixel_values_controller.Swap_pixel_values_controller()       
-        self.swap_pixel_values_controller.form_window.button_apply_swap_areas.clicked.connect(self.apply_swap_pixel_areas)
-        self.swap_pixel_values_controller.form_window.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)        
+        self.swap_pixel_values_controller.form_window_pixel_areas.button_apply_swap_areas.clicked.connect(self.apply_swap_pixel_areas)
+        self.swap_pixel_values_controller.form_window_pixel_areas.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)        
         
         #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
        

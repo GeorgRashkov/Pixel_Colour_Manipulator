@@ -12,6 +12,11 @@ from Z_Pixel_area import Pixel_area
 from Z_Pixel_area_initializer import Pixel_area_initializer
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
+from Z_Window_Form_pixel_areas_animations import FormWindow_PixelAreasAnimations
+
+from Z_Pixel_area_animations_initializer import Pixel_area_animations_initializer
+from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
+from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 
 class Swap_pixel_values_controller: 
     
@@ -19,15 +24,18 @@ class Swap_pixel_values_controller:
 
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
-        self.form_window = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
+        self.form_window_pixel_areas = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
+        self.form_window_pixel_areas_animations = FormWindow_PixelAreasAnimations()
                 
-        self.form_window.button_clear_canvas.clicked.connect(self.clear_canvas)
+        self.form_window_pixel_areas.button_clear_canvas.clicked.connect(self.clear_canvas)
 
-        self.form_window.button_add_rgb_formula.clicked.connect(self.add_rgb_function)
-        self.form_window.button_apply_brush_width_changes.clicked.connect(lambda _, change_width=True: self.change_brush_size_parameters(change_width))
-        self.form_window.button_apply_brush_height_changes.clicked.connect(lambda _, change_width=False: self.change_brush_size_parameters(change_width))
-        self.form_window.button_set_brush_size.clicked.connect(self.set_brush_size)
-        
+        self.form_window_pixel_areas.button_add_rgb_formula.clicked.connect(self.add_rgb_function)
+        self.form_window_pixel_areas.button_apply_brush_width_changes.clicked.connect(lambda _, change_width=True: self.change_brush_size_parameters(change_width))
+        self.form_window_pixel_areas.button_apply_brush_height_changes.clicked.connect(lambda _, change_width=False: self.change_brush_size_parameters(change_width))
+        self.form_window_pixel_areas.button_set_brush_size.clicked.connect(self.set_brush_size)
+
+        self.form_window_pixel_areas.button_open_window__swap_areas_animations.clicked.connect(self.show_animations_form_window)
+
         self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
         
         self.swap_pixel_areas = []#the list contains objects of type `Pixel_area`            
@@ -36,10 +44,13 @@ class Swap_pixel_values_controller:
 
     #<code for showing windows
     def show_form_window(self):
-        self.form_window.show()
+        self.form_window_pixel_areas.show()
     
     def show_canvas_window(self):
         self.canvas_window.show()
+
+    def show_animations_form_window(self):
+        self.form_window_pixel_areas_animations.show()
     #code for showing windows>
 
 
@@ -58,8 +69,8 @@ class Swap_pixel_values_controller:
             self.canvas_window.canvas.insert_rectangle(x = rectangle.x, y = rectangle.y, width=rectangle.w, height=rectangle.h)
 
     def set_brush_size(self):
-        width = self.form_window.textBox_brush_width_set.text()
-        height = self.form_window.textBox_brush_height_set.text()
+        width = self.form_window_pixel_areas.textBox_brush_width_set.text()
+        height = self.form_window_pixel_areas.textBox_brush_height_set.text()
 
         if(check_for_positive_int_format(width, is_zero_allowed=False) == False or check_for_positive_int_format(height, is_zero_allowed=False)==False):
             print("Error: the brush width or height was either in wrong format or it was equal to 0")
@@ -73,13 +84,13 @@ class Swap_pixel_values_controller:
         #take the brush size parameters
         brush_size_min_value, brush_size_max_value, brush_size_delta = None, None, None
         if(change_width == True):
-            brush_size_min_value = self.form_window.textBox_brush_width_min_value.text()
-            brush_size_max_value = self.form_window.textBox_brush_width_max_value.text()
-            brush_size_delta = self.form_window.textBox_brush_width_delta.text()
+            brush_size_min_value = self.form_window_pixel_areas.textBox_brush_width_min_value.text()
+            brush_size_max_value = self.form_window_pixel_areas.textBox_brush_width_max_value.text()
+            brush_size_delta = self.form_window_pixel_areas.textBox_brush_width_delta.text()
         else:
-            brush_size_min_value = self.form_window.textBox_brush_height_min_value.text()
-            brush_size_max_value = self.form_window.textBox_brush_height_max_value.text()
-            brush_size_delta = self.form_window.textBox_brush_height_delta.text()
+            brush_size_min_value = self.form_window_pixel_areas.textBox_brush_height_min_value.text()
+            brush_size_max_value = self.form_window_pixel_areas.textBox_brush_height_max_value.text()
+            brush_size_delta = self.form_window_pixel_areas.textBox_brush_height_delta.text()
 
         #check the the format of the brush size parameters
         if(check_for_positive_int_format(brush_size_min_value, is_zero_allowed=False) == False):
@@ -115,17 +126,21 @@ class Swap_pixel_values_controller:
 
     #<code for working with the text inside the text area containing the information for the pixel swap areas
     
-    """
-    def get_text_area_swap_pixel_areas_formatted_text_for_validation(self)
-        text = self.form_window.text_area_swap_pixel_areas.toPlainText()#gets the text in the text area
-        text = text[0:-1].replace(" ","").replace("\n", "").replace("[|", "[[").replace("|", "]")#replaces `|` with `[` or `]`; removes the spaces, the new lines and the last symbol which is a comma
-        return text
-    """
 
     def get_text_area_swap_pixel_areas_formatted_text(self):
-        swap_pixel_areas_str = self.form_window.text_area_swap_pixel_areas.toPlainText()
+        swap_pixel_areas_str = self.form_window_pixel_areas.text_area_swap_pixel_areas.toPlainText()
         swap_pixel_areas_str = swap_pixel_areas_str.replace(" ", "").replace("\n", "")
         return swap_pixel_areas_str
+    
+    def get_text_area_pixel_areas_animations_formatted_text(self):
+        pixel_areas_animations_str = self.form_window_pixel_areas_animations.text_area_pixel_areas_animations.toPlainText()
+        pixel_areas_animations_str = pixel_areas_animations_str.replace(" ", "").replace("\n", "")
+        return pixel_areas_animations_str
+
+    def get_text_area_pixel_areas_animations_groups_formatted_text(self):
+        pixel_areas_animations_groups_str = self.form_window_pixel_areas_animations.text_area_pixel_areas_animations_groups.toPlainText()
+        pixel_areas_animations_groups_str = pixel_areas_animations_groups_str.replace(" ", "").replace("\n", "")
+        return pixel_areas_animations_groups_str
     
     #draws the rectangle and gets its coordinates
     def canvas_clicked(self, pos, button):
@@ -150,15 +165,15 @@ class Swap_pixel_values_controller:
             area_id = str(swap_pixel_area_id)
                         
             #<pixel area properties
-            a_ids = self.form_window.text_box_animation_ids.text().replace(" ", "")
-            ag_ids = self.form_window.text_box_animations_group_ids.text().replace(" ", "")
-            f_id = self.form_window.text_box_rgb_formula_id.text().replace(" ", "")
-            p_ids = self.form_window.text_box_pixel_area_ids_as_input_for_rgb_func.text().replace(" ", "")
-            p_x = self.form_window.text_box_pixel_area_x_locations_as_input_for_rgb_func.text().replace(" ", "")
-            p_y = self.form_window.text_box_pixel_area_y_locations_as_input_for_rgb_func.text().replace(" ", "")
-            img_in_v = self.form_window.text_box_image_version_as_input_for_rgb_func.text().replace(" ", "")
-            img_out_v = self.form_window.text_box_image_version_as_output_from_rgb_func.text().replace(" ", "")
-            img_out_stack = self.form_window.text_box_image_version_as_output_from_rgb_func_stack.text().replace(" ", "")
+            a_ids = self.form_window_pixel_areas.text_box_animation_ids.text().replace(" ", "")
+            ag_ids = self.form_window_pixel_areas.text_box_animations_group_ids.text().replace(" ", "")
+            f_id = self.form_window_pixel_areas.text_box_rgb_formula_id.text().replace(" ", "")
+            p_ids = self.form_window_pixel_areas.text_box_pixel_area_ids_as_input_for_rgb_func.text().replace(" ", "")
+            p_x = self.form_window_pixel_areas.text_box_pixel_area_x_locations_as_input_for_rgb_func.text().replace(" ", "")
+            p_y = self.form_window_pixel_areas.text_box_pixel_area_y_locations_as_input_for_rgb_func.text().replace(" ", "")
+            img_in_v = self.form_window_pixel_areas.text_box_image_version_as_input_for_rgb_func.text().replace(" ", "")
+            img_out_v = self.form_window_pixel_areas.text_box_image_version_as_output_from_rgb_func.text().replace(" ", "")
+            img_out_stack = self.form_window_pixel_areas.text_box_image_version_as_output_from_rgb_func_stack.text().replace(" ", "")
             
             a_ids = self.get_proper_int_values(values=a_ids, element_name = "a_ids")#animation ids
             ag_ids = self.get_proper_int_values(values=ag_ids, element_name = "ag_ids")#animation groups ids
@@ -288,7 +303,7 @@ class Swap_pixel_values_controller:
         
         text = text[0:-2] + "}" 
 
-        self.form_window.text_area_swap_pixel_areas.append(text)
+        self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
     #code for working with the text inside the text area containing the information for the pixel swap areas>
 
     
@@ -338,7 +353,7 @@ class Swap_pixel_values_controller:
         return -1 #this code should never be reached unless the user defines over 999_999 valid ids
 
     def get_text_area_rgb_functions_formatted_text(self):
-        rgb_funcs_str = self.form_window.text_area_rgb_formulas.toPlainText()
+        rgb_funcs_str = self.form_window_pixel_areas.text_area_rgb_formulas.toPlainText()
         rgb_funcs_str = rgb_funcs_str.replace(" ", "").replace("\n", "")
         return rgb_funcs_str
     
@@ -350,12 +365,12 @@ class Swap_pixel_values_controller:
             print("error: the maximum number of RGB formulas was reached")
             return
         
-        self.form_window.rgb_elements.change_RGB_formula()
+        self.form_window_pixel_areas.rgb_elements.change_RGB_formula()
 
-        rgb_formulas_str = f"|{rgb_function_id}|  r->[ {self.form_window.rgb_elements.red_func} ]  g->[ {self.form_window.rgb_elements.green_func} ]  b->[ {self.form_window.rgb_elements.blue_func} ]"
+        rgb_formulas_str = f"|{rgb_function_id}|  r->[ {self.form_window_pixel_areas.rgb_elements.red_func} ]  g->[ {self.form_window_pixel_areas.rgb_elements.green_func} ]  b->[ {self.form_window_pixel_areas.rgb_elements.blue_func} ]"
         rgb_formulas_str = "{ " + rgb_formulas_str + " }\n"
 
-        self.form_window.text_area_rgb_formulas.append(rgb_formulas_str)
+        self.form_window_pixel_areas.text_area_rgb_formulas.append(rgb_formulas_str)
 
 
     
@@ -419,10 +434,48 @@ class Swap_pixel_values_controller:
         
         #pixel areas>
 
+        #<pixel areas animations
+
+        pixel_area_animations_initializer = Pixel_area_animations_initializer()
+        pixel_areas_animations_formatted_text = self.get_text_area_pixel_areas_animations_formatted_text()
+        pixel_areas_animations = None
+        pixel_areas_animations_dict = {}
+        
+        if(len(pixel_areas_animations_formatted_text) > 0):
+            pixel_areas_animations = pixel_area_animations_initializer.create_animations_for_pixel_areas(text=pixel_areas_animations_formatted_text)
+            if(pixel_areas_animations is None or len(pixel_areas_animations)==0):            
+                return None 
+            
+            for pixel_area_animation in pixel_areas_animations:
+                pixel_areas_animations_dict[pixel_area_animation.id] = pixel_area_animation
+        
+         
+        pixel_area_animations_groups_initializer = Pixel_area_animation_groups_initializer()
+        pixel_areas_animations_groups_formatted_text = self.get_text_area_pixel_areas_animations_groups_formatted_text()
+        pixel_areas_animations_groups = None
+        pixel_areas_animations_groups_dict = {}
+
+        if(len(pixel_areas_animations_groups_formatted_text) > 0):
+            pixel_areas_animations_groups = pixel_area_animations_groups_initializer.create_animation_groups_for_pixel_areas(text=pixel_areas_animations_groups_formatted_text)
+            if(pixel_areas_animations_groups is None or len(pixel_areas_animations_groups)==0):            
+                return None 
+        
+            for pixel_area_animation_group in pixel_areas_animations_groups:
+                pixel_areas_animations_groups_dict[pixel_area_animation_group.id] = pixel_area_animation_group
+
+        #pixel areas animations>
+
+        #<pixel area animation manipulator
+        
+        pixel_area_animation_manipulator = None
+        if(len(pixel_areas_animations_dict)>0 or len(pixel_areas_animations_groups_dict)>0):
+            pixel_area_animation_manipulator = Pixel_area_animation_manipulator(pixel_areas_animations_dict=pixel_areas_animations_dict, pixel_areas_animations_groups_dict=pixel_areas_animations_groups_dict)
+        
+        #pixel area animation manipulator>
 
         #<pixel area manipulator
         areas_resize_behaviour = self.get_areas_resize_behaviour()
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window.checkBox_fast_area_creation.isChecked())
+        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, animations_manipulator=pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window_pixel_areas.checkBox_fast_area_creation.isChecked())
         pixel_areas_manipulator.set_aspect_ratio(initial_image_width=self.canvas_window.canvas.width(), initial_image_height=self.canvas_window.canvas.height())
 
         self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
@@ -435,26 +488,26 @@ class Swap_pixel_values_controller:
         
         areas_resize_behaviour = None
 
-        if(self.form_window.radioButton_areas_resize.isChecked()):
+        if(self.form_window_pixel_areas.radioButton_areas_resize.isChecked()):
             areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Resize
-        elif(self.form_window.radioButton_areas_move.isChecked()):
+        elif(self.form_window_pixel_areas.radioButton_areas_move.isChecked()):
             areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Move
-        elif(self.form_window.radioButton_areas_keep_aspect_ratio.isChecked()):
+        elif(self.form_window_pixel_areas.radioButton_areas_keep_aspect_ratio.isChecked()):
             areas_resize_behaviour = Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio
         
         return areas_resize_behaviour
 
     def should_create_image_version_contoller(self):
 
-        if(self.form_window.textBox_image_version_start_index.text()=="" and self.form_window.textBox_image_version_increment.text()=="" and self.form_window.textBox_image_version_swap_frequency.text()==""):
+        if(self.form_window_pixel_areas.textBox_image_version_start_index.text()=="" and self.form_window_pixel_areas.textBox_image_version_increment.text()=="" and self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()==""):
             return False
 
         error_message = ""
-        if(check_for_int_format(txt_value=self.form_window.textBox_image_version_start_index.text()) == False):
+        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_start_index.text()) == False):
             error_message += "the field with the image version start index was in wrong format (only int values whether positive or negative are allowed); "
-        if(check_for_int_format(txt_value=self.form_window.textBox_image_version_increment.text()) == False):
+        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_increment.text()) == False):
             error_message += "the field with the image version increment was in wrong format (only int values whether positive or negative are allowed); "
-        if(check_for_positive_int_format(txt_value=self.form_window.textBox_image_version_swap_frequency.text()) == False):
+        if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()) == False):
             error_message += "the field with the image version frequency was in wrong format (only positive int values are allowed); "
         
         if(error_message != ""):
@@ -468,9 +521,9 @@ class Swap_pixel_values_controller:
         
         if(self.should_create_image_version_contoller()==True):
             
-            image_version_start_index = 0 if self.form_window.textBox_image_version_start_index.text() == "" else int(self.form_window.textBox_image_version_start_index.text())
-            image_version_increment = 1 if self.form_window.textBox_image_version_increment.text() == "" else int(self.form_window.textBox_image_version_increment.text())
-            image_version_swap_frequency = 1 if self.form_window.textBox_image_version_swap_frequency.text() == "" else int(self.form_window.textBox_image_version_swap_frequency.text())
+            image_version_start_index = 0 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
+            image_version_increment = 1 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
+            image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
             
             pixel_areas_manipulator.create_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
         

@@ -108,7 +108,6 @@ class Pixel_area_initializer:
             
             if(ids_counter > 1):
                 error_message = f"error: the area at row {row_index} has many ids"
-                break
 
             area_key_value = area_property.split(":")
             area_property_name = area_key_value[0]
@@ -117,19 +116,19 @@ class Pixel_area_initializer:
                 
                 if(len(area_key_value)<2):
                     error_message = f"error: the area at row {row_index} has id with no value"
-                    break
                 
                 if(len(area_key_value)>2):
                     error_message = f"error: the area at row {row_index} has id with many values"
-                    break
 
                 id_value = area_key_value[1]
                 is_format_valid = check_for_positive_int_format(txt_value=id_value, is_zero_allowed=True)
                 if(is_format_valid == False):
                     error_message = f"error: the value of the id in the area at row {row_index} is in wrong format (only numbers are allowed)"
-                    break
                 
                 ids_counter+=1
+            
+            if(error_message != ""):
+                break
         
         if(ids_counter < 1):
             error_message = f"error: the area at row {row_index} has no id"

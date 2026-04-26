@@ -6,11 +6,13 @@ import numpy as np
 from Z_Image_version_controller import Image_version_controller
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 
+from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
+
 
 
 class Pixel_areas_manipulator:
 
-    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window, get_inner_areas_fast:bool):
+    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], animations_manipulator:Pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window, get_inner_areas_fast:bool):
         
         self.pixel_areas_dict = pixel_areas_dict
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -34,6 +36,8 @@ class Pixel_areas_manipulator:
         self.initial_image_height = 100
 
         self.get_inner_areas_fast = get_inner_areas_fast
+
+        self.animations_manipulator = animations_manipulator
 
     #this function must be called from outside
     #this method must be called always when the desired output image version from the manipulator is different from the last version
@@ -95,7 +99,8 @@ class Pixel_areas_manipulator:
             image_versions.append(img.copy())
 
         #for each area create the rectangles used by the areas only when the size of the input image is not the same as the size of the previous image which was passed to the method
-        must_create_new_rectangles = False
+        must_create_new_rectangles = True 
+        #must_create_new_rectangles = False
         if(self.img_width != img.shape[1] or self.img_height != img.shape[0]):
             self.img_width = img.shape[1]
             self.img_height = img.shape[0]
@@ -106,6 +111,10 @@ class Pixel_areas_manipulator:
         
 
         for pixel_area in  self.pixel_areas_dict.values():
+
+            if(self.animations_manipulator is not None):
+                self.animations_manipulator.apply_animations(pixel_area=pixel_area, img=img)
+
             
             rgb_formula_id = pixel_area.f_id
             if(rgb_formula_id not in self.rgb_formulas_dict.keys()):#execute this code if the rgb formula id (of the current pixel area) does not exist
@@ -215,7 +224,7 @@ class Pixel_areas_manipulator:
 
       
 
-    
+    #`pixel_area_input` is the main area while `rec` is the used area
     def get_result_after_applying_used_area_on_main_area(self, pixel_area_input:Pixel_area, img:np, rec:Rectangle, rec_index:int, main_area_x:int, main_area_y:int, main_area_width:int, main_area_height:int):
         
         inner_area_width = min(main_area_width, rec.w)
@@ -244,6 +253,7 @@ class Pixel_areas_manipulator:
         rows_count = 0
         columns_count = 0
         rep_index = 0 #this is the index of the replicas created by the current used area (rectangle)
+        
 
         while(inner_area_y < main_area_height):
             
@@ -255,6 +265,14 @@ class Pixel_areas_manipulator:
             else:
                 inner_area_height_helper = inner_area_height
             
+            #make sure the main and used areas are inside the image
+            if(inner_area_y + inner_area_height_helper > area_from_img.shape[0]):
+                inner_area_height_helper = area_from_img.shape[0] - inner_area_y
+            if(rec.y + inner_area_height_helper > img.shape[0]):
+                inner_area_height_helper = img.shape[0] - rec.y
+            if(inner_area_height_helper <= 0):
+                break
+            
             while(inner_area_x < main_area_width):
                 
                 
@@ -264,6 +282,14 @@ class Pixel_areas_manipulator:
                         break
                 else:
                     inner_area_width_helper = inner_area_width 
+                
+                #make sure the main and used areas are inside the image
+                if(inner_area_x + inner_area_width_helper > area_from_img.shape[1]):
+                    inner_area_width_helper = area_from_img.shape[1] - inner_area_x
+                if(rec.x + inner_area_width_helper > img.shape[1]):
+                    inner_area_width_helper = img.shape[1] - rec.x
+                if(inner_area_width_helper <= 0):
+                    break
                               
                 area_from_img[inner_area_y: inner_area_y+inner_area_height_helper, inner_area_x:inner_area_x + inner_area_width_helper, :] = img[rec.y : rec.y + inner_area_height_helper, rec.x: rec.x + inner_area_width_helper, :]
                 

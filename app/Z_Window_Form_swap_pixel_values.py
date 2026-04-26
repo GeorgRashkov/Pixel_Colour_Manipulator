@@ -13,11 +13,13 @@ class FormWindow_SwapPixelValues(QWidget):
     def __init__(self):
         super().__init__()
         
-        self.setWindowTitle("Draw mask")
+        self.setWindowTitle("Pixel areas")
         self.setMinimumSize(100, 100)
         self.resize(800, 500)             
         
+        self.lable_for__text_area_swap_pixel_areas = QLabel("pixel areas")
         self.text_area_swap_pixel_areas = QTextEdit() #Text_area(allowed_symbols_regex="[0-9\\[\\], ]")
+        self.lable_for__text_area_rgb_formulas = QLabel("rgb formulas")
         self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
 
         positive_int_validator = QIntValidator(0, 999_999)
@@ -205,6 +207,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
         
         self.button_apply_swap_areas = QPushButton("Apply areas")
+        self.button_open_window__swap_areas_animations = QPushButton("Show animations")
         self.button_remove_swap_areas = QPushButton("Remove areas")
         self.button_clear_canvas = QPushButton("Clear canvas")
         
@@ -233,7 +236,12 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.textBox_image_version_swap_frequency)
         v_layout.addLayout(h_layout)
        
-        
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.lable_for__text_area_swap_pixel_areas)
+        h_layout.addWidget(self.lable_for__text_area_rgb_formulas)
+        v_layout.addLayout(h_layout)
+
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.text_area_swap_pixel_areas)
         h_layout.addWidget(self.text_area_rgb_formulas)
@@ -313,6 +321,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_swap_areas)
+        h_layout.addWidget(self.button_open_window__swap_areas_animations)
         h_layout.addWidget(self.button_remove_swap_areas)
         h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)

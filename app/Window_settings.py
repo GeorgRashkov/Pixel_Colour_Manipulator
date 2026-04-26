@@ -18,7 +18,7 @@ class FormWindow_Settings(QWidget):
         colour_funcs_sequence_validator = QIntValidator()
 
         #elements - update capture time
-        self.capture_time = 999_999
+        self.capture_time = 0.1
         self.label_update_capture_time = QLabel("Update capture Time")
         self.textBox_update_capture_time = QLineEdit(str(self.capture_time))
         self.textBox_update_capture_time.setMaxLength(6)

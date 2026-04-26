@@ -5,33 +5,33 @@ from Z_Pixel_area_animations import Pixel_area_animation_group, Pixel_area_anima
 
 class Pixel_area_animation_manipulator():
 
-    def __init__(self):
+    def __init__(self, pixel_areas_animations_dict:dict[int, Pixel_area_animation], pixel_areas_animations_groups_dict:dict[int, Pixel_area_animation_group]):
         
         #this is a dictionary which has pixel area ids for keys and inner dictonary for values;
         #the inner dictionary has 2 key value pairs where the keys are "a_ids" and "ag_ids" while the 2 values are the current index of `a_ids` and `ag_ids` used by the pixel area
         self.pixel_areas_ids_with_animation_indexes:dict[int, dict[str,int]] = {}
 
         #contains a pixel area animation for value and its id for key; the collection can have 0 or more key-value pairs
-        self.pixel_areas_animations:dict[int, Pixel_area_animation] = {}#must be initialized in the constructor from outside
+        self.pixel_areas_animations_dict:dict[int, Pixel_area_animation] = pixel_areas_animations_dict #must be initialized in the constructor from outside
         
         #contains a pixel area animations group for value and its id for key; the collection can have 0 or more key-value pairs
-        self.pixel_areas_animations_groups:dict[int, Pixel_area_animation_group] = {}#must be initialized in the constructor from outside
+        self.pixel_areas_animations_groups_dict:dict[int, Pixel_area_animation_group] = pixel_areas_animations_groups_dict #must be initialized in the constructor from outside
 
         #contains the id of pixel area animations group for key and for value it has another dictionary
         #the inner dictionary for keys has the ids of the animations used by the animation group and for values it has a booleans indicating whether the animation reached the end
         #the app passess from one area animation group to the other when all animations used by the animation group reach their end
         self.pixel_areas_animations_groups__end_reached_helper:dict[int, dict[int, bool]] = {}
-        for animations_group_id in  self.pixel_areas_animations_groups.keys():
+        for animations_group_id in  self.pixel_areas_animations_groups_dict.keys():
             self.pixel_areas_animations_groups__end_reached_helper[animations_group_id] = {}
 
-            for animation_id in self.pixel_areas_animations_groups[animations_group_id].a_ids:
+            for animation_id in self.pixel_areas_animations_groups_dict[animations_group_id].a_ids:
                 self.pixel_areas_animations_groups__end_reached_helper[animations_group_id][animation_id] = False
 
 
 
-
+        """
         #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pixel_areas_animations = {
+        pixel_areas_animations_dict = {
 
             1: Pixel_area_animation_xywh(id=1, a_type="x", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
             2: Pixel_area_animation_xywh(id=2, a_type="x", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
@@ -54,24 +54,23 @@ class Pixel_area_animation_manipulator():
             100: Pixel_area_animation_for_list_of_ints(id=100, a_type="f_id", step=1, step_img_s=0, step_img_w=0, step_img_h=0, frequency=1, values=[1,2,3]),
             101: Pixel_area_animation_for_list_of_ints(id=101, a_type="f_id", step=1, step_img_s=1, step_img_w=0, step_img_h=0, frequency=10, values=[1,2,3, 4, 5, 6, 7, 8, 9, 10])
         }
-        self.pixel_areas_animations = pixel_areas_animations
+        self.pixel_areas_animations_dict = pixel_areas_animations_dict
 
         #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pixel_areas_animations_groups = {
+        pixel_areas_animations_groups_dict = {
             1: Pixel_area_animation_group(id=1, a_ids=[1,100, 7,10]),
             2: Pixel_area_animation_group(id=2, a_ids=[4, 8,11]),
             3: Pixel_area_animation_group(id=3, a_ids=[1, 4, 8,10, 101])
         }
-        self.pixel_areas_animations_groups = pixel_areas_animations_groups
+        self.pixel_areas_animations_groups_dict = pixel_areas_animations_groups_dict
 
         #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        for animations_group_id in  self.pixel_areas_animations_groups.keys():
+        for animations_group_id in  self.pixel_areas_animations_groups_dict.keys():
             self.pixel_areas_animations_groups__end_reached_helper[animations_group_id] = {}
 
-            for animation_id in self.pixel_areas_animations_groups[animations_group_id].a_ids:
+            for animation_id in self.pixel_areas_animations_groups_dict[animations_group_id].a_ids:
                 self.pixel_areas_animations_groups__end_reached_helper[animations_group_id][animation_id] = False
-
-
+        """
     
     
     def apply_animations(self, pixel_area:Pixel_area, img:np):
@@ -92,8 +91,8 @@ class Pixel_area_animation_manipulator():
             current_animation_index = self.pixel_areas_ids_with_animation_indexes[pixel_area.id]["a_ids"]
             current_animation_id = pixel_area.a_ids[current_animation_index]
 
-            if(current_animation_id in self.pixel_areas_animations.keys()):
-                did_animation_reached_the_end = self.pixel_areas_animations[current_animation_id].apply_animation(pixel_area=pixel_area, img=img)
+            if(current_animation_id in self.pixel_areas_animations_dict.keys()):
+                did_animation_reached_the_end = self.pixel_areas_animations_dict[current_animation_id].apply_animation(pixel_area=pixel_area, img=img)
 
                 if(did_animation_reached_the_end == True):
                     self.pixel_areas_ids_with_animation_indexes[pixel_area.id]["a_ids"]+=1
@@ -114,16 +113,18 @@ class Pixel_area_animation_manipulator():
             current_animations_group_index = self.pixel_areas_ids_with_animation_indexes[pixel_area.id]["ag_ids"]
             current_animations_group_id = pixel_area.ag_ids[current_animations_group_index]
 
-            if(current_animations_group_id in self.pixel_areas_animations_groups.keys()):
+            if(current_animations_group_id in self.pixel_areas_animations_groups_dict.keys()):
                 
-                animations_ids = self.pixel_areas_animations_groups[current_animations_group_id].a_ids
+                animations_ids = self.pixel_areas_animations_groups_dict[current_animations_group_id].a_ids
                 for animation_id in animations_ids:
                     
-                    if(animation_id in self.pixel_areas_animations.keys()):
-                        did_animation_reached_the_end = self.pixel_areas_animations[animation_id].apply_animation(pixel_area=pixel_area, img=img)
+                    if(animation_id in self.pixel_areas_animations_dict.keys()):
+                        did_animation_reached_the_end = self.pixel_areas_animations_dict[animation_id].apply_animation(pixel_area=pixel_area, img=img)
                         if(did_animation_reached_the_end == True):
                             self.pixel_areas_animations_groups__end_reached_helper[current_animations_group_id][animation_id] = True
                             did_animations_group_reach_the_end = self.did_animations_in_group_reach_their_end(animations_group_id=current_animations_group_id)
+                    else:
+                        self.pixel_areas_animations_groups__end_reached_helper[current_animations_group_id][animation_id] = True
             else:
                 self.pixel_areas_ids_with_animation_indexes[pixel_area.id]["ag_ids"]+=1
                

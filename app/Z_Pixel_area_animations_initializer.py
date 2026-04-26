@@ -39,8 +39,8 @@ class Pixel_area_animations_initializer:
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         self.animation_properties_with_int_value = [ "id", "step", "step_img_s", "step_img_w", "step_img_h", "frequency", "initial_value", "border", "border_exact"]
-        self.animation_properties_with_positive_int_value = ["id", "frequency", "initial_value", "border", "border_exact"]
-        self.animation_properties_with_positive_or_negative_int_value = ["step", "step_img_s", "step_img_w", "step_img_h"]
+        self.animation_properties_with_positive_int_value = ["id", "frequency", "border", "border_exact"]
+        self.animation_properties_with_positive_or_negative_int_value = ["step", "step_img_s", "step_img_w", "step_img_h", "initial_value"]
         
 
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -166,7 +166,6 @@ class Pixel_area_animations_initializer:
             
             if(ids_counter > 1):
                 error_message = f"error: the animation at row {row_index} has many ids"
-                break
 
             animation_key_value = animation_property.split(":")
             animation_property_name = animation_key_value[0]
@@ -175,19 +174,19 @@ class Pixel_area_animations_initializer:
                 
                 if(len(animation_key_value)<2):
                     error_message = f"error: the animation at row {row_index} has id with no value"
-                    break
                 
                 if(len(animation_key_value)>2):
                     error_message = f"error: the animation at row {row_index} has id with many values"
-                    break
 
                 id_value = animation_key_value[1]
                 is_format_valid = check_for_positive_int_format(txt_value=id_value, is_zero_allowed=True)
                 if(is_format_valid == False):
                     error_message = f"error: the value of the id in the animation at row {row_index} is in wrong format (only numbers are allowed)"
-                    break
                 
                 ids_counter+=1
+            
+            if(error_message != ""):
+                break
         
 
         if(ids_counter < 1):
@@ -208,7 +207,6 @@ class Pixel_area_animations_initializer:
             
             if(animation_types_counter > 1):
                 error_message = f"error: the animation at row {row_index} has many animation types"
-                break
 
             animation_key_value = animation_property.split(":")
             animation_property_name = animation_key_value[0]
@@ -217,18 +215,18 @@ class Pixel_area_animations_initializer:
                 
                 if(len(animation_key_value)<2):
                     error_message = f"error: the animation at row {row_index} has animation type with no value"
-                    break
                 
                 if(len(animation_key_value)>2):
                     error_message = f"error: the animation at row {row_index} has animation type with many values"
-                    break
 
                 a_type_value = animation_key_value[1]                
                 if(a_type_value not in self.animation_type_values):
                     error_message = f"error: at row {row_index} the value {a_type_value} is not a valid animation type"
-                    break
                 
                 animation_types_counter+=1
+            
+            if(error_message != ""):
+                break
         
         if(animation_types_counter < 1):
             error_message = f"error: the animation at row {row_index} has no animation type"

@@ -71,7 +71,7 @@ class CaptureWindow(QtWidgets.QWidget):
         # Timer to refresh periodically the output of the window
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.on_timer)
-        self.timer.start(99999999)# 100 means 0.1 second #start(UPDATE_INTERVAL_MS)
+        self.timer.start(100)# 100 means 0.1 second #start(UPDATE_INTERVAL_MS)
 
         self.initialize_a_click_through_button()
         self.click_through_on_off()       
@@ -86,6 +86,11 @@ class CaptureWindow(QtWidgets.QWidget):
         self.label_stack_output.setStyleSheet("background-color: black; color: white;")
         self.checkBox_stack_output = QCheckBox()
         self.label_stack_output.setBuddy(self.checkBox_stack_output)
+
+        self.label_auto_capture = QLabel("auto capture")
+        self.label_auto_capture.setStyleSheet("background-color: black; color: white;")
+        self.checkBox_auto_capture = QCheckBox()
+        self.label_auto_capture.setBuddy(self.checkBox_auto_capture)
 
         self.button_open_settings = QPushButton('settings',  QtWidgets.QWidget(self))
         self.button_open_drawMask = QPushButton('draw mask',  QtWidgets.QWidget(self))
@@ -192,7 +197,8 @@ class CaptureWindow(QtWidgets.QWidget):
        
         h_layout = QHBoxLayout()        
         h_layout.addWidget(self.button0_showHide_widgets)
-        
+        h_layout.addWidget(self.label_auto_capture)
+        h_layout.addWidget(self.checkBox_auto_capture)
         h_layout.addWidget(self.button_capture_now)
         h_layout.addWidget(self.button_open_settings)
         h_layout.addWidget(self.label_stack_output)
@@ -207,6 +213,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_captureMask)
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swopAreas)
+        h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()        
@@ -242,7 +249,8 @@ class CaptureWindow(QtWidgets.QWidget):
     
     def on_timer(self):
         # Periodic update
-        self.update_capture()
+        if(self.checkBox_auto_capture.isChecked() == True):
+            self.update_capture()
 
     def slider_value_changed(self, slider_value, slider_id):
         self.SLIDERS_VALUES[slider_id] = round(slider_value*0.01,2)

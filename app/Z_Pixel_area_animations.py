@@ -159,7 +159,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
 
             #this occurs when the area is already at (or outside) the left border of the image
             if(pixel_area.x <= img_left_border):
-                pixel_area.x = self.initial_value
+                if(self.initial_value >= 0):
+                    pixel_area.x = self.initial_value
                 did_animation_reached_the_end = True
 
             else:
@@ -181,7 +182,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
                         
             #this occurs when the area is already at (or outside) the right border of the image
             if(area_right_corner_location >= img_right_border):
-                pixel_area.x = self.initial_value
+                if(self.initial_value >= 0):
+                    pixel_area.x = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -212,7 +214,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
 
             #this occurs when the area is already at (or outside) the top border of the image
             if(pixel_area.y <= img_top_border):
-                pixel_area.y = self.initial_value
+                if(self.initial_value >= 0):
+                    pixel_area.y = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -234,7 +237,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
 
             #this occurs when the area is already at (or outside) the bottom border of the image
             if(area_bottom_corner_location >= img_bottom_border):
-                pixel_area.y = self.initial_value
+                if(self.initial_value >= 0):
+                    pixel_area.y = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -265,7 +269,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
 
             #this occurs when the area width is already equal to (or smaller than) the minimum width it can have
             if(pixel_area.w <= area_min_width_border):
-                pixel_area.w = max(self.initial_value, 1)
+                if(self.initial_value > 0):
+                    pixel_area.w = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -283,7 +288,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
             
             #this occurs when the area width is already equal to (or bigger than) the maximum width it can have
             if(pixel_area.w >= area_max_width_border):
-                pixel_area.w = max(self.initial_value, 1)
+                if(self.initial_value > 0):
+                    pixel_area.w = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -311,7 +317,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
 
             #this occurs when the area height is already equal to (or smaller than) the minimum height it can have
             if(pixel_area.h <= area_min_height_border):
-                pixel_area.h = max(self.initial_value, 1)
+                if(self.initial_value > 0):
+                    pixel_area.h = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
@@ -329,7 +336,8 @@ class Pixel_area_animation_xywh(Pixel_area_animation):
             
             #this occurs when the area height is already equal to (or bigger than) the maximum height it can have
             if(pixel_area.h >= area_max_height_border):
-                pixel_area.h = max(self.initial_value, 1)
+                if(self.initial_value > 0):
+                    pixel_area.h = self.initial_value
                 did_animation_reached_the_end = True
             
             else:
