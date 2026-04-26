@@ -265,4 +265,54 @@ f_ids_rep:[(12)] }
 
 
 
+<sample 3 - 4 pixel areas using 4 animations for switching between 10 negative RGB formulas
+
+#<pixel areas
+
+{id:1; x:0; y:0; w:350; h:350; a_ids:[1]}
+{id:2; x:350; y:0; w:350; h:350; a_ids:[2]}
+{id:3; x:0; y:350; w:350; h:350; a_ids:[3]}
+{id:4; x:350; y:350; w:350; h:350; a_ids:[4]}
+
+#pixel areas>
+
+
+#<rgb formulas
+
+{ |1|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b ] }
+
+{ |2|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-b ] }
+
+{ |3|  r->[ 255-r ]  g->[ 255-g ]  b->[ 255-b ] }
+
+{ |4|  r->[ 255-b ]  g->[ 255-r ]  b->[ 255-g ] }
+
+{ |5|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |6|  r->[ 255-r ]  g->[ 255-b ]  b->[ 255-g ] }
+
+{ |7|  r->[ 255-g ]  g->[ 255-b ]  b->[ 255-r ] }
+
+{ |8|  r->[ 255-g ]  g->[ 255-g ]  b->[ 255-r ] }
+
+{ |9|  r->[ 255-r ]  g->[ 255-b ]  b->[ 255-r ] }
+
+{ |10|  r->[ 255-b ]  g->[ 255-b ]  b->[ 255-g ] }
+
+#rgb formulas>
+
+#<animations
+
+{id:1; a_type:f_id; step:1; frequency:30; values:[1,2,3, 4, 5, 6, 7, 8, 9, 10]}
+{id:2; a_type:f_id; step:2; frequency:30; values:[1,2,3, 4, 5, 6, 7, 8, 9, 10]}
+{id:3; a_type:f_id; step:3; frequency:30; values:[1,2,3, 4, 5, 6, 7, 8, 9, 10]}
+{id:4; a_type:f_id; step:4; frequency:30; values:[1,2,3, 4, 5, 6, 7, 8, 9, 10]}
+
+#animations>
+
+sample 3 -  4 pixel areas using 4 animations for switching between 10 negative RGB formulas>
+
+
+
+
 
