@@ -47,11 +47,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
 
         self.pixel_areas_manipulator:Pixel_areas_manipulator = None
-        """
-        #`swap_pixel_areas_rgb_formulas` is a dictionary which has numbers (RGB fomulas ids) for keys and RGB fommulas (represented as lamda functions) for values,
-        # the default key is `0` while the default value is = `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`)
-        self.swap_pixel_areas_rgb_formulas = None
-        """        
+        
         
 
         self.RGB_use_doubles = False
@@ -73,7 +69,9 @@ class CaptureWindow(QtWidgets.QWidget):
         self.timer.timeout.connect(self.on_timer)
         self.timer.start(100)# 100 means 0.1 second #start(UPDATE_INTERVAL_MS)
 
-        self.initialize_a_click_through_button()
+        self.button__click_trough_left = self.initialize_a_click_through_button()
+        self.button__click_trough_right = self.initialize_a_click_through_button()
+        self.click_through = True
         self.click_through_on_off()       
 
         
@@ -99,13 +97,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_swopAreas = QPushButton('swop areas',  QtWidgets.QWidget(self))
 
         #<color sliders
-        
-        """#not finished
-        validator = QIntValidator(0, 999, self)
-        textBox_colorRange = QtWidgets.QLineEdit()
-        textBox_colorRange.setMaxLength(3)
-        textBox_colorRange.setValidator(validator)
-        """
+               
 
         self.slider_red = QSlider(Qt.Horizontal)
         self.slider_red.setMinimum(0)
@@ -185,7 +177,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button3_showHide_widgets.setMaximumSize(10,10)
 
         self.button_showHide_all_widgets = QPushButton('', QtWidgets.QWidget(self))
-        self.button_showHide_all_widgets.clicked.connect(self.show_all_widgets)
+        self.button_showHide_all_widgets.clicked.connect(self.show_or_hide_all_widgets)
         self.button_showHide_all_widgets.setMaximumSize(10,10)
         self.are_widgets_shown = True
 
@@ -256,7 +248,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.SLIDERS_VALUES[slider_id] = round(slider_value*0.01,2)
         #print(slider_id, self.SLIDERS_VALUES[slider_id])
     
-    def show_all_widgets(self):
+    def show_or_hide_all_widgets(self):
         rows_count = self.v_layout.layout().count()
 
         if(self.are_widgets_shown == False):
@@ -304,47 +296,60 @@ class CaptureWindow(QtWidgets.QWidget):
     #creates a button which will make the set off the "click-through the window" ability
     #the button will be shown only when the window (not including the header) is pressed twice
     def initialize_a_click_through_button(self):
-        self.button = QPushButton('')
-        self.click_through = True
-        self.button.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
-        self.button.clicked.connect(self.click_through_on_off)
+        
+        overlay = QtWidgets.QWidget(self)  # top-level window
+        overlay.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.Tool)
+        overlay.setAttribute(Qt.WA_TranslucentBackground)
+        
+        button__click_trough = QPushButton('', overlay)
+        button__click_trough.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
+        button__click_trough.clicked.connect(self.click_through_on_off)
 
-        hwnd = int(self.button.winId())
+        hwnd = int(button__click_trough.winId())
         win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
                               0, 0, 0, 0,
                               win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
+        
+        return button__click_trough
    
     #when the window (not including the header) is pressed twice the following function will: 
     # set on the "click-through the window" ability; show a button which will be placed in the heather of the window  
     def mouseDoubleClickEvent(self, event: QtGui.QMouseEvent):
+        
         self.click_through_on_off()
 
+        self.are_widgets_shown = True
+        self.show_or_hide_all_widgets()
+
         geo = self.geometry()# Get window geometry
-        x, y, w= geo.x(), geo.y()-30, geo.width()
-    
-        #when the button is pressed the "click-through the window" ability will set to off
-        self.button.move(x, y)
-        self.button.resize(w, 30)
-        self.button.show()
+        x, y, w = geo.x(), geo.y(), geo.width()
+
+        btn_size = 10
+
+        #when the button is pressed the window will become clickable again
+        self.button__click_trough_left.move(x, y)
+        self.button__click_trough_left.setMaximumSize(btn_size, btn_size)
+        self.button__click_trough_left.show()
+
+        #when the button is pressed the window will become clickable again
+        self.button__click_trough_right.move(x+w-btn_size, y)
+        self.button__click_trough_right.setMaximumSize(btn_size,btn_size)
+        self.button__click_trough_right.show()
+
+
+        
+       
        
 
 
     def click_through_on_off(self):
-        self.button.hide()
+        self.button__click_trough_left.hide()
+        self.button__click_trough_right.hide()
         hwnd = int(self.winId())
         style = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
 
-        if not self.click_through:
-            self.click_through = True
-            # Add click-through
-            style |= win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT| win32con.WS_EX_TOPMOST
-            win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, style)
+        if self.click_through == True:
 
-             # Makes sure the window stays topmost in z-order (change to NOTOPMOST if desired)
-            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
-                              0, 0, 0, 0,
-                              win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
-        else:
             self.click_through = False
             # Removes WS_EX_TRANSPARENT while keeping WS_EX_LAYERED
             style &= ~win32con.WS_EX_TRANSPARENT
@@ -354,7 +359,20 @@ class CaptureWindow(QtWidgets.QWidget):
             win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
                               0, 0, 0, 0,
                               win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
-   
+
+        else:
+            
+            self.click_through = True
+            # Add click-through
+            style |= win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT| win32con.WS_EX_TOPMOST
+            win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, style)
+
+             # Makes sure the window stays topmost in z-order (change to NOTOPMOST if desired)
+            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
+                              0, 0, 0, 0,
+                              win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
+
+           
 
     def showEvent(self, event):
         self.exclude_from_capture(True)
@@ -517,56 +535,6 @@ class CaptureWindow(QtWidgets.QWidget):
         transformed_image = np.dstack((image_red, image_green, image_blue))
         return transformed_image           
     
-    """after you make sure that ` def apply_swop_pixel_areas` is working without issues you can delete this code
-    def apply_swop_pixel_areas_v1(self, img):
-        
-        if(self.swap_pixel_areas is None):
-            return img
-        
-        for rectangle_pair in self.swap_pixel_areas:
-            
-            first_rectangle = rectangle_pair[0]
-            second_rectangle = rectangle_pair[1]
-
-            frc = first_rectangle[0]#first rectangle coordinates (x, y, size) -> example (150, 340, 50)
-            frr = first_rectangle[1]#first rectangle rgb values (use_r, use_g, use_b) -> example (1,1,0) 
-            fr_rgb_formula_id = first_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
-            
-            src = second_rectangle[0]#second rectangle coordinates (x, y, size) -> example (100, 50, 320)
-            srr = second_rectangle[1]#second rectangle rgb values (use_r, use_g, use_b) -> example (0,0,0)
-            sr_rgb_formula_id = second_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
-
-            #if the any of the recntangle pairs is outside the borders of the image don't apply the swap of areas
-            if( (frc[0]+frc[2]>img.shape[0] or frc[1]+frc[2]>img.shape[1]) or
-                (src[0]+src[2]>img.shape[0] or src[1]+src[2]>img.shape[1])
-                ):
-                continue
-                #return img
-
-            #<swaps the chosen rgb channels from the 2 areas (in this case rectangles)
-            img_first_rectangle = np.array(img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), srr==1])
-            
-            img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), frr==1] = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), frr==1]
-
-            img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), srr==1] = img_first_rectangle
-            #swaps the chosen rgb channels from the 2 areas (in this case rectangles)>
-
-            #<apply rgb functions to swap areas
-            if(fr_rgb_formula_id != 0):
-                r_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 0]
-                g_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 1]
-                b_img_first_rectangle = img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2]), 2]
-                img[frc[0]:(frc[0]+frc[2]), frc[1]:(frc[1]+frc[2])] = self.swap_pixel_areas_rgb_formulas[fr_rgb_formula_id](r_img_first_rectangle, g_img_first_rectangle, b_img_first_rectangle)
-            
-            if(sr_rgb_formula_id != 0):
-                r_img_second_rectangle =  img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 0]
-                g_img_second_rectangle = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 1]
-                b_img_second_rectangle = img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2]), 2]
-                img[src[0]:(src[0]+src[2]), src[1]:(src[1]+src[2])] = self.swap_pixel_areas_rgb_formulas[sr_rgb_formula_id](r_img_second_rectangle, g_img_second_rectangle, b_img_second_rectangle)
-            #apply rgb functions to swap areas>
-        
-        return img
-    """
     
     def apply_pixel_areas_manipulator(self, img):
 
@@ -584,135 +552,7 @@ class CaptureWindow(QtWidgets.QWidget):
     def remove_pixel_areas_manipulator(self):
         self.pixel_areas_manipulator = None
     
-    """
-    def apply_swop_pixel_areas(self, img):
-        
-        if(self.swap_pixel_areas is None):
-            return img
-        
-        for rectangle_pair in self.swap_pixel_areas:
-            
-            first_rectangle = rectangle_pair[0]
-            second_rectangle = rectangle_pair[1]
-
-            frc = first_rectangle[0]#first rectangle coordinates (x, y, size) -> example (150, 340, 50)
-            frr = first_rectangle[1]#first rectangle rgb values (use_r, use_g, use_b) -> example (1,1,0) 
-            fr_rgb_formula_id = first_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
-            
-            src = second_rectangle[0]#second rectangle coordinates (x, y, size) -> example (100, 50, 320)
-            srr = second_rectangle[1]#second rectangle rgb values (use_r, use_g, use_b) -> example (0,0,0)
-            sr_rgb_formula_id = second_rectangle[2,0]#`first_rectangle[2]` has 3 values where the first value is the rgb formula id while the other values are dummy (not usable) 0 values whose purpose is to make the size of rgb formulas index compatible with the coordinates and the rgb values
-            
-            
-
-            #img coordinates
-            img_height = img.shape[0]
-            img_width = img.shape[1]
-
-            #<first rectangle coordinates
-            fr_x_left = frc[0]
-            fr_x_left = fr_x_left if fr_x_left > 0 else 0
-            
-            fr_x_right = frc[0] + frc[2]
-            fr_x_right = fr_x_right if fr_x_right < img_width else img_width
-            
-            fr_y_up = frc[1]
-            fr_y_up = fr_y_up if fr_y_up > 0 else 0
-            
-            fr_y_down = frc[1] + frc[2]
-            fr_y_down = fr_y_down if fr_y_down < img_height else img_height
-            #first rectangle coordinates>
-            
-            #<second rectangle coordinates
-            sr_x_left = src[0]
-            sr_x_left = sr_x_left if sr_x_left > 0 else 0
-            
-            sr_x_right = src[0] + src[2]
-            sr_x_right = sr_x_right if sr_x_right < img_width else img_width
-            
-            sr_y_up = src[1]
-            sr_y_up = sr_y_up if sr_y_up > 0 else 0
-            
-            sr_y_down = src[1] + frc[2]
-            sr_y_down = sr_y_down if sr_y_down < img_height else img_height
-            #second rectangle coordinates>
-
-            if((fr_x_left > img_width or fr_y_up > img_height) or 
-               (sr_x_left > img_width or sr_y_up > img_height)):
-                continue
-
-            #<make sure the rectangles have the same size
-            
-            fr_width = fr_x_right - fr_x_left
-            fr_height = fr_y_down - fr_y_up
-
-            sr_width = sr_x_right - sr_x_left
-            sr_height = sr_y_down - sr_y_up
-
-            #make the width of the rectangles be the same
-            if(fr_width != sr_width):    
-                width_difference = fr_width - sr_width
-                if(width_difference > 0):
-                    fr_x_right -= width_difference
-                else:
-                    sr_x_right += width_difference
-            
-            #make the height of the rectangles be the same
-            if(fr_height != sr_height):   
-                height_difference = fr_height - sr_height
-                if(height_difference > 0):
-                    fr_y_down -= height_difference
-                else:
-                    sr_y_down += height_difference
-
-            #make sure the rectangles have the same size>
-
-            #swaps the chosen rgb channels from the 2 areas (in this case rectangles)
-            if((frr==1).any() or (srr==1).any()):
-                img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==1 ])
-                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==1 ] = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==1]
-                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==1] = img_first_rectangle
-            
-            if((frr==2).any() or (srr==2).any()):
-                img_first_rectangle = np.array(img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, srr==2 ])
-                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, frr==2 ] += img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, frr==2]
-                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, srr==2] += img_first_rectangle
-
-
-            #<apply rgb functions to swap areas
-            if(fr_rgb_formula_id != 0):
-                r_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 0]
-                g_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 1]
-                b_img_first_rectangle = img[fr_y_up:fr_y_down, fr_x_left:fr_x_right, 2]
-                img[fr_y_up:fr_y_down, fr_x_left:fr_x_right] = self.swap_pixel_areas_rgb_formulas[fr_rgb_formula_id](r_img_first_rectangle, g_img_first_rectangle, b_img_first_rectangle)
-
-            if(sr_rgb_formula_id != 0):
-                r_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 0]
-                g_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 1]
-                b_img_second_rectangle = img[sr_y_up:sr_y_down, sr_x_left:sr_x_right, 2]
-                img[sr_y_up:sr_y_down, sr_x_left:sr_x_right] = self.swap_pixel_areas_rgb_formulas[sr_rgb_formula_id](r_img_second_rectangle, g_img_second_rectangle, b_img_second_rectangle)
-            #apply rgb functions to swap areas>
-        
-        return img
-
-    # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles),
-    # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle);
-    #`swap_pixel_areas_rgb_formulas` is a dictionary which has numbers (RGB fomulas ids) for keys and RGB fommulas (represented as lamda functions) for values,
-    # the default key is `0` while the default value is = `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`)
-    def set_swap_pixel_areas(self, swap_pixel_areas : np.array, swap_pixel_areas_rgb_formulas:dict):
-        
-        if(swap_pixel_areas is None or swap_pixel_areas_rgb_formulas is None):
-            self.swap_pixel_areas = None
-            self.swap_pixel_areas_rgb_formulas = None
-        
-        elif(isinstance(swap_pixel_areas, np.ndarray) and len(swap_pixel_areas.shape) == 4 and swap_pixel_areas.shape[1:] == (2,3,3)):
-            self.swap_pixel_areas = swap_pixel_areas
-            self.swap_pixel_areas_rgb_formulas = swap_pixel_areas_rgb_formulas
-
-            print("isinstance(swop_pixel_areas, np.ndarray)", isinstance(swap_pixel_areas, np.ndarray))
-            print("len(swop_pixel_areas.shape) == 4", len(swap_pixel_areas.shape) == 4)
-            print("swop_pixel_areas.shape[1:] == (2,2,3)", swap_pixel_areas.shape[1:] == (2,3,3))
-    """
+    
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
             
         self.color_functions = None if(color_functions==None or len(color_functions)==0) else color_functions

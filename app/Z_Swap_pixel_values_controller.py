@@ -18,6 +18,8 @@ from Z_Pixel_area_animations_initializer import Pixel_area_animations_initialize
 from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 
+from PyQt5_Window_functions import open_or_minimize_window
+
 class Swap_pixel_values_controller: 
     
     def __init__(self):
@@ -43,14 +45,10 @@ class Swap_pixel_values_controller:
 
 
     #<code for showing windows
-    def show_form_window(self):
-        self.form_window_pixel_areas.show()
-    
-    def show_canvas_window(self):
-        self.canvas_window.show()
-
+   
     def show_animations_form_window(self):
-        self.form_window_pixel_areas_animations.show()
+        open_or_minimize_window(self.form_window_pixel_areas_animations)
+        
     #code for showing windows>
 
 

@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 from PyQt5.QtGui import QColor, QImage
 import sys
 import numpy as np
@@ -98,21 +99,21 @@ class MainApp:
         sys.exit(self.app.exec_())
     
     def open_window_settings(self):
-        self.settings_window.show()
+        open_or_minimize_window(self.settings_window)
 
     def open_windows_draw_mask(self):
-        self.form_window_draw_mask.show()
-        self.canvas_window.show()
+        windows = [self.form_window_draw_mask, self.canvas_window]
+        open_or_minimize_windows(windows=windows)
 
     def open_window_capture_mask(self):
-        self.form_window_capture_mask.show()
+        open_or_minimize_window(self.form_window_capture_mask)
     
     def open_window_covolutional_filter(self):
-        self.convolutional_filter_window.show()
+        open_or_minimize_window(self.convolutional_filter_window)
     
     def open_windows_swop_pixel_areas(self):
-        self.swap_pixel_values_controller.show_form_window()
-        self.swap_pixel_values_controller.show_canvas_window()
+        windows = [self.swap_pixel_values_controller.form_window_pixel_areas, self.swap_pixel_values_controller.canvas_window]
+        open_or_minimize_windows(windows=windows)
        
         
 
