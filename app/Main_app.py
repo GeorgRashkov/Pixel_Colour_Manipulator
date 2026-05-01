@@ -13,23 +13,18 @@ class MainApp:
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
 
-        #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       
         
         self.swap_pixel_values_controller = Z_Swap_pixel_values_controller.Swap_pixel_values_controller()       
         self.swap_pixel_values_controller.form_window_pixel_areas.button_apply_swap_areas.clicked.connect(self.apply_swap_pixel_areas)
         self.swap_pixel_values_controller.form_window_pixel_areas.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)        
         
-        #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+        
        
-
-        #screen
-        self.screen = self.app.primaryScreen()
-        self.screen_width = self.screen.geometry().width()
-        self.screen_height = self.screen.geometry().height()
 
         #capture window
         self.camera = dxcam.create() #dxcam instance (fast screen capture)
-        self.capture_window = Window_capture.CaptureWindow(self.screen_width, self.screen_height, self.camera)
+        self.capture_window = Window_capture.CaptureWindow(self.camera)
         self.capture_window.button_open_settings.clicked.connect(self.open_window_settings)
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
@@ -83,15 +78,15 @@ class MainApp:
         self.capture_window.show()
         sys.exit(self.app.exec_())
     
-    #< in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     def apply_swap_pixel_areas(self):
         pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
         self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
 
     def remove_swap_pixel_areas(self):
         self.capture_window.remove_pixel_areas_manipulator()
-    # in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
-
+    
+    
 
     
 

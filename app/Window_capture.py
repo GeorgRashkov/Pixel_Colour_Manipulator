@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QL
 from PyQt5.QtCore import Qt
 import RGB_formula_elements
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
-
+from PyQt5.QtWidgets import QApplication
+from dxcam import DXCamera
 
 class Kernel():
     def __init__(self, stride: int, holes_count: int, kernel_values: np.ndarray):
@@ -29,12 +30,15 @@ class CaptureWindow(QtWidgets.QWidget):
     SLIDERS_VALUES = {"r":1, "g":1, "b":1}
     
 
-    def __init__(self, screen_width, screen_height, camera):
+    def __init__(self, camera:DXCamera):
         super().__init__()
+
+        
+
         self.transformed_image = None
         self.rgb_kernels = None
-        self.screen_width = screen_width
-        self.screen_height = screen_height
+        self.screen_width = QApplication.primaryScreen().geometry().width()
+        self.screen_height = QApplication.primaryScreen().geometry().height()
         
         self.mask_filters = None
         self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
@@ -69,8 +73,17 @@ class CaptureWindow(QtWidgets.QWidget):
         self.timer.timeout.connect(self.on_timer)
         self.timer.start(100)# 100 means 0.1 second #start(UPDATE_INTERVAL_MS)
 
-        self.button__click_trough_left = self.initialize_a_click_through_button()
-        self.button__click_trough_right = self.initialize_a_click_through_button()
+        self._button_click_trough = self.initialize_special_button()
+        self._button_click_trough.clicked.connect(self.click_through_on_off)
+
+        self._button_pseudo_maximize = self.initialize_special_button()
+        self._button_pseudo_maximize.clicked.connect(self.pseudo_maximize)
+
+        self.last_geometry_before_pseudo_maximize = self.geometry()
+        self.is_pseudo_maximized = False
+        self.is_pseudo_maximized_cover_task = False
+                
+
         self.click_through = True
         self.click_through_on_off()       
 
@@ -293,24 +306,23 @@ class CaptureWindow(QtWidgets.QWidget):
         print(self.rgb_elements.blue_func) 
 
 
-    #creates a button which will make the set off the "click-through the window" ability
+    #creates a button which will remain clickable even when the window is click-trough
     #the button will be shown only when the window (not including the header) is pressed twice
-    def initialize_a_click_through_button(self):
+    def initialize_special_button(self) -> QPushButton:
         
         overlay = QtWidgets.QWidget(self)  # top-level window
         overlay.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.Tool)
         overlay.setAttribute(Qt.WA_TranslucentBackground)
         
-        button__click_trough = QPushButton('', overlay)
-        button__click_trough.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
-        button__click_trough.clicked.connect(self.click_through_on_off)
+        special_button = QPushButton('', overlay)
+        special_button.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
 
-        hwnd = int(button__click_trough.winId())
+        hwnd = int(special_button.winId())
         win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
                               0, 0, 0, 0,
                               win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
         
-        return button__click_trough
+        return special_button
    
     #when the window (not including the header) is pressed twice the following function will: 
     # set on the "click-through the window" ability; show a button which will be placed in the heather of the window  
@@ -321,30 +333,35 @@ class CaptureWindow(QtWidgets.QWidget):
         self.are_widgets_shown = True
         self.show_or_hide_all_widgets()
 
+       
+        self.place_special_buttons()
+    
+    def place_special_buttons(self):
+
         geo = self.geometry()# Get window geometry
-        x, y, w = geo.x(), geo.y(), geo.width()
+        x, y, x2, y2 = max(geo.x(),0), max(geo.y(),0), min(geo.x()+geo.width(), self.screen_width), min(geo.y()+geo.height(), self.screen_height)
 
         btn_size = 10
 
         #when the button is pressed the window will become clickable again
-        self.button__click_trough_left.move(x, y)
-        self.button__click_trough_left.setMaximumSize(btn_size, btn_size)
-        self.button__click_trough_left.show()
+        self._button_click_trough.move(x, y)
+        self._button_click_trough.setMaximumSize(btn_size, btn_size)
+        self._button_click_trough.show()
 
-        #when the button is pressed the window will become clickable again
-        self.button__click_trough_right.move(x+w-btn_size, y)
-        self.button__click_trough_right.setMaximumSize(btn_size,btn_size)
-        self.button__click_trough_right.show()
+        #when the button is pressed the window will cover the entire screen without the taskbar
+        self._button_pseudo_maximize.move(x2-btn_size, y)
+        self._button_pseudo_maximize.setMaximumSize(btn_size,btn_size)
+        self._button_pseudo_maximize.show()
 
-
-        
        
        
 
 
     def click_through_on_off(self):
-        self.button__click_trough_left.hide()
-        self.button__click_trough_right.hide()
+        
+        self._button_click_trough.hide()
+        self._button_pseudo_maximize.hide()
+        
         hwnd = int(self.winId())
         style = win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE)
 
@@ -371,8 +388,30 @@ class CaptureWindow(QtWidgets.QWidget):
             win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST,
                               0, 0, 0, 0,
                               win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_NOACTIVATE)
+            
 
-           
+    def pseudo_maximize(self):
+        
+        if(self.is_pseudo_maximized == True):
+            self.setWindowState(Qt.WindowNoState)
+            self.setGeometry(self.last_geometry_before_pseudo_maximize)
+            self.is_pseudo_maximized = False
+            
+                
+        else:
+            screen = QApplication.primaryScreen()
+            screen_geometry = screen.availableGeometry()  #get's the screen size without the taskbar            
+            
+            self.last_geometry_before_pseudo_maximize = self.geometry()
+            self.setWindowState(Qt.WindowNoState)
+            self.setGeometry(screen_geometry)
+            self.is_pseudo_maximized = True
+        
+        self.place_special_buttons()
+    
+        
+
+
 
     def showEvent(self, event):
         self.exclude_from_capture(True)
@@ -391,19 +430,23 @@ class CaptureWindow(QtWidgets.QWidget):
     
 
     
+    
+
     def get_window_coordinates(self):
         geo = self.geometry()# Get window geometry
         x, y, w, h = geo.x(), geo.y(), geo.width(), geo.height()#`x` and `y` are horizontal and veritcal coordinates of the top left corner of the window; `w` and `h` are the width and height of the window
             
         if(x<0):
             x=0
+            
         if(y<0):
             y=0
-        x4, y4 = (x + w), (y + h)#`x4` and `y4` are horizontal and veritcal coordinates of the bottom right corner of the window;
-        if(x4 > self.screen_width):
-            w = w-(x4 - self.screen_width)
-        if(y4 > self.screen_height):
-            h=h-(y4 - self.screen_height)
+            
+       
+        if(x+w > self.screen_width):
+            w = self.screen_width-x
+        if(y+h > self.screen_height):
+            h=self.screen_height - y
         
         return x, y, w, h
     
@@ -566,6 +609,8 @@ class CaptureWindow(QtWidgets.QWidget):
         self.color_functions = None
         self.mask_filters = None                            
 
+   
+    
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         if self._pixmap is None:
@@ -575,7 +620,13 @@ class CaptureWindow(QtWidgets.QWidget):
         
         # Scale pixmap to widget size while preserving aspect ratio (or not — here we fill entire widget)
         #scaled = self._pixmap.scaled(self.size(), QtCore.Qt.IgnoreAspectRatio, QtCore.Qt.SmoothTransformation)
-        painter.drawPixmap(0, 0, self._pixmap)#scaled)
+        x = 0
+        if(self.geometry().x() < 0):
+            x = (-1)*self.geometry().x()
+        y = 0
+        if(self.geometry().y() < 0):
+            y = (-1)*self.geometry().y()
+        painter.drawPixmap(x, y, self._pixmap)
         painter.end()
 
 
