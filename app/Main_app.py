@@ -4,7 +4,7 @@ from PyQt5.QtGui import QColor, QImage
 import sys
 import numpy as np
 import dxcam
-import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask, Windows_for_switching_pixel_values, Z_Swap_pixel_values_controller
+import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
 
 import Number_format_checker
 import Canvas
