@@ -5,10 +5,10 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep", "rotations_rep"]
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep", "rotations_rep"]
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
-        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
         self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
     
         self.id = "id"
@@ -247,6 +247,10 @@ class Pixel_area_initializer:
         #makes the string values into lists of ints
         a_ids = ast.literal_eval(area_properties_dict["a_ids"]) if area_properties_dict["a_ids"] is not None else []
         ag_ids = ast.literal_eval(area_properties_dict["ag_ids"])if area_properties_dict["ag_ids"] is not None else []
+        f_vars_start = ast.literal_eval(area_properties_dict["f_vars_start"])if area_properties_dict["f_vars_start"] is not None else []
+        f_vars_end = ast.literal_eval(area_properties_dict["f_vars_end"])if area_properties_dict["f_vars_end"] is not None else []
+        f_vars_step = ast.literal_eval(area_properties_dict["f_vars_step"])if area_properties_dict["f_vars_step"] is not None else []
+        f_vars_frequency = ast.literal_eval(area_properties_dict["f_vars_frequency"])if area_properties_dict["f_vars_frequency"] is not None else []
         p_ids = ast.literal_eval(area_properties_dict["p_ids"])if area_properties_dict["p_ids"] is not None else []
         p_x = ast.literal_eval(area_properties_dict["p_x"])if area_properties_dict["p_x"] is not None else []
         p_y = ast.literal_eval(area_properties_dict["p_y"])if area_properties_dict["p_y"] is not None else []
@@ -267,7 +271,7 @@ class Pixel_area_initializer:
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
         a_ids = a_ids, ag_ids = ag_ids, 
-        f_id = f_id, 
+        f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
         p_ids = p_ids, p_x = p_x, p_y = p_y, 
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
         x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count, f_ids_rep=f_ids_rep, rotations_rep=rotations_rep)

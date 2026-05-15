@@ -14,7 +14,7 @@ class Pixel_area_animation():
     
     def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int):
         
-        valid_animation_types = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        valid_animation_types = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
         
         if(a_type not in valid_animation_types):
             raise Exception("invalid animation type")
@@ -431,6 +431,22 @@ class Pixel_area_animation_for_list_of_lists_of_ints(Pixel_area_animation):
         elif(self.a_type == "ag_ids"): 
             pixel_area.ag_ids = self.values[self.current_index_for__values]
 
+        elif(self.a_type == "f_vars_start"): 
+            pixel_area.f_vars_start = self.values[self.current_index_for__values]
+            pixel_area.make_f_vars_parameters_consistent()
+                    
+        elif(self.a_type == "f_vars_end"): 
+            pixel_area.f_vars_end = self.values[self.current_index_for__values]
+            pixel_area.make_f_vars_parameters_consistent()
+                    
+        elif(self.a_type == "f_vars_step"): 
+            pixel_area.f_vars_step = self.values[self.current_index_for__values]
+            pixel_area.make_f_vars_parameters_consistent()
+                    
+        elif(self.a_type == "f_vars_frequency"): 
+            pixel_area.f_vars_frequency = self.values[self.current_index_for__values]
+            pixel_area.make_f_vars_parameters_consistent()
+            
         elif(self.a_type == "p_ids"): 
             pixel_area.p_ids = self.values[self.current_index_for__values]
 

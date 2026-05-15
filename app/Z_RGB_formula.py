@@ -11,7 +11,7 @@ class RGB_formula():
             self.green_func = green_func
             self.blue_func = blue_func
             
-            self.rgb_function_str = f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
+            self.rgb_function_str = f"lambda r,g,b,v=0: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
             self.rgb_function = eval( self.rgb_function_str)
         else:
             
@@ -25,7 +25,7 @@ class RGB_formula():
 
             
             
-            self.rgb_function_str = f"lambda r,g,b,areas_count: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)"
+            self.rgb_function_str = f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8): np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)"
             self.rgb_function = eval( self.rgb_function_str)
     
 
@@ -37,10 +37,10 @@ class RGB_formula():
     #this function must be used only for valid rgb functions
     def add_default_indexes_to_rgb_channel_function(self, rgb_function:str):#`rgb_function` must be a rgb formula for one of the rgb channels
         
-        rgb_channles = ["r", "g", "b"]
+        rgb_channels = ["r", "g", "b", "v"]#`v` is not a rgb channel; it is a numpy array containing int values
 
-        for i in range (0, len(rgb_channles)):
-            rgb_channel = rgb_channles[i]
+        for i in range (0, len(rgb_channels)):
+            rgb_channel = rgb_channels[i]
             rgb_function = self.add_default_indexes_to_rgb_channel(rgb_function, rgb_channel)
         
         return rgb_function
@@ -82,7 +82,9 @@ class RGB_formula():
 
             current_index_in_brackets = rgb_formula[openining_bracket_index+1:closing_bracket_index]
             
-            rgb_formula = rgb_formula[:closing_bracket_index] + f" if {current_index_in_brackets}<areas_count else 0" + rgb_formula[closing_bracket_index:]
+            values_count_variable = "len(v)" if(rgb_formula[openining_bracket_index-1]=="v") else "areas_count"
+
+            rgb_formula = rgb_formula[:closing_bracket_index] + f" if {current_index_in_brackets}<{values_count_variable} else 0" + rgb_formula[closing_bracket_index:]
 
             start_index = rgb_formula.find("]",closing_bracket_index+1)
         

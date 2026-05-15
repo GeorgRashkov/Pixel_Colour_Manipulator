@@ -132,9 +132,11 @@ class Pixel_areas_manipulator:
             if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no rectangles were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
                 continue
             
-            #the rgb formula is this `eval(f"lambda r,g,b,areas_count: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
+            #the rgb formula is this `eval(f"lambda r,g,b,areas_count,v=[0]: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
             rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
-            rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0])
+            rgb_formula_dynamic_variable = np.array(pixel_area.current_f_vars, dtype=np.uint8) if( len(pixel_area.current_f_vars) > 0 ) else np.array([0], dtype=np.uint8)
+            rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0], v = rgb_formula_dynamic_variable)
+            pixel_area.update_dynamic_variables_for_rgb_function()
 
             starting_image_version = pixel_area.img_out_v
             ending_image_version = pixel_area.img_out_v + pixel_area.img_out_stack

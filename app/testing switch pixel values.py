@@ -191,7 +191,7 @@ print("---------------------------------")
 
 """
 
-
+"""
 import numpy as np
 
 img = np.array([[[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]]])
@@ -205,7 +205,7 @@ img_areas = np.array([])
 
 print(img_areas.shape)
 print(img_areas.shape[0])
-
+"""
 
 
 
@@ -279,3 +279,37 @@ print(img[:,:,:,0][0] + img[:,:,0,1][0])
 
 
 
+
+
+for i in range(0, 34):
+
+  current = 189
+  start = 59
+  end = 47
+  step = i
+  range_ = end-start+1 if(end>=start) else start-end+1
+
+  new_value = 0
+
+  if(range_ == 0):
+    continue
+
+  if(end >= start):
+    new_value = (current-start+step) % range_
+    current = start + new_value
+
+    if(current > end):
+      print("wtf")
+      #current = start + current%(end+1)
+
+  else:
+    new_value = (start-current+step) % range_
+    current = start - new_value
+
+    if(current < end):
+      print("wtf")
+      #current = start - current%(end+1)
+
+
+    
+  print("current:", current, "step:", step)

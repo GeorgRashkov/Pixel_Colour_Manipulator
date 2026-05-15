@@ -3,18 +3,18 @@ from Number_format_checker import check_for_positive_int_format
 
 
 class RGB_formula_validators:
-    rgb_formula_valid_symbols = ['.','(',')','r','g','b','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
-    rgb_formula_valid_symbols_regex = "[.()rgb+\\-*\\/^%<>=0123456789]"
-    rgb_formula_valid_symbols_for_swap_areas_regex = "[.()rgb+\\-*\\/^%<>=0123456789 \\[\\]]"
+    rgb_formula_valid_symbols = ['.','(',')','r','g','b','v','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
+    rgb_formula_valid_symbols_regex = "[.()rgbv+\\-*\\/^%<>=0123456789]"
+    rgb_formula_valid_symbols_for_swap_areas_regex = "[.()rgbv+\\-*\\/^%<>=0123456789 \\[\\]]"
     rgb_default_formula_for_swap_areas = "r->[r] g->[g] b->[b]"
 
 def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = False):
         
         #<allowed symbols collections
-        allowed_RGB_chars = ['r','g','b']
+        allowed_RGB_chars = ['r','g','b', 'v']#`v` is not a rgb channel; it is a list containing int values
         allowed_operator_chars = ['+','-','*','/','^','%','<','>','=']
         allowed_num_chars = ['0','1','2','3','4','5','6','7','8','9']
-        allowed_chars = ['.','(',')','r','g','b','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
+        allowed_chars = ['.','(',')','r','g','b','v','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
     
         if(rgb_formula == ''):
             return False
@@ -234,7 +234,7 @@ def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_are
 
     rgb_formula = rgb_formula if use_areas == False else make_areas_indexes_in_RGB_formula_fit_areas_count(rgb_formula)
     img = np.array([ [[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]] ], dtype=np.uint8) if use_areas == False else np.array([ [[[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]]], [[[11,22,33],[110,220,35]],[[55,77,99],[150,170,190]]] ], dtype=np.uint8)
-    rgb_function = eval(f"lambda r,g,b: {rgb_formula}")if use_areas == False else eval(f"lambda r,g,b,areas_count: {rgb_formula}")
+    rgb_function = eval(f"lambda r,g,b,v=0: {rgb_formula}")if use_areas == False else eval(f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8): {rgb_formula}")
     
     try:
         if(use_areas == False):
@@ -271,8 +271,10 @@ def make_areas_indexes_in_RGB_formula_fit_areas_count(rgb_formula: str):
             break
 
         current_index_in_brackets = rgb_formula[openining_bracket_index+1:closing_bracket_index]
+
+        values_count_variable = "len(v)" if(rgb_formula[openining_bracket_index-1]=="v") else "areas_count"
         
-        rgb_formula = rgb_formula[:closing_bracket_index] + f" if {current_index_in_brackets}<areas_count else 0" + rgb_formula[closing_bracket_index:]
+        rgb_formula = rgb_formula[:closing_bracket_index] + f" if {current_index_in_brackets}<{values_count_variable} else 0" + rgb_formula[closing_bracket_index:]
 
         start_index = rgb_formula.find("]",closing_bracket_index+1)
     
@@ -396,39 +398,5 @@ def get_closing_square_bracket(text:str, start_index:int):
     
     return searched_index
 
-
-#< in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#this function can be used any rgb function that uses image areas; the function replaces ["r","g","b"] with ["r[0]","g[0]","b[0]"] only when the rgb channels have no area index
-#this function must be used only for valid rgb functions
-def add_default_indexes_to_rgb_channel_function(rgb_function:str):#`rgb_function` must be a rgb formula for one of the rgb channels
-    
-    rgb_channles = ["r", "g", "b"]
-
-    for i in range (0, len(rgb_channles)):
-        rgb_channel = rgb_channles[i]
-        rgb_function = add_default_indexes_to_rgb_channel(rgb_function, rgb_channel)
-    
-    return rgb_function
-
-def add_default_indexes_to_rgb_channel(rgb_function:str, rgb_channel:str):
-    
-    index = 0
-    while (index < len(rgb_function)):
-        
-        channel_index = rgb_function.find(rgb_channel,index)
-        if(channel_index == -1):
-            break
-
-        if(channel_index < len(rgb_function) - 1):
-            if(rgb_function[channel_index+1] != "["):
-                rgb_function = rgb_function[:channel_index+1] + "[0]" + rgb_function[channel_index+1:]
-
-        elif(channel_index == len(rgb_function) - 1):
-            rgb_function = rgb_function + "[0]"
-        
-        index = channel_index+1
-    
-    return rgb_function
-#in testing state>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 #functions for checking RGB fomulas which use image areas>

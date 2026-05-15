@@ -11,7 +11,7 @@ class RGB_formula_elements(QWidget):
         self.text_boxes = {"r":QLineEdit(), "g":QLineEdit(), "b": QLineEdit()}
         self.labels = {"r":QLabel("Red channel formula"), "g":QLabel("Green channel formula"), "b":QLabel("Blue channel formula")}
                 
-        self.rgb_function_str = f"lambda r,g,b: np.stack([r,g,b], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count: np.stack([r,g,b], axis=-1)"
+        self.rgb_function_str = f"lambda r,g,b,v=0: np.stack([r,g,b], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8): np.stack([r,g,b], axis=-1)"
         self.rgb_function = eval(self.rgb_function_str)
 
         self.red_func = "r"
@@ -57,5 +57,5 @@ class RGB_formula_elements(QWidget):
         if(b_formula!=None):
             self.blue_func = b_formula
         
-        self.rgb_function_str = f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
+        self.rgb_function_str = f"lambda r,g,b,v=0: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
         self.rgb_function = eval(self.rgb_function_str)

@@ -4,7 +4,8 @@ class Pixel_area:
     
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
-                 f_id:int, p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
+                 f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
+                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
                  x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list, rotations_rep:list):
         
         #area id
@@ -22,6 +23,15 @@ class Pixel_area:
                
         #rgb function
         self.f_id = f_id #the id of the RGB formula
+        self.f_vars_max_value = 255
+        self.current_f_vars = []
+        self.current_f_vars_frequency = []
+        self.f_vars_start = f_vars_start #the initial values of the input variables
+        self.f_vars_end=f_vars_end #the ending values of the input variables
+        self.f_vars_step=f_vars_step #the steps which will change the current values of the input variables (the changes will be applied the next time the rgb function is called)
+        self.f_vars_frequency = f_vars_frequency
+        self.make_f_vars_parameters_consistent()
+               
 
         #pixel areas which will be used as an input for the rgb function
         self.p_ids = p_ids #contains the pixel area ids which will passed to the RGB formula
@@ -88,3 +98,81 @@ class Pixel_area:
             self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
             self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
         #repeat areas arguments>
+    
+
+    def update_dynamic_variables_for_rgb_function(self):
+        
+        for i in range(0, len(self.current_f_vars)):
+            
+            #make sure the current f_var value is changed only when the current f_var frequence is equal to or below 1
+            if(self.current_f_vars_frequency[i] > 1):
+                self.current_f_vars_frequency[i] -= 1
+                continue
+            self.current_f_vars_frequency[i] = self.f_vars_frequency[i]
+            
+            #get the difference between the start and the end of the current f_var
+            f_var_range = self.f_vars_end[i] - self.f_vars_start[i] + 1 if(self.f_vars_end[i] >= self.f_vars_start[i]) else self.f_vars_start[i] - self.f_vars_end[i] + 1
+
+            if(self.f_vars_end[i] >= self.f_vars_start[i]):
+                
+                new_value = (self.current_f_vars[i] - self.f_vars_start[i] + self.f_vars_step[i]) % f_var_range
+                self.current_f_vars[i] = self.f_vars_start[i] + new_value
+                
+            
+            else:
+                
+                new_value = (self.f_vars_start[i] - self.current_f_vars[i] + self.f_vars_step[i]) % f_var_range
+                self.current_f_vars[i] = self.f_vars_start[i] - new_value
+    
+    #if any of the f_vars parameters are changed from the outside this function must also be called after that
+    def make_f_vars_parameters_consistent(self):
+
+        if(len(self.f_vars_start) == 0):
+            return
+        
+        if(len(self.f_vars_end) == 0):
+            self.f_vars_end.append(self.f_vars_max_value)
+        
+        if(len(self.f_vars_step) == 0):
+            self.f_vars_step.append(1)
+        
+        if(len(self.f_vars_frequency) == 0):
+            self.f_vars_frequency.append(1)
+
+        for i in range(0, len(self.f_vars_start)):            
+            
+            #<make sure all collections have count of elements equal to (if above it is not an issue) `f_vars_start`
+            if(i == len(self.f_vars_end)):
+                self.f_vars_end.append(self.f_vars_end[len(self.f_vars_end)-1])
+            
+            if(i == len(self.f_vars_step)):
+                self.f_vars_step.append(self.f_vars_step[len(self.f_vars_step)-1])
+            
+            if(i == len(self.f_vars_frequency)):
+                self.f_vars_frequency.append(self.f_vars_frequency[len(self.f_vars_frequency)-1])
+            
+            #make sure all collections have count of elements equal to (if above it is not an issue) `f_vars_start`>
+            
+            #<make sure elements in collections fit in range 0-255
+            if(self.f_vars_start[i] > self.f_vars_max_value):
+                self.f_vars_start[i] = self.f_vars_start[i] % (self.f_vars_max_value+1)
+            
+            if(self.f_vars_end[i] > self.f_vars_max_value):
+                self.f_vars_end[i] = self.f_vars_end[i] % (self.f_vars_max_value+1)
+            #make sure elements in collections fit in range 0-255>
+        
+
+        #<make sure all collections have count of elements equal to `f_vars_start`
+        self.f_vars_end = self.f_vars_end[:len(self.f_vars_start)]
+        self.f_vars_step = self.f_vars_step[:len(self.f_vars_start)]
+        self.f_vars_frequency = self.f_vars_frequency[:len(self.f_vars_start)]
+        #make sure all collections have count of elements equal to `f_vars_start`>
+
+        self.current_f_vars = self.f_vars_start.copy()
+        self.current_f_vars_frequency = self.f_vars_frequency.copy()
+        
+
+               
+
+
+            
