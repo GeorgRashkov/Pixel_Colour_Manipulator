@@ -6,7 +6,10 @@ class Pixel_area:
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
                  p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
-                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list, rotations_rep:list):
+                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list, rotations_rep:list,
+                 x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
+                 x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
+                 f_ids_rep_p:list, rotations_rep_p:list):
         
         #area id
         self.id = id
@@ -97,6 +100,90 @@ class Pixel_area:
 
             self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
             self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
+        
+
+
+
+
+
+        #determines the place in % in the main area from where the used areas will start being applied
+        self.x_rep_start_p1 = [0]#the first value in the list corresponds to the main area
+        self.y_rep_start_p1 = [0]#the first value in the list corresponds to the main area
+
+        #determines the start place in % in the used areas
+        self.x_rep_start_p2 = [0]#the first value in the list corresponds to the main area
+        self.y_rep_start_p2 = [0]#the first value in the list corresponds to the main area
+        
+        #determines the place in % in the main area from where the used areas will end being applied
+        self.x_rep_end_p1 = [100]#the first value in the list corresponds to the main area
+        self.y_rep_end_p1 = [100]#the first value in the list corresponds to the main area
+
+        #determines the end place in % in the used areas
+        self.x_rep_end_p2 = [100]#the first value in the list corresponds to the main area
+        self.y_rep_end_p2 = [100]#the first value in the list corresponds to the main area
+
+        #determines the amount of space in % in the main area which will be skipped when creating rectangles from the used areas
+        self.x_rep_step_p1 = [0]#the first value in the list corresponds to the main area
+        self.y_rep_step_p1 = [0]#the first value in the list corresponds to the main area
+
+        #determines the amount of space in % in the used areas which will be skipped when getting the next rectangles in the used areas
+        self.x_rep_step_p2 = [0]#the first value in the list corresponds to the main area
+        self.y_rep_step_p2 = [0]#the first value in the list corresponds to the main area
+
+        #determines the size in % of the created rectangles in the main area
+        self.w_rep_p1 = [0]#the first value in the list corresponds to the main area
+        self.h_rep_p1 = [0]#the first value in the list corresponds to the main area
+
+        #determines the size in % of the rectangles taken from the used areas
+        self.w_rep_p2 = [0]#the first value in the list corresponds to the main area
+        self.h_rep_p2 = [0]#the first value in the list corresponds to the main area
+
+        #determines the max number of columns and rows of the created replicas in the main area
+        self.x_rep_count_p1 = [1]#the first value in the list corresponds to the main area
+        self.y_rep_count_p1 = [1]#the first value in the list corresponds to the main area
+
+        #determines the max number of columns and rows of the created replicas in the used areas
+        self.x_rep_count_p2 = [1]#the first value in the list corresponds to the main area
+        self.y_rep_count_p2 = [1]#the first value in the list corresponds to the main area
+
+        self.f_ids_rep_p = [[]]#the first value in the list corresponds to the main area
+        self.rotations_rep_p = [[]]#the first value in the list corresponds to the main area
+
+
+        for i in range(0, used_areas_count):
+            
+            self.x_rep_start_p1.append(0 if i >= len(x_rep_start_p1) else x_rep_start_p1[i])
+            self.y_rep_start_p1.append(0 if i >= len(y_rep_start_p1) else y_rep_start_p1[i])
+
+            self.x_rep_start_p2.append(0 if i >= len(x_rep_start_p2) else x_rep_start_p2[i])
+            self.y_rep_start_p2.append(0 if i >= len(y_rep_start_p2) else y_rep_start_p2[i])
+
+            self.x_rep_end_p1.append(100 if i >= len(x_rep_end_p1) else x_rep_end_p1[i])
+            self.y_rep_end_p1.append(100 if i >= len(y_rep_end_p1) else y_rep_end_p1[i])
+
+            self.x_rep_end_p2.append(100 if i >= len(x_rep_end_p2) else x_rep_end_p2[i])
+            self.y_rep_end_p2.append(100 if i >= len(y_rep_end_p2) else y_rep_end_p2[i])
+
+            self.x_rep_step_p1.append(0 if i >= len(x_rep_step_p1) else x_rep_step_p1[i])
+            self.y_rep_step_p1.append(0 if i >= len(y_rep_step_p1) else y_rep_step_p1[i])
+
+            self.x_rep_step_p2.append(0 if i >= len(x_rep_step_p2) else x_rep_step_p2[i])
+            self.y_rep_step_p2.append(0 if i >= len(y_rep_step_p2) else y_rep_step_p2[i])
+
+            self.w_rep_p1.append(0 if i >= len(w_rep_p1) else w_rep_p1[i])
+            self.h_rep_p1.append(0 if i >= len(h_rep_p1) else h_rep_p1[i])
+
+            self.w_rep_p2.append(0 if i >= len(w_rep_p2) else w_rep_p2[i])
+            self.h_rep_p2.append(0 if i >= len(h_rep_p2) else h_rep_p2[i])
+
+            self.x_rep_count_p1.append(1 if i >= len(x_rep_count_p1) else x_rep_count_p1[i])
+            self.y_rep_count_p1.append(1 if i >= len(y_rep_count_p1) else y_rep_count_p1[i])
+
+            self.x_rep_count_p2.append(1 if i >= len(x_rep_count_p2) else x_rep_count_p2[i])
+            self.y_rep_count_p2.append(1 if i >= len(y_rep_count_p2) else y_rep_count_p2[i])
+
+            self.f_ids_rep_p.append([] if i >= len(f_ids_rep_p) else f_ids_rep_p[i])
+            self.rotations_rep_p.append([] if i >= len(rotations_rep_p) else rotations_rep_p[i])
         #repeat areas arguments>
     
 
