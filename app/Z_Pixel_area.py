@@ -5,11 +5,10 @@ class Pixel_area:
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
-                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,
-                 x_rep_start:list, y_rep_start:list, x_rep_end:list, y_rep_end:list, x_rep_step:list,y_rep_step:list, x_rep_count:list, y_rep_count:list, f_ids_rep:list, rotations_rep:list,
+                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,                 
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
-                 f_ids_rep_p:list, rotations_rep_p:list):
+                 f_ids_rep:list, rotations_rep:list):
         
         #area id
         self.id = id
@@ -50,62 +49,7 @@ class Pixel_area:
         #<repeat areas arguments
         used_areas_count = len(self.p_ids) + min(len(self.p_x), len(self.p_y))
 
-        #determines the place in % in the main area from where the inner areas will start being applied
-        self.x_rep_start = [0]#the first value in the list corresponds to the main area
-        self.y_rep_start = [0]#the first value in the list corresponds to the main area
         
-        #determines the place in % in the main area from where the inner areas will end being applied
-        self.x_rep_end = [100]#the first value in the list corresponds to the main area
-        self.y_rep_end = [100]#the first value in the list corresponds to the main area
-
-        #determines the amount of space in % in the main area which will be skipped when creating duplicates of the used areas
-        self.x_rep_step = [0]#the first value in the list corresponds to the main area
-        self.y_rep_step = [0]#the first value in the list corresponds to the main area
-
-        #determines the max number of columns and rows of the created duplicates
-        self.x_rep_count = [1]
-        self.y_rep_count = [1]
-                
-        #determines the rgb formulas which will be applied to the duplicates; the values are collections where each collection is for specific used area while each inner element is rgb formula id which will be applied to a duplicate/s of the used area
-        # Each used area can have a different collection of RGB formulas ids - the first RGB formula is applied for the first copy, the second RGB formula is applied for the second copy, etc. 
-        # When the last RGB formula is applied for the current copy (of the current applied area), the next copy (of the current applied area) will use the first RGB formula, then the next copy (of the current applied area) will use the second RGB formula, etc.
-        self.f_ids_rep = [[]]#the first value in the list corresponds to the main area
-        """
-        example:
-        `
-        self.f_ids_rep = [[],
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11], 
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11]]
-        `
-        """
-
-        self.rotations_rep = [[]]
-
-        for i in range(0, used_areas_count):
-            
-            self.x_rep_start.append(0 if i >= len(x_rep_start) else x_rep_start[i])
-            self.y_rep_start.append(0 if i >= len(y_rep_start) else y_rep_start[i])
-
-            self.x_rep_end.append(100 if i >= len(x_rep_end) else x_rep_end[i])
-            self.y_rep_end.append(100 if i >= len(y_rep_end) else y_rep_end[i])
-
-            self.x_rep_step.append(0 if i >= len(x_rep_step) else x_rep_step[i])
-            self.y_rep_step.append(0 if i >= len(y_rep_step) else y_rep_step[i])
-
-            self.x_rep_count.append(1 if i >= len(x_rep_count) else x_rep_count[i])
-            self.y_rep_count.append(1 if i >= len(y_rep_count) else y_rep_count[i])
-
-            self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
-            self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
-        
-
-
-
-
-
         #determines the place in % in the main area from where the used areas will start being applied
         self.x_rep_start_p1 = [0]#the first value in the list corresponds to the main area
         self.y_rep_start_p1 = [0]#the first value in the list corresponds to the main area
@@ -146,8 +90,23 @@ class Pixel_area:
         self.x_rep_count_p2 = [1]#the first value in the list corresponds to the main area
         self.y_rep_count_p2 = [1]#the first value in the list corresponds to the main area
 
-        self.f_ids_rep_p = [[]]#the first value in the list corresponds to the main area
-        self.rotations_rep_p = [[]]#the first value in the list corresponds to the main area
+         #determines the rgb formulas which will be applied to the duplicates; the values are collections where each collection is for specific used area while each inner element is rgb formula id which will be applied to a duplicate/s of the used area
+        # Each used area can have a different collection of RGB formulas ids - the first RGB formula is applied for the first copy, the second RGB formula is applied for the second copy, etc. 
+        # When the last RGB formula is applied for the current copy (of the current applied area), the next copy (of the current applied area) will use the first RGB formula, then the next copy (of the current applied area) will use the second RGB formula, etc.
+        self.f_ids_rep = [[]]#the first value in the list corresponds to the main area
+        """
+        example:
+        `
+        self.f_ids_rep = [[],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11], 
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11]]
+        `
+        """
+
+        self.rotations_rep = [[]]
 
 
         for i in range(0, used_areas_count):
@@ -182,8 +141,8 @@ class Pixel_area:
             self.x_rep_count_p2.append(1 if i >= len(x_rep_count_p2) else x_rep_count_p2[i])
             self.y_rep_count_p2.append(1 if i >= len(y_rep_count_p2) else y_rep_count_p2[i])
 
-            self.f_ids_rep_p.append([] if i >= len(f_ids_rep_p) else f_ids_rep_p[i])
-            self.rotations_rep_p.append([] if i >= len(rotations_rep_p) else rotations_rep_p[i])
+            self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
+            self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
         #repeat areas arguments>
     
 

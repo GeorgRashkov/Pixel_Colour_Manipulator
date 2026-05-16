@@ -14,7 +14,10 @@ class Pixel_area_animation():
     
     def __init__(self, id:int, a_type:str, step:int, step_img_s:int, step_img_w:int, step_img_h:int, frequency:int):
         
-        valid_animation_types = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        valid_animation_types = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", 
+                                "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
+                                "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"
+                                ]
         
         if(a_type not in valid_animation_types):
             raise Exception("invalid animation type")
@@ -456,29 +459,70 @@ class Pixel_area_animation_for_list_of_lists_of_ints(Pixel_area_animation):
         elif(self.a_type == "p_y"): 
             pixel_area.p_y = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "x_rep_start"): 
-            pixel_area.x_rep_start = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "y_rep_start"): 
-            pixel_area.y_rep_start = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "x_rep_end"): 
-            pixel_area.x_rep_end = self.values[self.current_index_for__values]
+        elif(self.a_type == "x_rep_start_p1"):
+            pixel_area.x_rep_start_p1 = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "y_rep_end"): 
-            pixel_area.y_rep_end = self.values[self.current_index_for__values]
+        elif(self.a_type == "y_rep_start_p1"):
+            pixel_area.y_rep_start_p1 = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "x_rep_step"):            
-           pixel_area.x_rep_step = self.values[self.current_index_for__values]
+        elif(self.a_type == "x_rep_end_p1"):
+            pixel_area.x_rep_end_p1 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "y_rep_end_p1"):
+            pixel_area.y_rep_end_p1 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "x_rep_step_p1"):
+           pixel_area.x_rep_step_p1 = self.values[self.current_index_for__values]
         
-        elif(self.a_type == "y_rep_step"):            
-           pixel_area.y_rep_step = self.values[self.current_index_for__values]
+        elif(self.a_type == "y_rep_step_p1"):
+           pixel_area.y_rep_step_p1 = self.values[self.current_index_for__values]
         
-        elif(self.a_type == "x_rep_count"):            
-            pixel_area.x_rep_count = self.values[self.current_index_for__values] 
+        elif(self.a_type == "x_rep_count_p1"):
+            pixel_area.x_rep_count_p1 = self.values[self.current_index_for__values]
 
-        elif(self.a_type == "y_rep_count"):            
-            pixel_area.y_rep_count = self.values[self.current_index_for__values]      
+        elif(self.a_type == "y_rep_count_p1"):
+            pixel_area.y_rep_count_p1 = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "w_rep_p1"):
+            pixel_area.w_rep_p1 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "h_rep_p1"):
+            pixel_area.h_rep_p1 = self.values[self.current_index_for__values]
+        
+
+        elif(self.a_type == "x_rep_start_p2"):
+            pixel_area.x_rep_start_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "y_rep_start_p2"):
+            pixel_area.y_rep_start_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "x_rep_end_p2"):
+            pixel_area.x_rep_end_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "y_rep_end_p2"):
+            pixel_area.y_rep_end_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "x_rep_step_p2"):
+           pixel_area.x_rep_step_p2 = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "y_rep_step_p2"):
+           pixel_area.y_rep_step_p2 = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "x_rep_count_p2"):
+            pixel_area.x_rep_count_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "y_rep_count_p2"):
+            pixel_area.y_rep_count_p2 = self.values[self.current_index_for__values]
+        
+        elif(self.a_type == "w_rep_p2"):
+            pixel_area.w_rep_p2 = self.values[self.current_index_for__values]
+
+        elif(self.a_type == "h_rep_p2"):
+            pixel_area.h_rep_p2 = self.values[self.current_index_for__values]
+
+
 
         self.calls = 1
 

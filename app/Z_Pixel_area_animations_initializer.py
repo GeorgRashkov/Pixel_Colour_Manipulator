@@ -30,7 +30,10 @@ class Pixel_area_animations_initializer:
             "id", "a_type", "step", "step_img_s", "step_img_w", "step_img_h", "frequency", 
             "values",            
         ]        
-        self.animation_for_list_of_lists_of_ints_type_values = ["a_ids", "ag_ids",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        self.animation_for_list_of_lists_of_ints_type_values = ["a_ids", "ag_ids",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y",
+                                                                "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
+                                                                "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"
+                                                                ]
 
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -45,13 +48,13 @@ class Pixel_area_animations_initializer:
 
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        self.animation_type_values = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
+        self.animation_type_values = ["x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", 
+                                      "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
+                                      "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"
+                                      ]
         self.animation_value_properties_names = ["values", "values_exact"]
 
-        """
-        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "p_ids", "p_x", "p_y", "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count"]
-        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
-        """
+        
         self.id = "id"
         self.a_type = "a_type"
         

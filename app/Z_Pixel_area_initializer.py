@@ -5,29 +5,30 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack", 
-                                    "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count", "f_ids_rep", "rotations_rep",
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack",                                     
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
-                                    "f_ids_rep_p", "rotations_rep_p"]
+                                    "f_ids_rep", "rotations_rep"]
         
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
         
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
         
-        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", 
-                                    "x_rep_start", "y_rep_start", "x_rep_end", "y_rep_end", "x_rep_step", "y_rep_step", "x_rep_count", "y_rep_count",
+        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y",                                     
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"
                                     ]
         
-        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep", "f_ids_rep_p", "rotations_rep_p"]
+        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
     
         self.id = "id"
 
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
-    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
+    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; 
+    # x_rep_start_p1:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p1:[10,10,10], y_rep_end_p1:[10,10,10], x_rep_step_p1:[10,10,10], y_rep_step_p1:[10,10,10], x_rep_count_p1:[5,1,4], y_rep_count_p1:[3,1], w_rep_p1:[5,1,4], h_rep_p1:[3,1],
+    # x_rep_start_p2:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p2:[10,10,10], y_rep_end_p2:[10,10,10], x_rep_step_p2:[10,10,10], y_rep_step_p2:[10,10,10], x_rep_count_p2:[5,1,4], y_rep_count_p2:[3,1], w_rep_p2:[5,1,4], h_rep_p2:[3,1],  
+    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)], rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
     def create_pixel_areas(self, text:str) -> list[Pixel_area]:#returns a list  of objects of type `Pixel_area`
 
         is_format_correct = self.check_pixel_areas_str(text = text)
@@ -46,7 +47,10 @@ class Pixel_area_initializer:
 
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
-    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; x_rep_start:[10,10,10],y_rep_start:[10,10,10], x_rep_end:[10,10,10], y_rep_end:[10,10,10], x_rep_step:[10,10,10], y_rep_step:[10,10,10], x_rep_count:5, y_rep_count:5, f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
+    #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; 
+    # x_rep_start_p1:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p1:[10,10,10], y_rep_end_p1:[10,10,10], x_rep_step_p1:[10,10,10], y_rep_step_p1:[10,10,10], x_rep_count_p1:[5,1,4], y_rep_count_p1:[3,1], w_rep_p1:[5,1,4], h_rep_p1:[3,1],
+    # x_rep_start_p2:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p2:[10,10,10], y_rep_end_p2:[10,10,10], x_rep_step_p2:[10,10,10], y_rep_step_p2:[10,10,10], x_rep_count_p2:[5,1,4], y_rep_count_p2:[3,1], w_rep_p2:[5,1,4], h_rep_p2:[3,1],  
+    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)], rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
     def check_pixel_areas_str(self, text:str):
 
         pixel_areas_rows = self.get_areas_rows(text=text)
@@ -267,14 +271,6 @@ class Pixel_area_initializer:
         p_x = ast.literal_eval(area_properties_dict["p_x"])if area_properties_dict["p_x"] is not None else []
         p_y = ast.literal_eval(area_properties_dict["p_y"])if area_properties_dict["p_y"] is not None else []
         
-        x_rep_start = ast.literal_eval(area_properties_dict["x_rep_start"]) if area_properties_dict["x_rep_start"] is not None else []
-        y_rep_start = ast.literal_eval(area_properties_dict["y_rep_start"]) if area_properties_dict["y_rep_start"] is not None else []
-        x_rep_end = ast.literal_eval(area_properties_dict["x_rep_end"]) if area_properties_dict["x_rep_end"] is not None else []
-        y_rep_end = ast.literal_eval(area_properties_dict["y_rep_end"]) if area_properties_dict["y_rep_end"] is not None else []
-        x_rep_step = ast.literal_eval(area_properties_dict["x_rep_step"]) if area_properties_dict["x_rep_step"] is not None else []
-        y_rep_step = ast.literal_eval(area_properties_dict["y_rep_step"]) if area_properties_dict["y_rep_step"] is not None else []
-        x_rep_count = ast.literal_eval(area_properties_dict["x_rep_count"]) if area_properties_dict["x_rep_count"] is not None else []
-        y_rep_count = ast.literal_eval(area_properties_dict["y_rep_count"]) if area_properties_dict["y_rep_count"] is not None else []
         
         x_rep_start_p1 = ast.literal_eval(area_properties_dict["x_rep_start_p1"]) if area_properties_dict["x_rep_start_p1"] is not None else []
         y_rep_start_p1 = ast.literal_eval(area_properties_dict["y_rep_start_p1"]) if area_properties_dict["y_rep_start_p1"] is not None else []
@@ -297,13 +293,10 @@ class Pixel_area_initializer:
         y_rep_count_p2 = ast.literal_eval(area_properties_dict["y_rep_count_p2"]) if area_properties_dict["y_rep_count_p2"] is not None else []
         w_rep_p2 = ast.literal_eval(area_properties_dict["w_rep_p2"]) if area_properties_dict["w_rep_p2"] is not None else []
         h_rep_p2 = ast.literal_eval(area_properties_dict["h_rep_p2"]) if area_properties_dict["h_rep_p2"] is not None else []
-        
        
         f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep"])
         rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep"])
 
-        f_ids_rep_p = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep_p"])
-        rotations_rep_p = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep_p"])
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
@@ -311,10 +304,9 @@ class Pixel_area_initializer:
         f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
         p_ids = p_ids, p_x = p_x, p_y = p_y, 
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
-        x_rep_start=x_rep_start, y_rep_start=y_rep_start, x_rep_end=x_rep_end, y_rep_end=y_rep_end, x_rep_step=x_rep_step,y_rep_step=y_rep_step, x_rep_count=x_rep_count, y_rep_count=y_rep_count, f_ids_rep=f_ids_rep, rotations_rep=rotations_rep,
         x_rep_start_p1=x_rep_start_p1, y_rep_start_p1=y_rep_start_p1, x_rep_end_p1=x_rep_end_p1, y_rep_end_p1=y_rep_end_p1, x_rep_step_p1=x_rep_step_p1, y_rep_step_p1=y_rep_step_p1, x_rep_count_p1=x_rep_count_p1, y_rep_count_p1=y_rep_count_p1, w_rep_p1=w_rep_p1, h_rep_p1=h_rep_p1,
         x_rep_start_p2=x_rep_start_p2, y_rep_start_p2=y_rep_start_p2, x_rep_end_p2=x_rep_end_p2, y_rep_end_p2=y_rep_end_p2, x_rep_step_p2=x_rep_step_p2, y_rep_step_p2=y_rep_step_p2, x_rep_count_p2=x_rep_count_p2, y_rep_count_p2=y_rep_count_p2, w_rep_p2=w_rep_p2, h_rep_p2=h_rep_p2,
-        f_ids_rep_p=f_ids_rep_p, rotations_rep_p=rotations_rep_p)
+        f_ids_rep=f_ids_rep, rotations_rep=rotations_rep)
 
        
         
