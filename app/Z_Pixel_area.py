@@ -49,7 +49,7 @@ class Pixel_area:
         #<repeat areas arguments
         used_areas_count = len(self.p_ids) + min(len(self.p_x), len(self.p_y))
 
-        
+        """
         #determines the place in % in the main area from where the used areas will start being applied
         self.x_rep_start_p1 = [0]#the first value in the list corresponds to the main area
         self.y_rep_start_p1 = [0]#the first value in the list corresponds to the main area
@@ -95,6 +95,7 @@ class Pixel_area:
         # When the last RGB formula is applied for the current copy (of the current applied area), the next copy (of the current applied area) will use the first RGB formula, then the next copy (of the current applied area) will use the second RGB formula, etc.
         self.f_ids_rep = [[]]#the first value in the list corresponds to the main area
         """
+        """
         example:
         `
         self.f_ids_rep = [[],
@@ -105,7 +106,7 @@ class Pixel_area:
                       [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11]]
         `
         """
-
+        """
         self.rotations_rep = [[]]
 
 
@@ -143,6 +144,70 @@ class Pixel_area:
 
             self.f_ids_rep.append([] if i >= len(f_ids_rep) else f_ids_rep[i])
             self.rotations_rep.append([] if i >= len(rotations_rep) else rotations_rep[i])
+        """
+
+        #determines the place in % in the main area from where the used areas will start being applied
+        self.x_rep_start_p1 = x_rep_start_p1#the first value in the list corresponds to the main area
+        self.y_rep_start_p1 = y_rep_start_p1#the first value in the list corresponds to the main area
+
+        #determines the start place in % in the used areas
+        self.x_rep_start_p2 = x_rep_start_p2#the first value in the list corresponds to the main area
+        self.y_rep_start_p2 = y_rep_start_p2#the first value in the list corresponds to the main area
+        
+        #determines the place in % in the main area from where the used areas will end being applied
+        self.x_rep_end_p1 = x_rep_end_p1#the first value in the list corresponds to the main area
+        self.y_rep_end_p1 = y_rep_end_p1#the first value in the list corresponds to the main area
+
+        #determines the end place in % in the used areas
+        self.x_rep_end_p2 = x_rep_end_p2#the first value in the list corresponds to the main area
+        self.y_rep_end_p2 = y_rep_end_p2#the first value in the list corresponds to the main area
+
+        #determines the amount of space in % in the main area which will be skipped when creating rectangles from the used areas
+        self.x_rep_step_p1 = x_rep_step_p1#the first value in the list corresponds to the main area
+        self.y_rep_step_p1 = y_rep_step_p1#the first value in the list corresponds to the main area
+
+        #determines the amount of space in % in the used areas which will be skipped when getting the next rectangles in the used areas
+        self.x_rep_step_p2 = x_rep_step_p2#the first value in the list corresponds to the main area
+        self.y_rep_step_p2 = y_rep_step_p2#the first value in the list corresponds to the main area
+
+        #determines the size in % of the created rectangles in the main area
+        self.w_rep_p1 = w_rep_p1#the first value in the list corresponds to the main area
+        self.h_rep_p1 = h_rep_p1#the first value in the list corresponds to the main area
+
+        #determines the size in % of the rectangles taken from the used areas
+        self.w_rep_p2 = w_rep_p2#the first value in the list corresponds to the main area
+        self.h_rep_p2 = h_rep_p2#the first value in the list corresponds to the main area
+
+        #determines the max number of columns and rows of the created replicas in the main area
+        self.x_rep_count_p1 = x_rep_count_p1#the first value in the list corresponds to the main area
+        self.y_rep_count_p1 = y_rep_count_p1#the first value in the list corresponds to the main area
+
+        #determines the max number of columns and rows of the created replicas in the used areas
+        self.x_rep_count_p2 = x_rep_count_p2#the first value in the list corresponds to the main area
+        self.y_rep_count_p2 = y_rep_count_p2#the first value in the list corresponds to the main area
+
+        #determines the rgb formulas which will be applied to the replicas; the values are collections where each collection is for specific used area while each inner element is rgb formula id which will be applied to a replica/s of the used area
+        # Each used area can have a different collection of RGB formulas ids - the first RGB formula is applied for the first replica, the second RGB formula is applied for the second replica, etc. 
+        # When the last RGB formula is applied for the current replica (of the current applied area), the next replica (of the current applied area) will use the first RGB formula, then the next replica (of the current applied area) will use the second RGB formula, etc.
+        self.f_ids_rep = f_ids_rep#the first value (it is always `[]`) in the list corresponds to the main area
+        """
+        example:
+        `
+        self.f_ids_rep = [[],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11], 
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11],
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 25, 16, 13, 19, 35, 17, 14, 18, 29, 23, 11]]
+        `
+        """
+
+        #determines the rotations which will be applied to the replicas; the values are collections where each collection is for specific used area while each inner element is rotation number which will be applied to a replica/s of the used area
+        #the rotations can be: simple 90 degrees rotations for values (1,2,3), mirror for values (4), mirror of simple 90 degrees rotations for values (5,6,7); any rotation number outside the range [1-7] will not apply any rotation/mirror effects to the replica
+        # Each used area can have a different collection of rotation numbers - the first rotation is applied for the first replica, the second rotation is applied for the second replica, etc. 
+        # When the last rotation is applied for the current replica (of the current applied area), the next replica (of the current applied area) will use the first rotation, then the next replica (of the current applied area) will use the second rotation, etc.
+        self.rotations_rep = rotations_rep#the first value (it is always `[]`) in the list corresponds to the main area
+
         #repeat areas arguments>
     
 

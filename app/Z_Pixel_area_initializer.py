@@ -261,6 +261,7 @@ class Pixel_area_initializer:
         img_out_stack = int(area_properties_dict["img_out_stack"]) if area_properties_dict["img_out_stack"] is not None else 1        
         
         #makes the string values into lists of ints
+        """
         a_ids = ast.literal_eval(area_properties_dict["a_ids"]) if area_properties_dict["a_ids"] is not None else []
         ag_ids = ast.literal_eval(area_properties_dict["ag_ids"])if area_properties_dict["ag_ids"] is not None else []
         f_vars_start = ast.literal_eval(area_properties_dict["f_vars_start"])if area_properties_dict["f_vars_start"] is not None else []
@@ -296,6 +297,43 @@ class Pixel_area_initializer:
        
         f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep"])
         rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep"])
+        """
+        a_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["a_ids"])
+        ag_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["ag_ids"])
+        f_vars_start = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_start"])
+        f_vars_end = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_end"])
+        f_vars_step = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_step"])
+        f_vars_frequency = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_frequency"])
+        p_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["p_ids"])
+        p_x = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["p_x"])
+        p_y = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["p_y"])
+        
+        
+        x_rep_start_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_start_p1"], first_element=0)
+        y_rep_start_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_start_p1"], first_element=0)
+        x_rep_end_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_end_p1"], first_element=100)
+        y_rep_end_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_end_p1"], first_element=100)
+        x_rep_step_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_step_p1"], first_element=0)
+        y_rep_step_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_step_p1"], first_element=0)
+        x_rep_count_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_count_p1"], first_element=0)
+        y_rep_count_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_count_p1"], first_element=0)
+        w_rep_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["w_rep_p1"], first_element=0)
+        h_rep_p1 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["h_rep_p1"], first_element=0)
+
+        x_rep_start_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_start_p2"], first_element=0)
+        y_rep_start_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_start_p2"], first_element=0)
+        x_rep_end_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_end_p2"], first_element=100)
+        y_rep_end_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_end_p2"], first_element=100)
+        x_rep_step_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_step_p2"], first_element=0)
+        y_rep_step_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_step_p2"], first_element=0)
+        x_rep_count_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["x_rep_count_p2"], first_element=0)
+        y_rep_count_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["y_rep_count_p2"], first_element=0)
+        w_rep_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["w_rep_p2"], first_element=0)
+        h_rep_p2 = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["h_rep_p2"], first_element=0)
+
+
+        f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["f_ids_rep"], first_element=[])
+        rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["rotations_rep"], first_element=[])
 
 
         pixel_area = Pixel_area(id = id, 
@@ -312,6 +350,7 @@ class Pixel_area_initializer:
         
         return pixel_area
     
+    """
     def get__area_property_with_list_of_lists_of_ints_value(self, area_property:str):
 
         main_list = []
@@ -321,6 +360,32 @@ class Pixel_area_initializer:
             collections_of_f_ids = area_property[1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
             for collection_of_f_ids in collections_of_f_ids:
                 main_list.append(ast.literal_eval(collection_of_f_ids))
+
+        return main_list
+    """
+
+
+    def get__area_property_with_list_of_ints_value(self, str_value:str, first_element:int=None):
+        
+        area_property_value = ast.literal_eval(str_value) if str_value is not None else []
+        if(first_element is not None):
+            area_property_value.insert(0, first_element)
+        
+        return area_property_value
+
+
+    def get__area_property_with_list_of_lists_of_ints_value(self, str_value:str, first_element:list=None):
+
+        main_list = []
+        if str_value is not None:
+
+            #the result is list of strings which will be something like that `["[1,2]","[]","[5,2,5,2]","[1]"]`
+            collections_of_f_ids = str_value[1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
+            for collection_of_f_ids in collections_of_f_ids:
+                main_list.append(ast.literal_eval(collection_of_f_ids))
+        
+        if(first_element is not None):
+            main_list.insert(0, first_element)
 
         return main_list
 

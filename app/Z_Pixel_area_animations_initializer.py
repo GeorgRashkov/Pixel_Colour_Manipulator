@@ -57,6 +57,14 @@ class Pixel_area_animations_initializer:
         
         self.id = "id"
         self.a_type = "a_type"
+
+        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        self.animation_types_with_firs_element_0 = ["x_rep_start_p1", "y_rep_start_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
+                                      "x_rep_start_p2", "y_rep_start_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"]
+        
+        self.animation_types_with_firs_element_100 =["x_rep_end_p1", "y_rep_end_p1",
+                                                     "x_rep_end_p2", "y_rep_end_p2"]
         
 
 
@@ -78,6 +86,8 @@ class Pixel_area_animations_initializer:
         for row in animations_rows:
 
             animation = self.create_pixel_area_animation(text=row)
+            if(isinstance(animation, Pixel_area_animation_for_list_of_lists_of_ints)): 
+                self.add_initial_value_to_each_inner_list_in__animation_for_list_of_lists_of_ints(animation=animation)
             animations.append(animation)
         
         return animations
@@ -472,4 +482,16 @@ class Pixel_area_animations_initializer:
                 main_list.append(ast.literal_eval(collection_of_values))
 
         return main_list
+    
+
+    def add_initial_value_to_each_inner_list_in__animation_for_list_of_lists_of_ints(self, animation:Pixel_area_animation_for_list_of_lists_of_ints):
+
+        if(animation.a_type in self.animation_types_with_firs_element_0): 
+            for inner_list in animation.values:
+                inner_list.insert(0, 0)
+        
+        elif(animation.a_type in self.animation_types_with_firs_element_100): 
+            for inner_list in animation.values:
+                inner_list.insert(0, 100)
+
 
