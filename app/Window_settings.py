@@ -47,43 +47,51 @@ class FormWindow_Settings(QWidget):
         #elements - set min and max values for the sliders on the window capture>
 
         #<elements - execution sequence of the functions for setting the pixel values
-        self.allowed_colour_functions_values = ["1", "2", "3", "4"]
+        self.allowed_colour_functions_values = ["1", "2", "3", "4", "5"]
         
-        self.label_color_functions_sequence = QLabel("Color functions sequence")
+        self.label_colour_functions_sequence = QLabel("Colour functions sequence")
         
-        self.label_sliders_execution_index = QLabel("RGB Funcs")
-        textBox_sliders_execution_index_txt = "1"
-        self.textBox_sliders_execution_index = QLineEdit(textBox_sliders_execution_index_txt)
-        self.textBox_sliders_execution_index.setMaxLength(1)
-        self.textBox_sliders_execution_index.setMaximumWidth(15)
-        self.textBox_sliders_execution_index.setValidator(colour_funcs_sequence_validator)
+        self.label_rgbFunc_execution_index = QLabel("RGB Func")
+        textBox_rgbFunc_execution_index_txt = "1"
+        self.textBox_rgbFunc_execution_index = QLineEdit(textBox_rgbFunc_execution_index_txt)
+        self.textBox_rgbFunc_execution_index.setMaxLength(1)
+        self.textBox_rgbFunc_execution_index.setMaximumWidth(15)
+        self.textBox_rgbFunc_execution_index.setValidator(colour_funcs_sequence_validator)
+
+        self.label_mask_execution_index = QLabel("Mask")
+        textBox_mask_execution_index_txt = "2"
+        self.textBox_mask_execution_index = QLineEdit(textBox_mask_execution_index_txt)
+        self.textBox_mask_execution_index.setMaxLength(1)
+        self.textBox_mask_execution_index.setMaximumWidth(15)
+        self.textBox_mask_execution_index.setValidator(colour_funcs_sequence_validator)
         
         self.label_convolution_execution_index = QLabel("Convolution")
-        textBox_convolution_execution_index_txt = "2"
+        textBox_convolution_execution_index_txt = "3"
         self.textBox_convolution_execution_index = QLineEdit(textBox_convolution_execution_index_txt)
         self.textBox_convolution_execution_index.setMaxLength(1)
         self.textBox_convolution_execution_index.setMaximumWidth(15)
         self.textBox_convolution_execution_index.setValidator(colour_funcs_sequence_validator)
-        
-        self.label_otherColorFunctions_execution_index = QLabel("Sliders")
-        textBox_otherColorFunctions_execution_index_txt = "3"
-        self.textBox_otherColorFunctions_execution_index = QLineEdit(textBox_otherColorFunctions_execution_index_txt)
-        self.textBox_otherColorFunctions_execution_index.setMaxLength(1)
-        self.textBox_otherColorFunctions_execution_index.setMaximumWidth(15)
-        self.textBox_otherColorFunctions_execution_index.setValidator(colour_funcs_sequence_validator)
 
-        self.label_swopPixelAreas_execution_index = QLabel("Swop areas")
-        textBox_swopPixelAreas_execution_index_txt = "4"
-        self.textBox_swopPixelAreas_execution_index = QLineEdit(textBox_swopPixelAreas_execution_index_txt)
-        self.textBox_swopPixelAreas_execution_index.setMaxLength(1)
-        self.textBox_swopPixelAreas_execution_index.setMaximumWidth(15)
-        self.textBox_swopPixelAreas_execution_index.setValidator(colour_funcs_sequence_validator)
+        self.label_swapPixelAreas_execution_index = QLabel("Swap areas")
+        textBox_swapPixelAreas_execution_index_txt = "4"
+        self.textBox_swapPixelAreas_execution_index = QLineEdit(textBox_swapPixelAreas_execution_index_txt)
+        self.textBox_swapPixelAreas_execution_index.setMaxLength(1)
+        self.textBox_swapPixelAreas_execution_index.setMaximumWidth(15)
+        self.textBox_swapPixelAreas_execution_index.setValidator(colour_funcs_sequence_validator)
 
-        self.color_functions_execution_order = [
-            int(textBox_sliders_execution_index_txt), 
+        self.label_sliders_execution_index = QLabel("Sliders")
+        textBox_sliders_execution_index_txt = "5"
+        self.textBox_sliders_execution_index = QLineEdit(textBox_sliders_execution_index_txt)
+        self.textBox_sliders_execution_index.setMaxLength(1)
+        self.textBox_sliders_execution_index.setMaximumWidth(15)
+        self.textBox_sliders_execution_index.setValidator(colour_funcs_sequence_validator)
+
+        self.colour_functions_execution_order = [
+            int(textBox_rgbFunc_execution_index_txt), 
+            int(textBox_mask_execution_index_txt),
             int(textBox_convolution_execution_index_txt), 
-            int(textBox_otherColorFunctions_execution_index_txt),
-            int(textBox_swopPixelAreas_execution_index_txt)
+            int(textBox_swapPixelAreas_execution_index_txt),
+            int(textBox_sliders_execution_index_txt)
         ]
         #elements - execution sequence of the functions for setting the pixel values>
 
@@ -125,21 +133,25 @@ class FormWindow_Settings(QWidget):
 
 
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.label_color_functions_sequence)
+        h_layout.addWidget(self.label_colour_functions_sequence)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.label_sliders_execution_index)
-        h_layout.addWidget(self.textBox_sliders_execution_index)
 
-        h_layout.addWidget(self.label_convolution_execution_index)
+        h_layout.addWidget(self.textBox_rgbFunc_execution_index)
+        h_layout.addWidget(self.label_rgbFunc_execution_index)
+
+        h_layout.addWidget(self.textBox_mask_execution_index)
+        h_layout.addWidget(self.label_mask_execution_index)
+
         h_layout.addWidget(self.textBox_convolution_execution_index)
+        h_layout.addWidget(self.label_convolution_execution_index)
 
-        h_layout.addWidget(self.label_otherColorFunctions_execution_index)
-        h_layout.addWidget(self.textBox_otherColorFunctions_execution_index)
+        h_layout.addWidget(self.textBox_swapPixelAreas_execution_index)
+        h_layout.addWidget(self.label_swapPixelAreas_execution_index)
 
-        h_layout.addWidget(self.label_swopPixelAreas_execution_index)
-        h_layout.addWidget(self.textBox_swopPixelAreas_execution_index)
+        h_layout.addWidget(self.textBox_sliders_execution_index)
+        h_layout.addWidget(self.label_sliders_execution_index)
 
         v_layout.addLayout(h_layout)
 
@@ -172,10 +184,9 @@ class FormWindow_Settings(QWidget):
             print("Error: the text box for setting the max value of the slider was in wrong format")
             return None, None, None, None, None
         
-        if(self.check_color_functions_sequence_values()==False):
+        if(self.check_colour_functions_sequence_values()==False):
             return None, None, None, None, None
 
-        self.set_color_function_execution_order()
 
         RGB_use_doubles = self.checkBox_RGB_use_doubles.isChecked()
        
@@ -191,35 +202,27 @@ class FormWindow_Settings(QWidget):
             print("Error: the minimun value of the sliders cannot be higher than the max value!")
             return None, None, None, None, None
         
-        return self.capture_time, self.slider_min_value, self.slider_max_value, RGB_use_doubles, self.color_functions_execution_order
+        return self.capture_time, self.slider_min_value, self.slider_max_value, RGB_use_doubles, self.colour_functions_execution_order
     
+    
+    def check_colour_functions_sequence_values(self) -> bool:
 
-    def check_color_functions_sequence_values(self):
-
-        if(
-            self.textBox_sliders_execution_index.text() not in self.allowed_colour_functions_values or
-            self.textBox_convolution_execution_index.text() not in self.allowed_colour_functions_values or
-            self.textBox_otherColorFunctions_execution_index.text() not in self.allowed_colour_functions_values
-            ):
-            print(f"Error: one or more of the entered color functions indexes was not found! The allowed indexes are:\n{self.allowed_colour_functions_values}")
-            return False
+        colour_functions_input = [self.textBox_rgbFunc_execution_index.text(), self.textBox_mask_execution_index.text(), 
+                                  self.textBox_convolution_execution_index.text(), self.textBox_swapPixelAreas_execution_index.text(),
+                                  self.textBox_sliders_execution_index.text()]
         
-        if(
-            self.textBox_sliders_execution_index.text() == self.textBox_convolution_execution_index.text() or
-            self.textBox_sliders_execution_index.text() == self.textBox_otherColorFunctions_execution_index.text() or
-            self.textBox_convolution_execution_index.text() == self.textBox_otherColorFunctions_execution_index.text() 
-        ):
-            print("Error: an index of color function cannot be the same as the index of any other color function!")
-            return False
-                
+        for i in range(0, len(colour_functions_input)):
+            
+            if(colour_functions_input[i] not in self.allowed_colour_functions_values):
+                print(f"Error: one or more of the entered colour functions indexes was not found! The allowed indexes are:\n{self.allowed_colour_functions_values}")
+                return False
+            
+            for j in range(i+1, len(colour_functions_input)):
+                if(colour_functions_input[i] == colour_functions_input[j]):
+                    print("Error: an index of colour function cannot be the same as the index of any other colour function!")
+                    return False
+        
+        for i in range(0, len(colour_functions_input)):
+            self.colour_functions_execution_order[i] = int(colour_functions_input[i])
+
         return True
-    
-    def set_color_function_execution_order(self):
-                
-        execution_indexes = [int(self.textBox_sliders_execution_index.text()),  int(self.textBox_convolution_execution_index.text()), int(self.textBox_otherColorFunctions_execution_index.text()), int(self.textBox_swopPixelAreas_execution_index.text())]
-        color_func_index = 1
-
-        for execution_index in execution_indexes:
-            self.color_functions_execution_order[execution_index-1] = color_func_index
-            color_func_index += 1
-
