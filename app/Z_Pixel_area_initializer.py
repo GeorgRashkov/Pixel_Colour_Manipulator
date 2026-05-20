@@ -261,43 +261,7 @@ class Pixel_area_initializer:
         img_out_stack = int(area_properties_dict["img_out_stack"]) if area_properties_dict["img_out_stack"] is not None else 1        
         
         #makes the string values into lists of ints
-        """
-        a_ids = ast.literal_eval(area_properties_dict["a_ids"]) if area_properties_dict["a_ids"] is not None else []
-        ag_ids = ast.literal_eval(area_properties_dict["ag_ids"])if area_properties_dict["ag_ids"] is not None else []
-        f_vars_start = ast.literal_eval(area_properties_dict["f_vars_start"])if area_properties_dict["f_vars_start"] is not None else []
-        f_vars_end = ast.literal_eval(area_properties_dict["f_vars_end"])if area_properties_dict["f_vars_end"] is not None else []
-        f_vars_step = ast.literal_eval(area_properties_dict["f_vars_step"])if area_properties_dict["f_vars_step"] is not None else []
-        f_vars_frequency = ast.literal_eval(area_properties_dict["f_vars_frequency"])if area_properties_dict["f_vars_frequency"] is not None else []
-        p_ids = ast.literal_eval(area_properties_dict["p_ids"])if area_properties_dict["p_ids"] is not None else []
-        p_x = ast.literal_eval(area_properties_dict["p_x"])if area_properties_dict["p_x"] is not None else []
-        p_y = ast.literal_eval(area_properties_dict["p_y"])if area_properties_dict["p_y"] is not None else []
         
-        
-        x_rep_start_p1 = ast.literal_eval(area_properties_dict["x_rep_start_p1"]) if area_properties_dict["x_rep_start_p1"] is not None else []
-        y_rep_start_p1 = ast.literal_eval(area_properties_dict["y_rep_start_p1"]) if area_properties_dict["y_rep_start_p1"] is not None else []
-        x_rep_end_p1 = ast.literal_eval(area_properties_dict["x_rep_end_p1"]) if area_properties_dict["x_rep_end_p1"] is not None else []
-        y_rep_end_p1 = ast.literal_eval(area_properties_dict["y_rep_end_p1"]) if area_properties_dict["y_rep_end_p1"] is not None else []
-        x_rep_step_p1 = ast.literal_eval(area_properties_dict["x_rep_step_p1"]) if area_properties_dict["x_rep_step_p1"] is not None else []
-        y_rep_step_p1 = ast.literal_eval(area_properties_dict["y_rep_step_p1"]) if area_properties_dict["y_rep_step_p1"] is not None else []
-        x_rep_count_p1 = ast.literal_eval(area_properties_dict["x_rep_count_p1"]) if area_properties_dict["x_rep_count_p1"] is not None else []
-        y_rep_count_p1 = ast.literal_eval(area_properties_dict["y_rep_count_p1"]) if area_properties_dict["y_rep_count_p1"] is not None else []
-        w_rep_p1 = ast.literal_eval(area_properties_dict["w_rep_p1"]) if area_properties_dict["w_rep_p1"] is not None else []
-        h_rep_p1 = ast.literal_eval(area_properties_dict["h_rep_p1"]) if area_properties_dict["h_rep_p1"] is not None else []
-
-        x_rep_start_p2 = ast.literal_eval(area_properties_dict["x_rep_start_p2"]) if area_properties_dict["x_rep_start_p2"] is not None else []
-        y_rep_start_p2 = ast.literal_eval(area_properties_dict["y_rep_start_p2"]) if area_properties_dict["y_rep_start_p2"] is not None else []
-        x_rep_end_p2 = ast.literal_eval(area_properties_dict["x_rep_end_p2"]) if area_properties_dict["x_rep_end_p2"] is not None else []
-        y_rep_end_p2 = ast.literal_eval(area_properties_dict["y_rep_end_p2"]) if area_properties_dict["y_rep_end_p2"] is not None else []
-        x_rep_step_p2 = ast.literal_eval(area_properties_dict["x_rep_step_p2"]) if area_properties_dict["x_rep_step_p2"] is not None else []
-        y_rep_step_p2 = ast.literal_eval(area_properties_dict["y_rep_step_p2"]) if area_properties_dict["y_rep_step_p2"] is not None else []
-        x_rep_count_p2 = ast.literal_eval(area_properties_dict["x_rep_count_p2"]) if area_properties_dict["x_rep_count_p2"] is not None else []
-        y_rep_count_p2 = ast.literal_eval(area_properties_dict["y_rep_count_p2"]) if area_properties_dict["y_rep_count_p2"] is not None else []
-        w_rep_p2 = ast.literal_eval(area_properties_dict["w_rep_p2"]) if area_properties_dict["w_rep_p2"] is not None else []
-        h_rep_p2 = ast.literal_eval(area_properties_dict["h_rep_p2"]) if area_properties_dict["h_rep_p2"] is not None else []
-       
-        f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property=area_properties_dict["f_ids_rep"])
-        rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(area_property = area_properties_dict["rotations_rep"])
-        """
         a_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["a_ids"])
         ag_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["ag_ids"])
         f_vars_start = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_start"])
@@ -350,19 +314,7 @@ class Pixel_area_initializer:
         
         return pixel_area
     
-    """
-    def get__area_property_with_list_of_lists_of_ints_value(self, area_property:str):
 
-        main_list = []
-        if area_property is not None:
-
-            #the result is list of strings which will be something like that `["[1,2]","[]","[5,2,5,2]","[1]"]`
-            collections_of_f_ids = area_property[1:-1].replace("(", "[").replace(")","]").replace("],","];").split(";")
-            for collection_of_f_ids in collections_of_f_ids:
-                main_list.append(ast.literal_eval(collection_of_f_ids))
-
-        return main_list
-    """
 
 
     def get__area_property_with_list_of_ints_value(self, str_value:str, first_element:int=None):

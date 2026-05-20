@@ -378,12 +378,6 @@ class Swap_pixel_values_controller:
 
 
 
-    
-    
-#<not checked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
-
-
-
 #when called this function will remove everything from the canvas and will put in there rectangles based on the coordinates written in the text area 
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
         
@@ -563,7 +557,7 @@ class Swap_pixel_values_controller:
         while (rgb_channel_index < 3):
 
             rgb_formula_start_index = rgb_formulas_for_pixel_area.find("[", rgb_formula_end_index)
-            rgb_formula_end_index = get_closing_square_bracket(text=rgb_formulas_for_pixel_area,start_index=rgb_formula_start_index)#rgb_formulas_for_pixel_area.find("]", rgb_formula_start_index)
+            rgb_formula_end_index = get_closing_square_bracket(text=rgb_formulas_for_pixel_area,start_index=rgb_formula_start_index)
            
             rgb_formula = rgb_formulas_for_pixel_area[rgb_formula_start_index+1:rgb_formula_end_index]
             rgb_formulas[rgb_channels[rgb_channel_index]] = rgb_formula

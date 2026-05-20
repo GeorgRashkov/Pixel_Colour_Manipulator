@@ -18,7 +18,7 @@ class FormWindow_SwapPixelValues(QWidget):
         self.resize(800, 500)             
         
         self.lable_for__text_area_swap_pixel_areas = QLabel("pixel areas")
-        self.text_area_swap_pixel_areas = QTextEdit() #Text_area(allowed_symbols_regex="[0-9\\[\\], ]")
+        self.text_area_swap_pixel_areas = QTextEdit()
         self.lable_for__text_area_rgb_formulas = QLabel("rgb formulas")
         self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
 

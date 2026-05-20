@@ -21,7 +21,6 @@ class DrawingWidget(QWidget):
         self.brush_max_width = 999
         self.brush_min_height = 1
         self.brush_max_height = 999
-        #self.width_height_percentage_difference = self.brush_width/self.brush_height
         self.brush_delta_width = 50 #the value which will be use to increase or decrease the brush width
         self.brush_delta_height = 50 #the value which will be use to increase or decrease the brush height
         

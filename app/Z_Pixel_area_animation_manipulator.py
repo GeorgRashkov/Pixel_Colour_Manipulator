@@ -1,7 +1,7 @@
 import numpy as np
 
 from Z_Pixel_area import Pixel_area
-from Z_Pixel_area_animations import Pixel_area_animation_group, Pixel_area_animation_xywh, Pixel_area_animation_for_list_of_lists_of_ints, Pixel_area_animation_for_list_of_ints, Pixel_area_animation
+from Z_Pixel_area_animations import Pixel_area_animation_group, Pixel_area_animation
 
 class Pixel_area_animation_manipulator():
 
@@ -29,49 +29,6 @@ class Pixel_area_animation_manipulator():
 
 
 
-        """
-        #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pixel_areas_animations_dict = {
-
-            1: Pixel_area_animation_xywh(id=1, a_type="x", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
-            2: Pixel_area_animation_xywh(id=2, a_type="x", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
-            3: Pixel_area_animation_xywh(id=3, a_type="x", step=-15, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 90, border=-100, border_exact=-5_000, values=[], values_exact=[]),
-            
-            4: Pixel_area_animation_xywh(id=4, a_type="y", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=95, border_exact=5_000, values=[], values_exact=[]),
-            5: Pixel_area_animation_xywh(id=5, a_type="y", step=15, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=110, border_exact=5_000, values=[], values_exact=[]),
-            6: Pixel_area_animation_xywh(id=6, a_type="y", step=-15, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 90, border=-100, border_exact=-5_000, values=[], values_exact=[]),
-            
-            7: Pixel_area_animation_xywh(id=7, a_type="w", step=12, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
-            8: Pixel_area_animation_xywh(id=8, a_type="w", step=-12, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
-            9: Pixel_area_animation_xywh(id=9, a_type="w", step=-12, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
-            
-            10: Pixel_area_animation_xywh(id=10, a_type="h", step=12, step_img_s=2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 20, border=50, border_exact=5_000, values=[], values_exact=[]),
-            11: Pixel_area_animation_xywh(id=11, a_type="h", step=-12, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 50, border=20, border_exact=-5_000, values=[], values_exact=[]),
-            12: Pixel_area_animation_xywh(id=12, a_type="h", step=-12, step_img_s=-2, step_img_w=0, step_img_h=0, frequency=1, initial_value = 50, border=-20, border_exact=-5_000, values=[], values_exact=[]),
-                        
-            
-            
-            100: Pixel_area_animation_for_list_of_ints(id=100, a_type="f_id", step=1, step_img_s=0, step_img_w=0, step_img_h=0, frequency=1, values=[1,2,3]),
-            101: Pixel_area_animation_for_list_of_ints(id=101, a_type="f_id", step=1, step_img_s=1, step_img_w=0, step_img_h=0, frequency=10, values=[1,2,3, 4, 5, 6, 7, 8, 9, 10])
-        }
-        self.pixel_areas_animations_dict = pixel_areas_animations_dict
-
-        #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        pixel_areas_animations_groups_dict = {
-            1: Pixel_area_animation_group(id=1, a_ids=[1,100, 7,10]),
-            2: Pixel_area_animation_group(id=2, a_ids=[4, 8,11]),
-            3: Pixel_area_animation_group(id=3, a_ids=[1, 4, 8,10, 101])
-        }
-        self.pixel_areas_animations_groups_dict = pixel_areas_animations_groups_dict
-
-        #this is for testing purposes only !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        for animations_group_id in  self.pixel_areas_animations_groups_dict.keys():
-            self.pixel_areas_animations_groups__end_reached_helper[animations_group_id] = {}
-
-            for animation_id in self.pixel_areas_animations_groups_dict[animations_group_id].a_ids:
-                self.pixel_areas_animations_groups__end_reached_helper[animations_group_id][animation_id] = False
-        """
-    
     
     def apply_animations(self, pixel_area:Pixel_area, img:np):
         

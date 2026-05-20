@@ -32,9 +32,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
     SLIDERS_VALUES = {"r":1, "g":1, "b":1}
     
-    """
-    def __init__(self, camera:DXCamera):
-    """
+   
     def __init__(self):
         super().__init__()
 
@@ -63,9 +61,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.RGB_use_doubles = False
 
         self.color_methods_execution_order = [1, 2, 3, 4, 5] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
-        """
-        self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
-        """
+       
         self.color_methods = [self.apply_default_color_function, self.apply_rgb_mask, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
         self.setWindowTitle("Color Changer")
@@ -468,10 +464,7 @@ class CaptureWindow(QtWidgets.QWidget):
     
     def update_capture(self):
             
-            """#this is usefull for checking the count of the mask filters and the colour functions (it is not important as it is only for testing purposes)
-            if(self.mask_filters!=None):
-                print(f"mask filters: {len(self.mask_filters)}, color functions: {len(self.color_functions)}, default colour function: {1}")
-            """
+          
 
         #try:
             x, y, w, h = self.get_window_coordinates()
@@ -518,93 +511,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
         return img
 
-    """
-    def apply_color_functions_to_image(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
-        
-
-    #<change the color of the pixels in the image without a mask
-        
-        if(self.mask_filters is None):#self.default_color_function has this value `lambda r,g,b: np.stack([r, g, b], axis=-1)`
-            
-            transformed_image = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])
-            return transformed_image       
-        
-    #change the color of the pixels in the image without a mask>
-        
-
-    #<change the color of the pixels in the image using a mask
-
-        # Initialize output
-        transformed_image = np.zeros_like(img, dtype=float)
-
-        # Keep track of which pixels have been transformed
-        processed_mask = np.zeros(self.mask_filters[0].shape, dtype=bool)
-
-        try:        
-            # Apply filters in order
-            for mf, func in zip(self.mask_filters, self.color_functions):               
-                
-                #if the user changes the shape of the window than the code in the if statement whill be executed in order to make the size of the filters match the size of the resized image         
-                if(img.shape[1] !=self.mask_filters[0].shape[0] or img.shape[0]!=self.mask_filters[0].shape[1]):
-                    mf = self.resize_filter(mf, img.shape[1],img.shape[0])
-                    processed_mask = self.resize_filter(processed_mask, img.shape[1],img.shape[0])
-            
-                apply_mask = mf & ~processed_mask
-                transformed_image[apply_mask] = func(img[:,:,0], img[:,:,1], img[:,:,2])[apply_mask]
-                processed_mask |= apply_mask
-
-            # Apply default function to remaining pixels
-            remaining_mask = ~processed_mask
-            transformed_image[remaining_mask] = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])[remaining_mask]
-        except:
-            print("Error the mask is not compatible with the Main window. Make sure the Main window borders are inside the screen")
-        return transformed_image
-    """
-
-    """
-    def apply_color_functions_to_image(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
-        
-
-    #<change the color of the pixels in the image without a mask
-        
-        if(self.mask_filters is None):#self.default_color_function has this value `lambda r,g,b: np.stack([r, g, b], axis=-1)`
-            
-            img = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])
-            return img       
-        
-    #change the color of the pixels in the image without a mask>
-        
-
-    #<change the color of the pixels in the image using a mask
-
-          
-        # Apply filters in order
-        for mf, func in zip(self.mask_filters, self.color_functions):               
-                
-            #if the user changes the shape of the window than the code in the if statement whill be executed in order to make the size of the filters match the size of the resized image         
-            if(img.shape[1] !=self.mask_filters[0].shape[0] or img.shape[0]!=self.mask_filters[0].shape[1]):
-                mf = self.resize_filter(mf, img.shape[1],img.shape[0])
-               
-            img[mf] = func(img[:,:,0], img[:,:,1], img[:,:,2], m=mf)
-        
-        return img
-
-    """
-    """
-    #Resize a boolean mask to match a new image shape
-    def resize_filter(self, mask, img_width, img_hight):
-                
-        # Convert to float for interpolation
-        mask_float = mask.astype(np.float32)
-        
-        # Resize using nearest or bilinear interpolation
-        resized = cv2.resize(mask_float, (img_width, img_hight), interpolation=cv2.INTER_LINEAR)
-        
-        # Convert back to boolean
-        return resized > 0.5
     
-    #change the color of the pixels in the image using a mask>
-    """
 
     def apply_sliders_values_to_image(self, img):
                

@@ -65,10 +65,7 @@ class RGB_formulas_mask:
         if(len(rgb_functions) != len(colours)):
             raise Exception("colours had id which had no maching rgb function id")
 
-        """
-        self.mask_original = np.zeros(img_mask.shape[:-1],np.uint8) #the mask will contain the ids of the rgb_funtions
-        self.rgb_functions = {}
-        """
+       
         self.update_original_mask_and_rgb_functions(img_mask=img_mask, remove_presious_mask=remove_presious_mask)
 
        
@@ -98,10 +95,7 @@ class RGB_formulas_mask:
         if(len(rgb_functions) != len(colour_ranges)):
             raise Exception("colour ranges had id which had no maching rgb function id")
         
-        """   
-        self.mask_original = np.zeros(img_mask.shape[:-1],np.uint8) #the mask will contain the ids of the rgb_funtions
-        self.rgb_functions = {}
-        """
+       
         self.update_original_mask_and_rgb_functions(img_mask=img_mask, remove_presious_mask=remove_presious_mask)
         
         for i in range(0, img_mask.shape[0]):
