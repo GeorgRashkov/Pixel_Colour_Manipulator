@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
 import Z_RGB_formula_checker as RGB_formula_checker#import RGB_formula_checker
+from Z_RGB_formula import RGB_formula
 
 class RGB_formula_elements(QWidget):
     def __init__(self, use_areas: bool = False, text_boxes_max_lenght: int = 150):
@@ -47,7 +48,7 @@ class RGB_formula_elements(QWidget):
 
         self.set_color_variables(r_formula, g_formula, b_formula)
         
-    
+    """
     def set_color_variables(self, r_formula, g_formula, b_formula):
         
         if(r_formula!=None):
@@ -57,5 +58,15 @@ class RGB_formula_elements(QWidget):
         if(b_formula!=None):
             self.blue_func = b_formula
         
-        self.rgb_function_str = f"lambda r,g,b,v=0: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
+        self.rgb_function_str = f"lambda r,g,b,v=0,m=slice(None): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8),m=slice(None): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
         self.rgb_function = eval(self.rgb_function_str)
+    """
+
+    def set_color_variables(self, r_formula, g_formula, b_formula):
+        
+        if(r_formula == None or g_formula==None or b_formula == None):
+            return
+
+        rgb_formula = RGB_formula(red_func=r_formula, green_func=g_formula, blue_func=b_formula, use_pixel_areas=False)
+        self.rgb_function_str = rgb_formula.rgb_function_str
+        self.rgb_function = rgb_formula.rgb_function

@@ -8,8 +8,11 @@ from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QL
 from PyQt5.QtCore import Qt
 import RGB_formula_elements
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
+from Z_RGB_formulas_mask import RGB_formulas_mask
 from PyQt5.QtWidgets import QApplication
 from dxcam import DXCamera
+
+from DXCamera_Singleton import DXCamera_Singleton
 
 class Kernel():
     def __init__(self, stride: int, holes_count: int, kernel_values: np.ndarray):
@@ -29,8 +32,10 @@ class CaptureWindow(QtWidgets.QWidget):
 
     SLIDERS_VALUES = {"r":1, "g":1, "b":1}
     
-
+    """
     def __init__(self, camera:DXCamera):
+    """
+    def __init__(self):
         super().__init__()
 
         
@@ -49,6 +54,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.swap_pixel_areas = None #when initialized it must a numpy array
         
 
+        self.rgb_mask:RGB_formulas_mask = None
 
         self.pixel_areas_manipulator:Pixel_areas_manipulator = None
         
@@ -56,14 +62,17 @@ class CaptureWindow(QtWidgets.QWidget):
 
         self.RGB_use_doubles = False
 
-        self.color_methods_execution_order = [1, 2, 3, 4] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
+        self.color_methods_execution_order = [1, 2, 3, 4, 5] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
+        """
         self.color_methods = [self.apply_color_functions_to_image, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
+        """
+        self.color_methods = [self.apply_default_color_function, self.apply_rgb_mask, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
         self.setWindowTitle("Color Changer")
         self.setMinimumSize(200, 30)
         self.resize(400, 400)
              
-        self.camera = camera
+        self.camera:DXCamera = DXCamera_Singleton().get_DXCamera()
 
         # Keep a pixmap to paint
         self._pixmap = None
@@ -256,6 +265,10 @@ class CaptureWindow(QtWidgets.QWidget):
         # Periodic update
         if(self.checkBox_auto_capture.isChecked() == True):
             self.update_capture()
+        
+    def get_transformed_img(self) -> np:
+        self.update_capture()
+        return self.transformed_image
 
     def slider_value_changed(self, slider_value, slider_id):
         self.SLIDERS_VALUES[slider_id] = round(slider_value*0.01,2)
@@ -505,7 +518,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
         return img
 
-   
+    """
     def apply_color_functions_to_image(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
         
 
@@ -546,8 +559,38 @@ class CaptureWindow(QtWidgets.QWidget):
         except:
             print("Error the mask is not compatible with the Main window. Make sure the Main window borders are inside the screen")
         return transformed_image
+    """
 
-    
+    """
+    def apply_color_functions_to_image(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
+        
+
+    #<change the color of the pixels in the image without a mask
+        
+        if(self.mask_filters is None):#self.default_color_function has this value `lambda r,g,b: np.stack([r, g, b], axis=-1)`
+            
+            img = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])
+            return img       
+        
+    #change the color of the pixels in the image without a mask>
+        
+
+    #<change the color of the pixels in the image using a mask
+
+          
+        # Apply filters in order
+        for mf, func in zip(self.mask_filters, self.color_functions):               
+                
+            #if the user changes the shape of the window than the code in the if statement whill be executed in order to make the size of the filters match the size of the resized image         
+            if(img.shape[1] !=self.mask_filters[0].shape[0] or img.shape[0]!=self.mask_filters[0].shape[1]):
+                mf = self.resize_filter(mf, img.shape[1],img.shape[0])
+               
+            img[mf] = func(img[:,:,0], img[:,:,1], img[:,:,2], m=mf)
+        
+        return img
+
+    """
+    """
     #Resize a boolean mask to match a new image shape
     def resize_filter(self, mask, img_width, img_hight):
                 
@@ -561,7 +604,8 @@ class CaptureWindow(QtWidgets.QWidget):
         return resized > 0.5
     
     #change the color of the pixels in the image using a mask>
-        
+    """
+
     def apply_sliders_values_to_image(self, img):
                
         image_red = img[:,:,0]
@@ -579,6 +623,27 @@ class CaptureWindow(QtWidgets.QWidget):
         return transformed_image           
     
     
+    def apply_rgb_mask(self, img):
+
+        if(self.rgb_mask is None):
+            return img
+        
+        transformed_image = self.rgb_mask.apply_mask_to_image(img=img)
+        return transformed_image
+    
+    def set_rgb_mask(self, rgb_mask:RGB_formulas_mask):
+
+        if(rgb_mask is not None):
+            self.rgb_mask = rgb_mask
+    
+    def remove_rgb_mask(self):
+        self.rgb_mask = None
+
+
+    def apply_default_color_function(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
+        transformed_image = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])
+        return transformed_image
+
     def apply_pixel_areas_manipulator(self, img):
 
         if(self.pixel_areas_manipulator is None):
