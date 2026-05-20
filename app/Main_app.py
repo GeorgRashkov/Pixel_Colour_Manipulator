@@ -5,7 +5,7 @@ import numpy as np
 import Window_capture, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
 from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
-
+from Z_RGB_formulas_mask import RGB_formulas_mask
 
 from DXCamera_Singleton import DXCamera_Singleton
 
@@ -13,11 +13,13 @@ class MainApp:
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
 
-        self.draw_mask_controller = Draw_mask_controller()
+        rgb_formulas_mask = RGB_formulas_mask()
+
+        self.draw_mask_controller = Draw_mask_controller(rgb_formulas_mask=rgb_formulas_mask)
         self.draw_mask_controller.form_window_draw_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask_from_draw_window)
         self.draw_mask_controller.form_window_draw_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)
 
-        self.capture_mask_controller = Capture_mask_controller()
+        self.capture_mask_controller = Capture_mask_controller(rgb_formulas_mask=rgb_formulas_mask)
         self.capture_mask_controller.form_window_capture_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask_from_capture_window)
         self.capture_mask_controller.form_window_capture_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)
 

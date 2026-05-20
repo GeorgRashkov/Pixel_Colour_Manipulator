@@ -13,13 +13,13 @@ from typing import Callable
 
 class Capture_mask_controller():
 
-    def __init__(self):
+    def __init__(self, rgb_formulas_mask:RGB_formulas_mask):
         
         
         self.form_window_capture_mask = Window_Form_capture_mask()
-        self.RGB_formulas_mask = RGB_formulas_mask()
+        self.rgb_formulas_mask = rgb_formulas_mask
 
-        self.rbg_formula_id_max_value = 255
+        #self.rbg_formula_id_max_value = 255
         
         self.form_window_capture_mask.colour_variables_group_box.button_add_rgb_formula.clicked.connect(self.create_rgb_formula)
         self.form_window_capture_mask.colour_variables_group_box.button_show_rgb_formula.clicked.connect(self.show_rgb_formulas)
@@ -30,6 +30,7 @@ class Capture_mask_controller():
 
 
     #<get functions (helpers)
+    """
     def get_min_not_used_id_for_rgb_formula(self) -> int:
 
         num = 1
@@ -38,7 +39,7 @@ class Capture_mask_controller():
             num+=1
         
         return num
-    
+    """
     def get_id_of_colour_range(self, colour_range:Colour_range):
 
         for colour_id in self.mask_colour_ranges.keys():
@@ -130,9 +131,16 @@ class Capture_mask_controller():
         
         colour_range_id = self.get_id_of_colour_range(colour_range = colour_range)
 
+        """
         if(colour_range_id is None):
             colour_range_id = self.get_min_not_used_id_for_rgb_formula()
             if(colour_range_id > self.rbg_formula_id_max_value):
+                print("warning: the rgb formula and the colour range will not be applied because the maximum number of colour ranges was reached")
+                return
+        """
+        if(colour_range_id is None):
+            colour_range_id = self.rgb_formulas_mask.get_min_not_used_id_for_rgb_formula()
+            if(colour_range_id is None):
                 print("warning: the rgb formula and the colour range will not be applied because the maximum number of colour ranges was reached")
                 return
                 
@@ -153,6 +161,7 @@ class Capture_mask_controller():
             if(rgb_formula_id in self.rgb_formulas.keys()):
                 del self.mask_colour_ranges[rgb_formula_id]
                 del self.rgb_formulas[rgb_formula_id]
+                self.rgb_formulas_mask.remove_used_id(id=rgb_formula_id)
 
     #functions for altering the values of rgb formulas and mask>
     
@@ -162,5 +171,6 @@ class Capture_mask_controller():
     def get_colour_mask(self, img_mask:np.ndarray[np.uint8]):
 
         rgb_functions = self.get_rgb_formulas_as_lambdas()
-        self.RGB_formulas_mask.create_colour_range_mask(img_mask=img_mask, rgb_functions=rgb_functions, colour_ranges=self.mask_colour_ranges)
-        return self.RGB_formulas_mask
+        remove_presious_mask = self.form_window_capture_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked()
+        self.rgb_formulas_mask.create_colour_range_mask(img_mask=img_mask, rgb_functions=rgb_functions, colour_ranges=self.mask_colour_ranges, remove_presious_mask=remove_presious_mask)
+        return self.rgb_formulas_mask

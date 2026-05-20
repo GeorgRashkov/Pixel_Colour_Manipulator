@@ -15,13 +15,13 @@ from typing import Callable
 
 class Draw_mask_controller():
 
-    def __init__(self):
+    def __init__(self, rgb_formulas_mask:RGB_formulas_mask):
         
         self.form_window_draw_mask = Window_Form_draw_mask()
         self.canvas_window = Window_Canvas_draw_mask()
-        self.RGB_formulas_mask = RGB_formulas_mask()
+        self.rgb_formulas_mask = rgb_formulas_mask
 
-        self.rbg_formula_id_max_value = 255
+        #self.rbg_formula_id_max_value = 255
 
         self.form_window_draw_mask.colour_variables_group_box.button_add_rgb_formula.clicked.connect(self.create_rgb_formula)
         self.form_window_draw_mask.colour_variables_group_box.button_show_rgb_formula.clicked.connect(self.show_rgb_formulas)
@@ -87,6 +87,7 @@ class Draw_mask_controller():
 
     
     #<get functions (helpers)
+    """
     def get_min_not_used_id_for_rgb_formula(self) -> int:
 
         num = 1
@@ -95,7 +96,7 @@ class Draw_mask_controller():
             num+=1
         
         return num
-
+    """
     def get_id_of_colour(self, colour:Colour):
 
         for colour_id in self.mask_colours.keys():
@@ -142,9 +143,16 @@ class Draw_mask_controller():
         rgb_formula = RGB_formula(red_func=rgb_formulas_str["r"], green_func=rgb_formulas_str["g"], blue_func=rgb_formulas_str["b"], use_pixel_areas=False)
         colour_id = self.get_id_of_colour(colour = colour)
 
+        """
         if(colour_id is None):
             colour_id = self.get_min_not_used_id_for_rgb_formula()
             if(colour_id > self.rbg_formula_id_max_value):
+                print("warning: the rgb formula and the paint region will not be applied because the maximum number of paint regions was reached")
+                return
+        """
+        if(colour_id is None):
+            colour_id = self.rgb_formulas_mask.get_min_not_used_id_for_rgb_formula()
+            if(colour_id is None):
                 print("warning: the rgb formula and the paint region will not be applied because the maximum number of paint regions was reached")
                 return
             
@@ -167,6 +175,7 @@ class Draw_mask_controller():
             if(rgb_formula_id in self.rgb_formulas.keys()):
                 del self.mask_colours[rgb_formula_id]
                 del self.rgb_formulas[rgb_formula_id]
+                self.rgb_formulas_mask.remove_used_id(id=rgb_formula_id)
 
     #functions for altering the values of rgb formulas and colours of mask>
     
@@ -177,5 +186,6 @@ class Draw_mask_controller():
 
         img_mask = get_rgb_pixel_values_from_window(window=self.canvas_window)
         rgb_functions = self.get_rgb_formulas_as_lambdas()
-        self.RGB_formulas_mask.create_colour_mask(img_mask=img_mask, rgb_functions=rgb_functions, colours=self.mask_colours)
-        return self.RGB_formulas_mask
+        remove_presious_mask = self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked()
+        self.rgb_formulas_mask.create_colour_mask(img_mask=img_mask, rgb_functions=rgb_functions, colours=self.mask_colours, remove_presious_mask=remove_presious_mask)
+        return self.rgb_formulas_mask

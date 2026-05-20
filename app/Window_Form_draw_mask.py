@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QHBoxLayout
+    QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QHBoxLayout, QCheckBox
 )
 from PyQt5.QtGui import QIntValidator
 from Group_box_for_setting_colour_map import Group_box_for_setting_colour_map
@@ -46,6 +46,9 @@ class Window_Form_draw_mask(QWidget):
         self.button_apply_mask = QPushButton("Apply mask")
         self.button_remove_mask = QPushButton("Remove mask")
 
+        self.checkBox_auto_remove_previous_mask_when_applying_new_mask = QCheckBox("auto remove presious mask when applying new mask")
+        self.checkBox_auto_remove_previous_mask_when_applying_new_mask.setChecked(True)
+
         self.sliders_min_value = 0
         self.sliders_max_value = 5
         self.slider_step = 51
@@ -77,6 +80,10 @@ class Window_Form_draw_mask(QWidget):
         h_layout.addWidget(self.button_clear_canvas)
         h_layout.addWidget(self.button_apply_mask)
         h_layout.addWidget(self.button_remove_mask)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.checkBox_auto_remove_previous_mask_when_applying_new_mask)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
