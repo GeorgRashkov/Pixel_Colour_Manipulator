@@ -1,15 +1,11 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QWidget
 from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
-from PyQt5.QtGui import QColor, QImage
 import sys
 import numpy as np
-import dxcam
-import Window_capture, Window_canvas, Window_form_drawMask, Window_form_captureMask, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
+import Window_capture, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
 from Draw_mask_controller import Draw_mask_controller
+from Capture_mask_controller import Capture_mask_controller
 
-import Number_format_checker
-import Canvas
 
 from DXCamera_Singleton import DXCamera_Singleton
 
@@ -18,9 +14,12 @@ class MainApp:
         self.app = QtWidgets.QApplication(sys.argv)
 
         self.draw_mask_controller = Draw_mask_controller()
-        self.draw_mask_controller.form_window_draw_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask)#
-        self.draw_mask_controller.form_window_draw_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)#
+        self.draw_mask_controller.form_window_draw_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask_from_draw_window)
+        self.draw_mask_controller.form_window_draw_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)
 
+        self.capture_mask_controller = Capture_mask_controller()
+        self.capture_mask_controller.form_window_capture_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask_from_capture_window)
+        self.capture_mask_controller.form_window_capture_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)
 
 
 
@@ -40,6 +39,7 @@ class MainApp:
 
         self.capture_window.button_open_settings.clicked.connect(self.open_window_settings)
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
+        self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
         """
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
         """
@@ -107,12 +107,18 @@ class MainApp:
         self.capture_window.remove_pixel_areas_manipulator()
     
     
-    def apply_rgb_mask(self):
+    def apply_rgb_mask_from_draw_window(self):
         rgb_formula_mask = self.draw_mask_controller.get_colour_mask()
+        self.capture_window.set_rgb_mask(rgb_mask=rgb_formula_mask)
+
+    def apply_rgb_mask_from_capture_window(self):
+        img_mask = self.get_rgb_pixel_values_from_capture_window()
+        rgb_formula_mask = self.capture_mask_controller.get_colour_mask(img_mask=img_mask)
         self.capture_window.set_rgb_mask(rgb_mask=rgb_formula_mask)
     
     def remove_rgb_mask(self):
         self.capture_window.remove_rgb_mask()
+
 
     
     def apply_convolutional_filters(self):
@@ -147,6 +153,8 @@ class MainApp:
         windows = [self.draw_mask_controller.form_window_draw_mask, self.draw_mask_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
 
+    def open_window_capture_mask(self):
+        open_or_minimize_window(self.capture_mask_controller.form_window_capture_mask)
     """
     def open_window_capture_mask(self):
         open_or_minimize_window(self.form_window_capture_mask)
@@ -167,7 +175,11 @@ class MainApp:
             self.capture_window.apply_settings(capture_time=capture_time, slider_min_value=slider_min_value, slider_max_value=slider_max_value, RGB_use_doubles=RGB_use_doubles, color_functions_execution_order = color_functions_execution_order)
 
     
-    
+    #The returned numpy array has shape (Height, Width, 3[RGB])
+    def get_rgb_pixel_values_from_capture_window(self) -> np.ndarray[np.uint8]:
+        
+        rgb_values_from_capture_window = self.capture_window.get_transformed_img()
+        return rgb_values_from_capture_window
     
 
     """
@@ -414,43 +426,6 @@ class MainApp:
 
     """
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    #The returned numpy array has shape (Height, Width, 3[RGB])
-    def get_rgb_pixel_values_from_capture_window(self) -> np:
-        
-        rgb_values_from_capture_window = self.capture_window.get_transformed_img()
-        return rgb_values_from_capture_window
 
 
 

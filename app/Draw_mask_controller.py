@@ -1,7 +1,6 @@
 
 import numpy as np
 from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QImage
 
 from Window_Form_draw_mask import Window_Form_draw_mask
 from Number_format_checker import check_for_positive_int_format
@@ -21,6 +20,8 @@ class Draw_mask_controller():
         self.form_window_draw_mask = Window_Form_draw_mask()
         self.canvas_window = Window_Canvas_draw_mask()
         self.RGB_formulas_mask = RGB_formulas_mask()
+
+        self.rbg_formula_id_max_value = 255
 
         self.form_window_draw_mask.colour_variables_group_box.button_add_rgb_formula.clicked.connect(self.create_rgb_formula)
         self.form_window_draw_mask.colour_variables_group_box.button_show_rgb_formula.clicked.connect(self.show_rgb_formulas)
@@ -84,7 +85,7 @@ class Draw_mask_controller():
     
     #drawing functions>
 
-
+    
     #<get functions (helpers)
     def get_min_not_used_id_for_rgb_formula(self) -> int:
 
@@ -143,6 +144,9 @@ class Draw_mask_controller():
 
         if(colour_id is None):
             colour_id = self.get_min_not_used_id_for_rgb_formula()
+            if(colour_id > self.rbg_formula_id_max_value):
+                print("warning: the rgb formula and the paint region will not be applied because the maximum number of paint regions was reached")
+                return
             
         self.rgb_formulas[colour_id] = rgb_formula
         self.mask_colours[colour_id] = colour
@@ -152,7 +156,7 @@ class Draw_mask_controller():
     def show_rgb_formulas(self):
 
         for rgb_formulas_id in self.rgb_formulas.keys():
-            print(f"id {rgb_formulas_id} -> formula {self.rgb_formulas[rgb_formulas_id].rgb_function_str} -> colour: r:{self.mask_colours[rgb_formulas_id].r}, g:{self.mask_colours[rgb_formulas_id].g}, b:{self.mask_colours[rgb_formulas_id].b}")
+            print(f"id {rgb_formulas_id} -> rgb formula {self.rgb_formulas[rgb_formulas_id].rgb_function_str} -> colour: r:{self.mask_colours[rgb_formulas_id].r}, g:{self.mask_colours[rgb_formulas_id].g}, b:{self.mask_colours[rgb_formulas_id].b}")
 
     def remove_rgb_formula(self):
 

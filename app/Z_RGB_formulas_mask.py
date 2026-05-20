@@ -94,7 +94,7 @@ class RGB_formulas_mask:
 
                     if(img_mask[i,j,0] >= colour_ranges[id].r_from and img_mask[i,j,0] <= colour_ranges[id].r_to and
                        img_mask[i,j,1] >= colour_ranges[id].g_from and img_mask[i,j,1] <= colour_ranges[id].g_to and
-                       img_mask[i,j,2] >= colour_ranges[id].b_from and img_mask[i,j,2] <= colour_ranges[id].b_from):
+                       img_mask[i,j,2] >= colour_ranges[id].b_from and img_mask[i,j,2] <= colour_ranges[id].b_to):
                         self.mask[i,j] = id
                         self.rgb_functions[id] = rgb_functions[id]
                         break
