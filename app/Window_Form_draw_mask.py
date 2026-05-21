@@ -46,7 +46,7 @@ class Window_Form_draw_mask(QWidget):
         self.button_apply_mask = QPushButton("Apply mask")
         self.button_remove_mask = QPushButton("Remove mask")
 
-        self.checkBox_auto_remove_previous_mask_when_applying_new_mask = QCheckBox("auto remove presious mask when applying new mask")
+        self.checkBox_auto_remove_previous_mask_when_applying_new_mask = QCheckBox("auto remove previous mask when applying new mask")
         self.checkBox_auto_remove_previous_mask_when_applying_new_mask.setChecked(True)
 
         self.sliders_min_value = 0

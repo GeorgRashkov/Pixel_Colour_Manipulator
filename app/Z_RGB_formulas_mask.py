@@ -1,9 +1,6 @@
-from PyQt5.QtWidgets import QWidget
-from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 import cv2
 import numpy as np
 from typing import Callable
-
 
 from Colour import Colour, Colour_range
 
@@ -124,14 +121,13 @@ class RGB_formulas_mask:
         img_g = img[:,:,1]
         img_b = img[:,:,2]
 
-        for rgb_function_id in self.rgb_functions:
+        for rgb_function_id in self.rgb_functions.keys():
             
-            #if the user changes the shape of the window than the code in the if statement whill be executed in order to make the size of the filters match the size of the resized image         
+            #if the user changes the shape of the window then the code in the if statement whill be executed in order to make the size of the filters match the size of the resized image         
             if(img.shape[0] !=self.mask_resized.shape[0] or img.shape[1]!=self.mask_resized.shape[1]):
                 self.resize_resizable_mask(img.shape[1],img.shape[0])
             
             boolean_mask = self.mask_resized == rgb_function_id
-            #img[boolean_mask] = self.rgb_functions[rgb_function_id](r=img[:,:,0], g=img[:,:,1], b=img[:,:,2], m=boolean_mask)
             r = img_r[boolean_mask]
             g = img_g[boolean_mask]
             b = img_b[boolean_mask]

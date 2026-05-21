@@ -6,6 +6,7 @@ import Window_capture, Window_settings, Window_form_convolutionalMask, Z_Swap_pi
 from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
 from Z_RGB_formulas_mask import RGB_formulas_mask
+from Z_Window_Form_pixel_areas_masks import Window_Form_pixel_areas_masks
 
 from DXCamera_Singleton import DXCamera_Singleton
 
@@ -39,7 +40,7 @@ class MainApp:
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
        
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
-        self.capture_window.button_open_swopAreas.clicked.connect(self.open_windows_swop_pixel_areas)
+        self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         
         #settings window
         self.settings_window = Window_settings.FormWindow_Settings()
@@ -50,7 +51,10 @@ class MainApp:
         self.convolutional_filter_window.button_apply_filters.clicked.connect(self.apply_convolutional_filters)
         self.convolutional_filter_window.button_remove_filters.clicked.connect(self.remove_convolutional_filters)
         
-        
+        #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        self.capture_window.button_capture_now.clicked.connect(self.open_window_pixel_areas_mask)
+        self.window_form_pixel_areas_masks = Window_Form_pixel_areas_masks()
+        #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
     
         self.capture_window.show()
         sys.exit(self.app.exec_())
@@ -58,7 +62,8 @@ class MainApp:
     def run(self):
         sys.exit(self.app.exec_())
 
-    
+    def open_window_pixel_areas_mask(self):
+        self.window_form_pixel_areas_masks.show()
 
     def apply_swap_pixel_areas(self):
         pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()

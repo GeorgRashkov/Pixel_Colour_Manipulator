@@ -3,7 +3,6 @@ import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton, QSlider
 import win32con, win32gui
-import cv2
 from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QLabel
 from PyQt5.QtCore import Qt
 import RGB_formula_elements
@@ -64,7 +63,7 @@ class CaptureWindow(QtWidgets.QWidget):
        
         self.color_methods = [self.apply_default_color_function, self.apply_rgb_mask, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
-        self.setWindowTitle("Color Changer")
+        self.setWindowTitle("Colour Changer")
         self.setMinimumSize(200, 30)
         self.resize(400, 400)
              
@@ -112,7 +111,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_drawMask = QPushButton('draw mask',  QtWidgets.QWidget(self))
         self.button_open_captureMask = QPushButton('capture mask',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
-        self.button_open_swopAreas = QPushButton('swop areas',  QtWidgets.QWidget(self))
+        self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
 
         #<color sliders
                
@@ -222,7 +221,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_drawMask)
         h_layout.addWidget(self.button_open_captureMask)
         h_layout.addWidget(self.button_open_convolutionalFilter)
-        h_layout.addWidget(self.button_open_swopAreas)
+        h_layout.addWidget(self.button_open_swapAreas)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 
