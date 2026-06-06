@@ -5,21 +5,21 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 class Pixel_area_initializer:
 
     def __init__(self):
-        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack",                                     
+        self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "mask_id", "mask_f_ids",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack",                            
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
-                                    "f_ids_rep", "rotations_rep"]
+                                    "f_ids_rep", "rotations_rep", "mask_ids_rep"]
         
-        self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack"]
+        self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack", "mask_id"]
         
         self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
         
-        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y",                                     
+        self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "mask_f_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y",                                     
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"
                                     ]
         
-        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep"]
+        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep", "mask_ids_rep"]
     
         self.id = "id"
 
@@ -248,6 +248,7 @@ class Pixel_area_initializer:
         w = int(area_properties_dict["w"]) if area_properties_dict["w"] is not None else 10
         h = int(area_properties_dict["h"]) if area_properties_dict["h"] is not None else 10
         f_id = int(area_properties_dict["f_id"]) if area_properties_dict["f_id"] is not None else 0
+        mask_id = int(area_properties_dict["mask_id"]) if area_properties_dict["mask_id"] is not None else 0
 
         #the default input image version is `0` which will always contain the pixel values of the original image
         img_in_v = int(area_properties_dict["img_in_v"]) if area_properties_dict["img_in_v"] is not None else 0
@@ -264,6 +265,7 @@ class Pixel_area_initializer:
         
         a_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["a_ids"])
         ag_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["ag_ids"])
+        mask_f_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["mask_f_ids"])
         f_vars_start = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_start"])
         f_vars_end = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_end"])
         f_vars_step = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_step"])
@@ -298,17 +300,19 @@ class Pixel_area_initializer:
 
         f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["f_ids_rep"], first_element=[])
         rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["rotations_rep"], first_element=[])
+        mask_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["mask_ids_rep"], first_element=[])
 
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
         a_ids = a_ids, ag_ids = ag_ids, 
         f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
-        p_ids = p_ids, p_x = p_x, p_y = p_y, 
+        p_ids = p_ids, p_x = p_x, p_y = p_y,
+        mask_id = mask_id, mask_f_ids = mask_f_ids,
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
         x_rep_start_p1=x_rep_start_p1, y_rep_start_p1=y_rep_start_p1, x_rep_end_p1=x_rep_end_p1, y_rep_end_p1=y_rep_end_p1, x_rep_step_p1=x_rep_step_p1, y_rep_step_p1=y_rep_step_p1, x_rep_count_p1=x_rep_count_p1, y_rep_count_p1=y_rep_count_p1, w_rep_p1=w_rep_p1, h_rep_p1=h_rep_p1,
         x_rep_start_p2=x_rep_start_p2, y_rep_start_p2=y_rep_start_p2, x_rep_end_p2=x_rep_end_p2, y_rep_end_p2=y_rep_end_p2, x_rep_step_p2=x_rep_step_p2, y_rep_step_p2=y_rep_step_p2, x_rep_count_p2=x_rep_count_p2, y_rep_count_p2=y_rep_count_p2, w_rep_p2=w_rep_p2, h_rep_p2=h_rep_p2,
-        f_ids_rep=f_ids_rep, rotations_rep=rotations_rep)
+        f_ids_rep=f_ids_rep, rotations_rep=rotations_rep, mask_ids_rep=mask_ids_rep)
 
        
         

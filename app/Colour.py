@@ -6,6 +6,11 @@ class Colour:
         self.r = r
         self.g = g
         self.b = b
+    
+    def copy(self):
+
+        self_copy = Colour(r=self.r, g=self.g, b=self.b)
+        return self_copy
 
 def does_colour_exist(colours:list[Colour], colour:Colour):
 
@@ -27,6 +32,11 @@ class Colour_range:
         self.r_to = r_to
         self.g_to = g_to
         self.b_to = b_to
+    
+    def copy(self):
+
+        self_copy = Colour_range(r_from=self.r_from, g_from=self.g_from, b_from=self.b_from, r_to=self.r_to, g_to=self.g_to, b_to=self.b_to)
+        return self_copy
 
 
 def does_colour_range_exist(colour_ranges:list[Colour_range], colour_range:Colour_range):

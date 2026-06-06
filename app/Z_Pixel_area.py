@@ -5,10 +5,11 @@ class Pixel_area:
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
-                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,                 
+                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,  
+                 mask_id:int, mask_f_ids:list,               
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
-                 f_ids_rep:list, rotations_rep:list):
+                 f_ids_rep:list, rotations_rep:list, mask_ids_rep:list):
         
         #area id
         self.id = id
@@ -46,6 +47,10 @@ class Pixel_area:
         self.img_out_stack = img_out_stack #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on 
 
         
+        self.mask_id = mask_id
+        self.mask_f_ids = mask_f_ids
+
+
         #<repeat areas arguments
        
         #determines the place in % in the main area from where the used areas will start being applied
@@ -109,6 +114,8 @@ class Pixel_area:
         # Each used area can have a different collection of rotation numbers - the first rotation is applied for the first replica, the second rotation is applied for the second replica, etc. 
         # When the last rotation is applied for the current replica (of the current applied area), the next replica (of the current applied area) will use the first rotation, then the next replica (of the current applied area) will use the second rotation, etc.
         self.rotations_rep = rotations_rep#the first value (it is always `[]`) in the list corresponds to the main area
+
+        self.mask_ids_rep = mask_ids_rep
 
         #repeat areas arguments>
     
@@ -188,4 +195,39 @@ class Pixel_area:
                
 
 
-            
+
+class Rectangle():
+    def __init__(self, x, y, w, h):
+        
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+    
+
+
+class Replica():
+    def __init__(self,  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list,
+                 x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list,
+                 replica_width:list, replica_height:list):
+        
+        self.x_rep_start_p1 = x_rep_start_p1
+        self.y_rep_start_p1 = y_rep_start_p1
+        self.x_rep_end_p1 = x_rep_end_p1
+        self.y_rep_end_p1 = y_rep_end_p1
+        self.x_rep_step_p1 = x_rep_step_p1
+        self.y_rep_step_p1 = y_rep_step_p1
+        self.x_rep_count_p1 = x_rep_count_p1
+        self.y_rep_count_p1 = y_rep_count_p1
+        
+        self.x_rep_start_p2 = x_rep_start_p2
+        self.y_rep_start_p2 = y_rep_start_p2
+        self.x_rep_end_p2 = x_rep_end_p2
+        self.y_rep_end_p2 = y_rep_end_p2
+        self.x_rep_step_p2 = x_rep_step_p2
+        self.y_rep_step_p2 = y_rep_step_p2
+        self.x_rep_count_p2 = x_rep_count_p2
+        self.y_rep_count_p2 = y_rep_count_p2
+       
+        self.replica_width = replica_width
+        self.replica_height = replica_height

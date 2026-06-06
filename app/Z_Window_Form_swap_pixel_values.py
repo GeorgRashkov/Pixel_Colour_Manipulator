@@ -37,6 +37,9 @@ class FormWindow_SwapPixelValues(QWidget):
         self.checkBox_fast_area_creation = QCheckBox("use smallest area size")
         #pixel areas behaviour when resizing main window>
 
+        self.checkBox_use_copy_for_replicas = QCheckBox("use copy for replicas")
+        self.checkBox_use_copy_for_replicas.setChecked(True)
+
         #<settings for output image versions        
         
         self.label_image_version_start_index = QLabel("image version start index")
@@ -208,6 +211,7 @@ class FormWindow_SwapPixelValues(QWidget):
         
         self.button_apply_swap_areas = QPushButton("Apply areas")
         self.button_open_window__swap_areas_animations = QPushButton("Show animations")
+        self.button_open_window__swap_areas_masks = QPushButton("Show masks")
         self.button_remove_swap_areas = QPushButton("Remove areas")
         self.button_clear_canvas = QPushButton("Clear canvas")
         
@@ -224,6 +228,10 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.radioButton_areas_move)
         h_layout.addWidget(self.radioButton_areas_keep_aspect_ratio)
         h_layout.addWidget(self.checkBox_fast_area_creation)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.checkBox_use_copy_for_replicas)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
@@ -322,6 +330,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_swap_areas)
         h_layout.addWidget(self.button_open_window__swap_areas_animations)
+        h_layout.addWidget(self.button_open_window__swap_areas_masks)
         h_layout.addWidget(self.button_remove_swap_areas)
         h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)

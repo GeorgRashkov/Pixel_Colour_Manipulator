@@ -65,7 +65,7 @@ class RGB_formulas_mask:
             return False
         
     
-    def update_rgb_formula_id_region(self, rgb_formula_id:int, region_id:np.uint8):
+    def alter_rgb_formula_id(self, rgb_formula_id:int, region_id:np.uint8):
         
         self.rgb_formulas_and_regions_ids[rgb_formula_id] = region_id
 
@@ -147,3 +147,8 @@ class RGB_formulas_mask:
     
     def resize_original_mask(self, new_width:int, new_hight:int):
         self.mask_original = cv2.resize(self.mask_original, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
+    
+
+    def get_ids_of_rgb_formulas_and_regions(self) -> dict[int, np.uint8]:
+
+        return self.rgb_formulas_and_regions_ids

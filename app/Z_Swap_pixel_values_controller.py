@@ -1,3 +1,4 @@
+import numpy as np
 
 import Window_canvas, Z_Window_Canvas_swap_pixel_values, Z_Window_Form_swap_pixel_values
 from PyQt5.QtCore import Qt
@@ -8,7 +9,7 @@ from Number_format_checker import check_for_positive_int_format, check_numbers_f
 from Z_RGB_formula_checker import check_rgb_formulas_format_for_pixel_areas, get_closing_square_bracket
 
 from Z_RGB_formula import RGB_formula
-from Z_Pixel_area import Pixel_area
+from Z_Pixel_area import Pixel_area, Rectangle
 from Z_Pixel_area_initializer import Pixel_area_initializer
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
@@ -17,12 +18,16 @@ from Z_Window_Form_pixel_areas_animations import FormWindow_PixelAreasAnimations
 from Z_Pixel_area_animations_initializer import Pixel_area_animations_initializer
 from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
+from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
 
-from PyQt5_Window_functions import open_or_minimize_window
+from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 
 class Swap_pixel_values_controller: 
     
     def __init__(self):
+
+        self.pixel_areas_masks_controller = Pixel_areas_masks_controller()
+        self.pixel_areas_masks_controller.form_window_draw_mask.button_remove_masks.clicked.connect(self.remove_masks)
 
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
@@ -37,10 +42,11 @@ class Swap_pixel_values_controller:
         self.form_window_pixel_areas.button_set_brush_size.clicked.connect(self.set_brush_size)
 
         self.form_window_pixel_areas.button_open_window__swap_areas_animations.clicked.connect(self.show_animations_form_window)
+        self.form_window_pixel_areas.button_open_window__swap_areas_masks.clicked.connect(self.show_window_pixel_areas_mask)
 
         self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
         
-        self.swap_pixel_areas = []#the list contains objects of type `Pixel_area`            
+        self.pixel_areas_manipulator:Pixel_areas_manipulator = None
 
 
 
@@ -48,6 +54,10 @@ class Swap_pixel_values_controller:
    
     def show_animations_form_window(self):
         open_or_minimize_window(self.form_window_pixel_areas_animations)
+    
+    def show_window_pixel_areas_mask(self):
+        windows = [self.pixel_areas_masks_controller.form_window_draw_mask, self.pixel_areas_masks_controller.canvas_window]
+        open_or_minimize_windows(windows=windows)
         
     #code for showing windows>
 
@@ -467,14 +477,15 @@ class Swap_pixel_values_controller:
 
         #<pixel area manipulator
         areas_resize_behaviour = self.get_areas_resize_behaviour()
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, animations_manipulator=pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window_pixel_areas.checkBox_fast_area_creation.isChecked())
+        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, animations_manipulator=pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window_pixel_areas.checkBox_fast_area_creation.isChecked(), use_copy_for_replicas=self.form_window_pixel_areas.checkBox_use_copy_for_replicas.isChecked())
         pixel_areas_manipulator.set_aspect_ratio(initial_image_width=self.canvas_window.canvas.width(), initial_image_height=self.canvas_window.canvas.height())
 
         self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
         #pixel area manipulator>
         
+        self.pixel_areas_manipulator = pixel_areas_manipulator
         
-        return pixel_areas_manipulator
+        return self.pixel_areas_manipulator
     
     def get_areas_resize_behaviour(self) -> Areas_behaviour_when_resizing_main_window:
         
@@ -568,9 +579,31 @@ class Swap_pixel_values_controller:
 
 
 
+    #this function must be called from outside
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
 
+        if(self.pixel_areas_manipulator is not None):
 
+            rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_main_areas_as_rectangles()
+            
+            masks = self.pixel_areas_masks_controller.get_masks()
+            masks_copies = []
 
+            for mask in masks:
+                
+                if(mask.pixel_area_id in rectangles_with_ids.keys()):
+                    rec = rectangles_with_ids[mask.pixel_area_id]
+                    img_for_colour_ranges_for_current_mask =  img_for_colour_ranges[rec.x : rec.x+rec.w , rec.y : rec.y+rec.h , :]
+                    mask.apply_regions(img_for_colour_ranges=img_for_colour_ranges_for_current_mask)
+                    masks_copies.append(mask.copy())
+
+            self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
+    
+    def remove_masks(self):
+
+        if(self.pixel_areas_manipulator is not None):
+            self.pixel_areas_manipulator.remove_masks()
 
 
 

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from Z_Pixel_area import Pixel_area
+from Z_Pixel_area import Pixel_area, Rectangle, Replica
 from Z_RGB_formula import RGB_formula
 import numpy as np
 from Z_Image_version_controller import Image_version_controller
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
+from Z_Mask import Mask
 
 
 
 class Pixel_areas_manipulator:
 
-    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], animations_manipulator:Pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window, get_inner_areas_fast:bool):
+    def __init__(self, pixel_areas_dict: dict[int,Pixel_area], rgb_formulas_dict: dict[int,RGB_formula], animations_manipulator:Pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window, get_inner_areas_fast:bool, use_copy_for_replicas:bool):
         
         self.pixel_areas_dict = pixel_areas_dict
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -36,8 +37,43 @@ class Pixel_areas_manipulator:
         self.initial_image_height = 100
 
         self.get_inner_areas_fast = get_inner_areas_fast
+        self.use_copy_for_replicas = use_copy_for_replicas
 
         self.animations_manipulator = animations_manipulator
+
+        self.masks:dict[int,Mask] = {}
+
+    #This function must be called from outside
+    #The function returns a dictionary which has the ids of the main areas for keys and the rectangles corresponding to the main areas for values 
+    def get_main_areas_as_rectangles(self) -> dict[int, Rectangle]:
+        
+        rectangles_with_ids = {}
+
+        for pixel_area in self.pixel_areas_dict.values():
+
+            rectangles = self.get_rectangles_used_by_area(pixel_area_input=pixel_area)
+
+            #if the top left corner of the input pixel area is outside the image execute this code
+            if(rectangles is None or len(rectangles) == 0):
+                continue
+
+            rectangles_with_ids[pixel_area.id] = rectangles[0]
+            
+        return rectangles_with_ids
+    
+    #This function must be called from outside
+    def apply_masks(self, masks:list[Mask]):
+        self.masks = {}
+
+        for mask in masks:
+            self.masks[mask.id] = mask
+    
+    #This function must be called from outside
+    def remove_masks(self):
+        self.masks = {}
+    
+
+               
 
     #this function must be called from outside
     #this method must be called always when the desired output image version from the manipulator is different from the last version
@@ -122,16 +158,21 @@ class Pixel_areas_manipulator:
             
             image_version_input = image_versions[pixel_area.img_in_v]
             rgb_formula_dynamic_variables = np.array(pixel_area.current_f_vars, dtype=np.uint8) if( len(pixel_area.current_f_vars) > 0 ) else np.array([0], dtype=np.uint8)
+            rgb_formulas_for_masks:list = [self.rgb_formulas_dict[f_id] for f_id in pixel_area.mask_f_ids if f_id in self.rgb_formulas_dict]
             
             #this is a numpy array of shape (AREA, Height, Width, 3[RGB])
             pixel_areas_as_parameters_for_rgb_formula = None
             if(self.get_inner_areas_fast == True):
                 pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula__fast(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles) 
             else:
-                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables)
+                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
             
             if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no rectangles were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
                 continue
+
+            if(pixel_area.mask_id in self.masks.keys()):
+                mask = self.masks[pixel_area.mask_id]
+                pixel_areas_as_parameters_for_rgb_formula = mask.transform_image(img = pixel_areas_as_parameters_for_rgb_formula, rgb_formulas=rgb_formulas_for_masks, rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
             
             #the rgb formula is this `eval(f"lambda r,g,b,areas_count,v=[0]: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
             rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
@@ -191,7 +232,7 @@ class Pixel_areas_manipulator:
 
 
     #creates and returns the image pixel areas (as numpy array of shape (AREA, Height, Width, 3[RGB])) obtinaed from the the values of `id`, `p_ids`, `p_x`, `p_y` of the input pixel area
-    def get_image_areas_as_parameters_for_rgb_formula(self, pixel_area_input:Pixel_area, img:np, must_create_new_rectangles:bool, rgb_formula_dynamic_variables:np) -> np:
+    def get_image_areas_as_parameters_for_rgb_formula(self, pixel_area_input:Pixel_area, img:np, must_create_new_rectangles:bool, rgb_formula_dynamic_variables:np, rgb_formulas_for_masks:list) -> np:
         
         rectangles = None
         if(must_create_new_rectangles == True):
@@ -209,10 +250,11 @@ class Pixel_areas_manipulator:
         
         rec_index = 0
 
-       
         for rec in rectangles:
-           
+            """
             area_from_img = self.get_result_after_applying_used_area_on_main_area(main_area = pixel_area_input, main_area_rec=rectangles[0], used_area_rec=rec, img = img, rec_index=rec_index, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables)
+            """
+            area_from_img = self.get_result_after_applying_used_area_on_main_area(main_area = pixel_area_input, main_area_rec=rectangles[0], used_area_rec=rec, img = img, rec_index=rec_index, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
 
             rec_index+=1
 
@@ -355,6 +397,7 @@ class Pixel_areas_manipulator:
 
         return replica
 
+    """
     def get_result_after_applying_used_area_on_main_area(self, main_area:Pixel_area, main_area_rec:Rectangle, used_area_rec:Rectangle, img:np, rec_index:int, rgb_formula_dynamic_variables:np) -> np:
         
         rep:Replica = self.get_replica_values(main_area=main_area, main_area_rec=main_area_rec, used_area_rec=used_area_rec, rec_index=rec_index)
@@ -516,7 +559,222 @@ class Pixel_areas_manipulator:
         #move to the next row>
                            
         return main_area_from_img
+    """
 
+    def get_result_after_applying_used_area_on_main_area(self, main_area:Pixel_area, main_area_rec:Rectangle, used_area_rec:Rectangle, img:np, rec_index:int, rgb_formula_dynamic_variables:np, rgb_formulas_for_masks:list) -> np:
+        
+        rep:Replica = self.get_replica_values(main_area=main_area, main_area_rec=main_area_rec, used_area_rec=used_area_rec, rec_index=rec_index)
+
+        inner_area_y_p1 = rep.y_rep_start_p1
+        inner_area_x_p1 = rep.x_rep_start_p1
+
+        inner_area_y_p2 = rep.y_rep_start_p2
+        inner_area_x_p2 = rep.x_rep_start_p2
+
+        main_area_from_img = np.copy(img[main_area_rec.y : main_area_rec.y + main_area_rec.h, main_area_rec.x : main_area_rec.x + main_area_rec.w, : ])
+        used_area_from_img = img[used_area_rec.y : used_area_rec.y + used_area_rec.h, used_area_rec.x : used_area_rec.x + used_area_rec.w, : ]
+        
+        inner_area_height_helper = rep.replica_height
+        inner_area_width_helper = rep.replica_width
+
+        rows_count_p1 = 0
+        columns_count_p1 = 0
+
+        rows_count_p2 = 0
+        columns_count_p2 = 0
+        
+        rep_index = 0 #this is the index of the replicas created by the current used area (rectangle)
+        
+        #cycle through the rows of the main area
+        while(inner_area_y_p1 < main_area_rec.h):
+            
+        #<make sure the replicas are inside the image, the used area and the main area (y)
+
+            #make sure the replica is inside the main area (vertical)
+            if(inner_area_y_p1 + rep.replica_height > rep.y_rep_end_p1):
+                inner_area_height_helper = rep.y_rep_end_p1 - inner_area_y_p1
+                if(inner_area_height_helper <= 0):
+                    break
+            else:
+                inner_area_height_helper = rep.replica_height
+            
+            #make sure the replica is inside the used area (vertical)
+            if(inner_area_y_p2 + inner_area_height_helper > rep.y_rep_end_p2):
+                inner_area_height_helper = rep.y_rep_end_p2 - inner_area_y_p2
+                if(inner_area_height_helper <= 0):
+                    break
+                    
+            
+            #make sure the main and used areas are inside the image (vertical)
+            if(inner_area_y_p1 + inner_area_height_helper > main_area_from_img.shape[0]):
+                inner_area_height_helper = main_area_from_img.shape[0] - inner_area_y_p1
+                if(inner_area_height_helper <= 0):
+                    break
+            if(inner_area_y_p2 + inner_area_height_helper > img.shape[0]):
+                inner_area_height_helper = img.shape[0] - inner_area_y_p2
+                if(inner_area_height_helper <= 0):
+                    break
+            
+        #make sure the replicas are inside the image, the used area and the main area (y)>
+
+            #cycle through the columns of the main area
+            while(inner_area_x_p1 < main_area_rec.w):
+                
+            #<make sure the replicas are inside the image, the used area and the main area (x)
+
+                #make sure the replica is inside the main area (horizontal)
+                if(inner_area_x_p1 + rep.replica_width > rep.x_rep_end_p1):
+                    inner_area_width_helper = rep.x_rep_end_p1 - inner_area_x_p1
+                    if(inner_area_width_helper <= 0):
+                        break
+                else:
+                    inner_area_width_helper = rep.replica_width
+
+                #make sure the replica is inside the used area (horizontal)
+                if(inner_area_x_p2 + inner_area_width_helper > rep.x_rep_end_p2):
+                    inner_area_width_helper = rep.x_rep_end_p2 - inner_area_x_p2
+                    if(inner_area_width_helper <= 0):
+                        break
+                
+                #make sure the main and used areas are inside the image (horizontal)
+                if(inner_area_x_p1 + inner_area_width_helper > main_area_from_img.shape[1]):
+                    inner_area_width_helper = main_area_from_img.shape[1] - inner_area_x_p1
+                    if(inner_area_width_helper <= 0):
+                        break
+                if(inner_area_x_p2 + inner_area_width_helper > img.shape[1]):
+                    inner_area_width_helper = img.shape[1] - inner_area_x_p2
+                    if(inner_area_width_helper <= 0):
+                        break
+                
+            #make sure the replicas are inside the image, the used area and the main area (x)>
+
+                
+                #apply the current replica to the main area
+                main_area_from_img[inner_area_y_p1: inner_area_y_p1 + inner_area_height_helper, inner_area_x_p1:inner_area_x_p1 + inner_area_width_helper, :] = used_area_from_img[inner_area_y_p2 : inner_area_y_p2 + inner_area_height_helper, inner_area_x_p2: inner_area_x_p2 + inner_area_width_helper, :]               
+                
+            
+            #<apply rgb formulas, rotations and masks to the replica
+                """
+                #make sure the current used area (rectangle) has a collection of ids of RGB formulas
+                if(len(main_area.f_ids_rep) > rec_index):
+                    #make sure the collection of ids of RGB formulas for the current used area (rectangle) is not empty
+                    if(len(main_area.f_ids_rep[rec_index]) > 0):
+                        rgb_formula_index = rep_index % len(main_area.f_ids_rep[rec_index])
+                        rgb_formula_id = main_area.f_ids_rep[rec_index][rgb_formula_index]
+                        
+                        
+                        if(rgb_formula_id in self.rgb_formulas_dict.keys()):
+
+                            #<apply rotations
+                            rep_area:np = used_area_from_img[inner_area_y_p2 : inner_area_y_p2 + inner_area_height_helper, inner_area_x_p2: inner_area_x_p2 + inner_area_width_helper, :]
+                            if(len(main_area.rotations_rep) > rec_index):
+                                if(len(main_area.rotations_rep[rec_index]) > 0):
+                                    rotation_index = rep_index % len(main_area.rotations_rep[rec_index])
+                                    rotation_number = main_area.rotations_rep[rec_index][rotation_index]
+                                    rep_area = self.rotate_replica_area(img = used_area_from_img,  used_area_width=inner_area_width_helper, used_area_height=inner_area_height_helper, used_area_x_left_corner=inner_area_x_p2, used_area_x_right_corner=inner_area_x_p2+inner_area_width_helper, used_area_y_top_corner=inner_area_y_p2,  used_area_y_bottom_corner=inner_area_y_p2+inner_area_height_helper, rotation_number=rotation_number)
+                            #apply rotations>
+
+                            rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
+                            
+                            #<apply masks (it may not work correctly !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!)
+                            if(len(main_area.mask_ids_rep) > rec_index):
+                                if(len(main_area.mask_ids_rep[rec_index]) > 0):
+                                    mask_index = rep_index % len(main_area.mask_ids_rep[rec_index])
+                                    mask_id = main_area.mask_ids_rep[rec_index][mask_index]
+                                    if(mask_id in self.masks.keys()):
+                                        rep_area = self.masks[mask_id].transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
+                            #apply masks>
+
+                            #<apply rgb formula
+                            #rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
+                            rgb_formula = self.rgb_formulas_dict[rgb_formula_id].rgb_function
+                            rgb_formula_result = rgb_formula(r = rep_area[:,:,:,0], g = rep_area[:,:,:,1], b = rep_area[:,:,:,2], areas_count = 1, v = rgb_formula_dynamic_variables)
+                            main_area_from_img[inner_area_y_p1: inner_area_y_p1 + inner_area_height_helper, inner_area_x_p1:inner_area_x_p1 + inner_area_width_helper, :] = rgb_formula_result
+                            #apply rgb formula>
+                """
+                        
+                rep_area:np = used_area_from_img[inner_area_y_p2 : inner_area_y_p2 + inner_area_height_helper, inner_area_x_p2: inner_area_x_p2 + inner_area_width_helper, :]
+                if(self.use_copy_for_replicas == True):
+                    rep_area = np.copy(rep_area)
+
+                #<apply rotations
+                if(len(main_area.rotations_rep) > rec_index):
+                    if(len(main_area.rotations_rep[rec_index]) > 0):
+                        rotation_index = rep_index % len(main_area.rotations_rep[rec_index])
+                        rotation_number = main_area.rotations_rep[rec_index][rotation_index]
+                        rep_area = self.rotate_replica_area(img = used_area_from_img,  used_area_width=inner_area_width_helper, used_area_height=inner_area_height_helper, used_area_x_left_corner=inner_area_x_p2, used_area_x_right_corner=inner_area_x_p2+inner_area_width_helper, used_area_y_top_corner=inner_area_y_p2,  used_area_y_bottom_corner=inner_area_y_p2+inner_area_height_helper, rotation_number=rotation_number)
+                #apply rotations>
+                
+                #<apply mask
+                if(len(main_area.mask_ids_rep) > rec_index): #make sure the current used area (rectangle) has a collection of ids of masks
+                    if(len(main_area.mask_ids_rep[rec_index]) > 0): #make sure the collection of ids of masks for the current used area (rectangle) is not empty
+                        mask_index = rep_index % len(main_area.mask_ids_rep[rec_index])
+                        mask_id = main_area.mask_ids_rep[rec_index][mask_index]
+                        if(mask_id in self.masks.keys()):
+                            rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
+                            mask = self.masks[mask_id]
+                            rep_area = mask.transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
+                #apply mask>
+
+                #<apply rgb formula
+                if(len(main_area.f_ids_rep) > rec_index): #make sure the current used area (rectangle) has a collection of ids of RGB formulas
+                    if(len(main_area.f_ids_rep[rec_index]) > 0): #make sure the collection of ids of RGB formulas for the current used area (rectangle) is not empty
+                        rgb_formula_index = rep_index % len(main_area.f_ids_rep[rec_index])
+                        rgb_formula_id = main_area.f_ids_rep[rec_index][rgb_formula_index]
+                        if(rgb_formula_id in self.rgb_formulas_dict.keys()):
+                            rep_area = rep_area.reshape(1, rep_area.shape[-3], rep_area.shape[-2], rep_area.shape[-1])
+                            rgb_formula = self.rgb_formulas_dict[rgb_formula_id].rgb_function
+                            rep_area = rgb_formula(r = rep_area[:,:,:,0], g = rep_area[:,:,:,1], b = rep_area[:,:,:,2], areas_count = 1, v = rgb_formula_dynamic_variables)
+                #apply rgb formula
+
+                main_area_from_img[inner_area_y_p1: inner_area_y_p1 + inner_area_height_helper, inner_area_x_p1:inner_area_x_p1 + inner_area_width_helper, :] = rep_area
+            
+            #apply rgb formulas, rotations and masks to the replica>           
+                
+                #increase the index of the replicas
+                rep_index+=1
+            
+            #<move to the next column
+                
+                inner_area_x_p2 += rep.x_rep_step_p2
+                columns_count_p2 += 1
+                if(inner_area_x_p2 >= rep.x_rep_end_p2 or columns_count_p2 >= rep.x_rep_count_p2):
+                    columns_count_p2 = 0
+                    inner_area_x_p2 = rep.x_rep_start_p2
+                
+                inner_area_x_p1 += rep.x_rep_step_p1 + inner_area_width_helper
+                columns_count_p1 += 1
+                if(inner_area_x_p1 >= rep.x_rep_end_p1 or columns_count_p1 >= rep.x_rep_count_p1):
+                    break
+
+            #move to the next column>
+
+        #<reset the columns when moving to the next row of the main area
+            
+            columns_count_p1 = 0
+            inner_area_x_p1 = rep.x_rep_start_p1
+            if(rep.x_rep_count_p1 == rep.x_rep_count_p2):
+                        columns_count_p2 = 0
+                        inner_area_x_p2 = rep.x_rep_start_p2
+
+        #reset the columns when moving to the next row of the main area>
+
+        #<move to the next row
+
+            inner_area_y_p2 += rep.y_rep_step_p2
+            rows_count_p2 += 1
+            if(inner_area_y_p2 >= rep.y_rep_end_p2 or rows_count_p2 >= rep.y_rep_count_p2):
+                rows_count_p2 = 0
+                inner_area_y_p2 = rep.y_rep_start_p2
+
+            inner_area_y_p1 += rep.y_rep_step_p1 + inner_area_height_helper
+            rows_count_p1 += 1
+            if(inner_area_y_p1 >= rep.y_rep_end_p1  or rows_count_p1 >= rep.y_rep_count_p1):
+                break
+        
+        #move to the next row>
+                           
+        return main_area_from_img
 
 
     #<functions for creating rectangles used by pixel area 
@@ -648,6 +906,7 @@ class Pixel_areas_manipulator:
 
 
 
+"""
 class Rectangle():
     def __init__(self, x, y, w, h):
         
@@ -683,3 +942,4 @@ class Replica():
        
         self.replica_width = replica_width
         self.replica_height = replica_height
+"""

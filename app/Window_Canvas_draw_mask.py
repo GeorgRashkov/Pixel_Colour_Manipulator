@@ -3,6 +3,8 @@ from PyQt5.QtGui import QPainter, QPen, QMouseEvent, QColor, QImage, QCursor, QP
 from PyQt5.QtCore import Qt, QPointF
 import numpy as np
 
+#import math
+
 
 class Window_Canvas_draw_mask(QWidget):
     def __init__(self):
@@ -117,3 +119,112 @@ class Window_Canvas_draw_mask(QWidget):
 
         # Create a NumPy array (height, width, 4)
         arr = np.frombuffer(ptr, np.uint8).reshape((height, width, 4))
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+    """
+    #<this code is not used currently anywhere however it can be updated in a way to allow the user to enter mathematical formulas which the app will use to draw automatically on the canvas 
+    def mousePressEvent_v2(self, event: QMouseEvent):
+
+        self.create_mask_with_formula()
+
+
+    def draw_from_formula(self, point:QPointF ):
+
+        current = self._normalize_point(point)
+        line = (self.last_point, current, self.brush_colour, self.brush_size)
+        self.lines.append(line)
+        self.last_point = current
+        self.update()
+    
+
+
+    def create_mask_with_formula(self):
+        
+        start = -10
+        end = 10
+        step = 1
+
+        x_values, y_values = self.create_mask_with_formula_2(start=start, end=end , step=step)
+
+        canvas_w = self.width()
+        canvas_h = self.height()
+
+        canvas_x_center = canvas_w/2
+        canvas_y_center = canvas_h/2
+
+        w_ratio = canvas_w / (start*(-1)+end)
+        h_ratio = canvas_h / (start*(-1)+end)
+
+        for i in range(0, len(x_values)):
+
+            x = canvas_x_center + x_values[i]*w_ratio
+            y = canvas_y_center + y_values[i]*h_ratio
+
+            point = QPointF(x,y)
+            self.draw_from_formula(point=point)
+
+            
+        
+        
+
+    def create_mask_with_formula_2(self, start:int, end:int, step:int):
+        
+        start = -10
+        end = 10
+        step = 0.01
+
+        x_max_value = 30
+        y_max_value = 30
+
+        x_min_value = -30
+        y_min_value = -30
+
+        x_values = []
+        y_values = []
+
+        x = 0
+        y = 0
+
+        while(x < end):
+
+            if(x > x_max_value or x < x_min_value
+               or y > y_max_value or y < y_min_value):
+                break
+            
+            x_values.append(x)
+            y_values.append(y)
+
+            x+=step
+            y = x * math.sin(x*x+y*y)
+        
+        x = 0
+        y = 0
+
+        while(x > start):
+
+            if(x > x_max_value or x < x_min_value
+               or y > y_max_value or y < y_min_value):
+                break
+
+            x_values.append(x)
+            y_values.append(y)
+
+            x-=step
+            y = x * math.sin(x*x+y*y)
+        
+        return x_values, y_values
+
+
+    #this code is not used currently anywhere however it can be updated in a way to allow the user to enter mathematical formulas which the app will use to draw automatically on the canvas>
+    """
