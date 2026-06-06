@@ -1,9 +1,7 @@
 import numpy as np
-
-import Window_canvas, Z_Window_Canvas_swap_pixel_values, Z_Window_Form_swap_pixel_values
 from PyQt5.QtCore import Qt
 
-import ast
+import Window_canvas, Z_Window_Canvas_swap_pixel_values, Z_Window_Form_swap_pixel_values
 
 from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, check_for_int_format
 from Z_RGB_formula_checker import check_rgb_formulas_format_for_pixel_areas, get_closing_square_bracket
@@ -65,7 +63,7 @@ class Swap_pixel_values_controller:
 
 
 
-    #<code for manipulating the canvas
+    #<code for manipulating the canvas which draws rectangles
     def clear_canvas(self):
         self.canvas_window.canvas.clear()
 
@@ -124,16 +122,13 @@ class Swap_pixel_values_controller:
         else:
             self.canvas_window.canvas.set_brush_height_arguments(brush_min_height = brush_min_size, brush_max_height=brush_max_size, brush_delta_height=brush_delta) 
 
-    #code for manipulating the canvas>
+    #code for manipulating the canvas which draws rectangles>
 
 
 
 
-
-
-
-    #<code for working with the text inside the text area containing the information for the pixel swap areas
     
+    #<code for getting text (without spaces and new lines) from user input
 
     def get_text_area_swap_pixel_areas_formatted_text(self):
         swap_pixel_areas_str = self.form_window_pixel_areas.text_area_swap_pixel_areas.toPlainText()
@@ -150,6 +145,14 @@ class Swap_pixel_values_controller:
         pixel_areas_animations_groups_str = pixel_areas_animations_groups_str.replace(" ", "").replace("\n", "")
         return pixel_areas_animations_groups_str
     
+    #code for getting text (without spaces and new lines) from user input>
+
+
+
+
+    #<code for working with the text inside the text area containing the information for the pixel swap areas
+
+    """
     #draws the rectangle and gets its coordinates
     def canvas_clicked(self, pos, button):
         
@@ -171,7 +174,7 @@ class Swap_pixel_values_controller:
 
             #get data which will be inserted in the text area for pixel swap values and the text area for rgb functions
             area_id = str(swap_pixel_area_id)
-                        
+
             #<pixel area properties
             a_ids = self.form_window_pixel_areas.text_box_animation_ids.text().replace(" ", "")
             ag_ids = self.form_window_pixel_areas.text_box_animations_group_ids.text().replace(" ", "")
@@ -193,12 +196,112 @@ class Swap_pixel_values_controller:
             img_out_v = self.get_proper_int_value(value=img_out_v, element_name = "img_out_v")#image output version
             img_out_stack = self.get_proper_int_value(value=img_out_stack, element_name = "img_out_stack")#image ouput stack
             #pixel area properties>
-                       
 
             #append the pixel are properties of the drawn rectangle to the text area
             self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h, a_ids=a_ids, ag_ids=ag_ids,
             f_id=f_id, p_ids=p_ids, p_x=p_x, p_y=p_y, img_in_v=img_in_v, img_out_v=img_out_v, img_out_stack=img_out_stack)
+            
+            #append the pixel are properties of the drawn rectangle to the text area
+            self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h,)
+    """
+
+    #draws the rectangle and gets its coordinates
+    def canvas_clicked(self, pos, button):
+        
+        if button == Qt.LeftButton:
+            
+            x = pos.x()
+            y = pos.y()
+               
+            
+            #draws the rectangle and get's its coordinates
+            x, y, w, h = self.canvas_window.canvas.left_mouse_button_pressed(x = x, y = y)
+
+            #get a proper value for the id of the drawn area
+            
+            swap_pixel_area_id = self.get_first_unused_pixel_area_id()
+            if(swap_pixel_area_id == -1):
+                print("error: the maximum number of areas was reached")
+                return
+
+            #get data which will be inserted in the text area for pixel swap values and the text area for rgb functions
+            area_id = str(swap_pixel_area_id)
+
+           
+            #append the pixel are properties of the drawn rectangle to the text area
+            self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h,)
     
+
+    def get_first_unused_pixel_area_id(self):
+
+        text = self.get_text_area_swap_pixel_areas_formatted_text()
+
+        pixel_area_end_index = -1
+        used_numbers = []
+        pixel_area_start_symbol = "{"
+        pixel_area_end_symbol = "}"
+
+        pixel_area_id_txt_initial = "{id:"
+        pixel_area_id_txt_not_initial = ";id:"
+
+        pixel_area_id_end_separator_1 = ";"
+        pixel_area_id_end_separator_2 = "}"
+
+        while (True):
+
+            pixel_area_start_index = text.find(pixel_area_start_symbol, pixel_area_end_index+1)#get's the index of the first symbol of the current pixel area
+            pixel_area_end_index = text.find(pixel_area_end_symbol, pixel_area_start_index+1)#get's the index of the last symbol of the current pixel area
+            if(pixel_area_start_index == -1 or pixel_area_end_index==-1):
+                break
+            
+            #check whether the current area has an id
+            pixel_area_id_txt__start_index = text.find(pixel_area_id_txt_initial, pixel_area_start_index, pixel_area_end_index+1)#the `end` parameter in `find` is not inclusive
+            if(pixel_area_id_txt__start_index == -1):
+                pixel_area_id_txt__start_index = text.find(pixel_area_id_txt_not_initial, pixel_area_start_index, pixel_area_end_index+1)
+                if(pixel_area_id_txt__start_index == -1):
+                    continue
+            
+            #check whether the id of the current area has a proper separator
+            pixel_area_id_txt__end_index = text.find(pixel_area_id_end_separator_1, pixel_area_id_txt__start_index, pixel_area_end_index+1)
+            if(pixel_area_id_txt__end_index == -1):
+                pixel_area_id_txt__end_index = text.find(pixel_area_id_end_separator_2, pixel_area_id_txt__start_index, pixel_area_end_index+1)
+                if(pixel_area_id_txt__end_index == -1):
+                    continue
+            
+            id_num = text[pixel_area_id_txt__start_index+len(pixel_area_id_txt_initial):pixel_area_id_txt__end_index]
+            is_number_correct = check_for_positive_int_format(txt_value = id_num, is_zero_allowed=False)
+            if(is_number_correct == True):
+                used_numbers.append(int(id_num))
+
+        #finds the first unused number
+        for i in range (1, 1_000_000):
+            if(i not in used_numbers):
+                return i
+        
+        return -1 #this code should never be reached unless the user defines over 999_999 valid numbers
+    
+    def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str): 
+        text = "{"
+        if(id is not None):
+            text = f"{text}id:{id}; "
+
+        if(x is not None):
+            text = f"{text}x:{x}; "
+
+        if(y is not None):
+            text = f"{text}y:{y}; "
+
+        if(w is not None):
+            text = f"{text}w:{w}; "
+
+        if(h is not None):
+            text = f"{text}h:{h}; "
+        
+        text = text[0:-2] + "}" 
+
+        self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
+
+    """
     def get_first_unique_positive_number(self, text:str, start_separator:str, end_separator:str, allowed_symbols_before_start_separator:list, is_zero_allowed:bool):
 
         start_index = 0      
@@ -312,6 +415,7 @@ class Swap_pixel_values_controller:
         text = text[0:-2] + "}" 
 
         self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
+    """
     #code for working with the text inside the text area containing the information for the pixel swap areas>
 
     

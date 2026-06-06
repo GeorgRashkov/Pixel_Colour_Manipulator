@@ -5,7 +5,7 @@ from Number_format_checker import check_for_positive_int_format
 class RGB_formula_validators:
     rgb_formula_valid_symbols = ['.','(',')','r','g','b','v','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
     rgb_formula_valid_symbols_regex = "[.()rgbv+\\-*\\/^%<>=0123456789]"
-    rgb_formula_valid_symbols_for_swap_areas_regex = "[.()rgbv+\\-*\\/^%<>=0123456789 \\[\\]]"
+    rgb_formula_valid_symbols_for_swap_areas_regex = "[{}.()rgbv+\\-*\\/^%<>=0123456789 \\[\\]]"
     rgb_default_formula_for_swap_areas = "r->[r] g->[g] b->[b]"
 
 def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = False):
@@ -325,7 +325,7 @@ def check_rgb_formulas_format_for_pixel_area(rgb_formulas_for_pixel_area: str, i
     
     rgb_formula_id_wrong_index = rgb_formulas_for_pixel_area.find("|", rgb_formula_id_index_end + 1)
     if(rgb_formula_id_wrong_index != -1):
-        print(f"error: the rgb formula at index {index} cannot have more than 3 `|`")
+        print(f"error: the rgb formula at index {index} cannot have more than 2 `|` symbols")
         return False
 
     rgb_formula_id = rgb_formulas_for_pixel_area[rgb_formula_id_index_start+1:rgb_formula_id_index_end]

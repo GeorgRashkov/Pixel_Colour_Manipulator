@@ -151,6 +151,7 @@ class FormWindow_SwapPixelValues(QWidget):
                 
         #rgb formula elements>
         
+        """
         #<values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas
 
         #list of animation ids
@@ -205,7 +206,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
 
         #values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas>
-
+        """
 
 
         
@@ -291,7 +292,7 @@ class FormWindow_SwapPixelValues(QWidget):
         
         v_layout.addLayout(rgb_formulas_layout)
 
-        
+        """
         h_layout = QHBoxLayout()
         h_layout.setAlignment(Qt.AlignLeft)
 
@@ -324,6 +325,7 @@ class FormWindow_SwapPixelValues(QWidget):
        
 
         v_layout.addLayout(h_layout) 
+        """
        
        
 

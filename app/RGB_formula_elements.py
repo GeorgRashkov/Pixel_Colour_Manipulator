@@ -46,27 +46,17 @@ class RGB_formula_elements(QWidget):
         b_formula = None if (RGB_formula_checker.check_RGB_formula_format(b_formula, "blue", self.use_areas)==False) else b_formula.replace('^','**').replace('=','==')#replaces '^' with '**' and '=' with '=='
         b_formula = None if (RGB_formula_checker.is_RGB_formula_compatible_with_dxcam(b_formula, "blue", self.use_areas)==False) else b_formula
 
-        self.set_color_variables(r_formula, g_formula, b_formula)
-        
-    """
-    def set_color_variables(self, r_formula, g_formula, b_formula):
-        
-        if(r_formula!=None):
-            self.red_func = r_formula
-        if (g_formula!=None):
-            self.green_func = g_formula
-        if(b_formula!=None):
-            self.blue_func = b_formula
-        
-        self.rgb_function_str = f"lambda r,g,b,v=0,m=slice(None): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)" if self.use_areas == False else f"lambda r,g,b,areas_count,v=np.array([0], dtype=np.uint8),m=slice(None): np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)"
-        self.rgb_function = eval(self.rgb_function_str)
-    """
+        if(r_formula is not None and g_formula is not None and b_formula is not None):
+            self.set_color_variables(r_formula, g_formula, b_formula)
+    
 
     def set_color_variables(self, r_formula, g_formula, b_formula):
-        
-        if(r_formula == None or g_formula==None or b_formula == None):
-            return
 
         rgb_formula = RGB_formula(red_func=r_formula, green_func=g_formula, blue_func=b_formula, use_pixel_areas=False)
+        
         self.rgb_function_str = rgb_formula.rgb_function_str
         self.rgb_function = rgb_formula.rgb_function
+
+        self.red_func = rgb_formula.red_func
+        self.green_func = rgb_formula.green_func
+        self.blue_func = rgb_formula.blue_func
