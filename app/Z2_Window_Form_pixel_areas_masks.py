@@ -92,8 +92,10 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.checkBox_keep_ratio = QCheckBox("keep ratio")
         self.checkBox_keep_ratio.setChecked(True)
 
+        """
         self.button_apply_masks = QPushButton("Apply masks")
         self.button_remove_masks = QPushButton("Remove masks")
+        """
 
 
 
@@ -196,10 +198,12 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         h_layout.addWidget(self.checkBox_keep_ratio)
         v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_masks)
         h_layout.addWidget(self.button_remove_masks)
         v_layout.addLayout(h_layout)
+        """
 
         h_main_layout.addWidget(container)
         

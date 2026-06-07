@@ -25,8 +25,10 @@ class Swap_pixel_values_controller:
     def __init__(self):
 
         self.pixel_areas_masks_controller = Pixel_areas_masks_controller()
+        """
         self.pixel_areas_masks_controller.form_window_draw_mask.button_remove_masks.clicked.connect(self.remove_masks)
-
+        """
+        
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
         self.form_window_pixel_areas = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
@@ -43,8 +45,11 @@ class Swap_pixel_values_controller:
         self.form_window_pixel_areas.button_open_window__swap_areas_masks.clicked.connect(self.show_window_pixel_areas_mask)
 
         self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
+
+        self.form_window_pixel_areas.radioButtonGroup_resize_behaviour.buttonToggled.connect(self.set__areas_resize_behaviour_to__pixel_areas_manipulator)
+        self.form_window_pixel_areas.checkBox_use_copy_for_replicas.clicked.connect(self.set__use_copy_for_replicas_to__pixel_areas_manipulator)
         
-        self.pixel_areas_manipulator:Pixel_areas_manipulator = None
+        self.pixel_areas_manipulator:Pixel_areas_manipulator = Pixel_areas_manipulator()
 
 
 
@@ -438,7 +443,7 @@ class Swap_pixel_values_controller:
             stard_index_current_id = text.find(id_separator, start_index)
             start_index = stard_index_current_id + 1
 
-            if stard_index_current_id == -1:
+            if (stard_index_current_id == -1):
                 break
             
             end_index_current_id = text.find(id_separator, stard_index_current_id+1)
@@ -493,6 +498,7 @@ class Swap_pixel_values_controller:
 
 
 #when called this function will remove everything from the canvas and will put in there rectangles based on the coordinates written in the text area 
+    """
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
         
         #<rgb formulas
@@ -590,7 +596,226 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator = pixel_areas_manipulator
         
         return self.pixel_areas_manipulator
+    """
+
+    #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    #<those functions must be called from the outside
+    def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
+        return self.pixel_areas_manipulator
+
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def apply_elements_to_pixel_areas_manipulator(self, img_for_colour_ranges_of_masks:np.ndarray[np.uint8]) -> Pixel_areas_manipulator:
+
+        if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
+            self.apply_pixel_areas_to__pixel_areas_manipulator()
+
+        if(self.form_window_pixel_areas.check_box_rgb_formulas.isChecked() == True):
+            self.apply_rgb_formulas_to__pixel_areas_manipulator()
+        
+        if(self.form_window_pixel_areas.check_box_animations.isChecked() == True):
+            self.apply_animations_to__pixel_areas_manipulator()
+        
+        if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
+            if(img_for_colour_ranges_of_masks.shape[0] > 0 and img_for_colour_ranges_of_masks.shape[1] > 0):
+                self.apply_masks(img_for_colour_ranges=img_for_colour_ranges_of_masks)
+        
+        if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
+            self.apply_image_version_controller()
+        
+
+    def remove_elements_from_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
+
+        if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
+            self.remove_pixel_areas_from__pixel_areas_manipulator()
+
+        if(self.form_window_pixel_areas.check_box_rgb_formulas.isChecked() == True):
+            self.remove_rgb_formulas_from__pixel_areas_manipulator()
+        
+        if(self.form_window_pixel_areas.check_box_animations.isChecked() == True):
+            self.remove_animations_from__pixel_areas_manipulator()
+        
+        if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
+            self.remove_masks()
+        
+        if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
+            self.remove_image_version_controller()
+
+    #those functions must be called from the outside>
+
+
+## <functions for applying/setting/removing elements for the pixel area manipulator
+
+
+#<functions for applying elements to the pixel area manipulator
+
+    def apply_pixel_areas_to__pixel_areas_manipulator(self):
+        
+        pixel_area_initializer = Pixel_area_initializer()
+
+        #returns a list  of objects of type `Pixel_area`
+        pixel_areas = pixel_area_initializer.create_pixel_areas(text=self.get_text_area_swap_pixel_areas_formatted_text())
+
+        #execute this code if the format of the pixel areas is wrong 
+        if(pixel_areas is None or len(pixel_areas)==0):            
+            return          
+
+        pixel_areas = self.update_canvas(pixel_areas=pixel_areas)# get's those areas whose top left corner and bottom right corner are inside the canvas
+        
+        #execute this code if all pixel areas with valid format were outside the canvas
+        if(pixel_areas is None or len(pixel_areas)==0):            
+            return               
+
+        pixel_areas_dict = {}
+        for pixel_area in pixel_areas:
+            pixel_areas_dict[pixel_area.id] = pixel_area
+        
+        self.pixel_areas_manipulator.apply_pixel_areas(pixel_areas_dict=pixel_areas_dict)
     
+
+    def apply_rgb_formulas_to__pixel_areas_manipulator(self):
+
+        rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
+
+        #check whether the format of the rgb formula is correct
+        if(check_rgb_formulas_format_for_pixel_areas(rgb_formulas_for_pixel_areas=rgb_formulas_str) == False):
+            return
+        
+        #the dictionary has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
+        rgb_formulas_dict = self.get_dictionary_of_rgb_formulas(rgb_formulas_for_pixel_areas = rgb_formulas_str)
+        
+        """
+        if(rgb_formulas_dict is None or len(rgb_formulas_dict) == 0):
+            return
+        """
+
+        for id in rgb_formulas_dict.keys():
+            rgb_formulas_dict[id] = RGB_formula(red_func=rgb_formulas_dict[id]["r"],green_func=rgb_formulas_dict[id]["g"],blue_func=rgb_formulas_dict[id]["b"],use_pixel_areas=True)
+        
+        self.pixel_areas_manipulator.apply_rgb_formulas(rgb_formulas_dict=rgb_formulas_dict)
+    
+
+    def apply_animations_to__pixel_areas_manipulator(self):
+        
+        #<pixel areas animations
+
+        pixel_area_animations_initializer = Pixel_area_animations_initializer()
+        pixel_areas_animations_formatted_text = self.get_text_area_pixel_areas_animations_formatted_text()
+        pixel_areas_animations = None
+        pixel_areas_animations_dict = {}
+        
+        if(len(pixel_areas_animations_formatted_text) > 0):
+            pixel_areas_animations = pixel_area_animations_initializer.create_animations_for_pixel_areas(text=pixel_areas_animations_formatted_text)
+            if(pixel_areas_animations is None or len(pixel_areas_animations)==0):            
+                return None 
+            
+            for pixel_area_animation in pixel_areas_animations:
+                pixel_areas_animations_dict[pixel_area_animation.id] = pixel_area_animation
+        
+         
+        pixel_area_animations_groups_initializer = Pixel_area_animation_groups_initializer()
+        pixel_areas_animations_groups_formatted_text = self.get_text_area_pixel_areas_animations_groups_formatted_text()
+        pixel_areas_animations_groups = None
+        pixel_areas_animations_groups_dict = {}
+
+        if(len(pixel_areas_animations_groups_formatted_text) > 0):
+            pixel_areas_animations_groups = pixel_area_animations_groups_initializer.create_animation_groups_for_pixel_areas(text=pixel_areas_animations_groups_formatted_text)
+            if(pixel_areas_animations_groups is None or len(pixel_areas_animations_groups)==0):            
+                return None 
+        
+            for pixel_area_animation_group in pixel_areas_animations_groups:
+                pixel_areas_animations_groups_dict[pixel_area_animation_group.id] = pixel_area_animation_group
+
+        #pixel areas animations>
+
+        #<pixel area animation manipulator
+        
+        pixel_area_animation_manipulator = None
+        if(len(pixel_areas_animations_dict)>0 or len(pixel_areas_animations_groups_dict)>0):
+            pixel_area_animation_manipulator = Pixel_area_animation_manipulator(pixel_areas_animations_dict=pixel_areas_animations_dict, pixel_areas_animations_groups_dict=pixel_areas_animations_groups_dict)
+        
+        #pixel area animation manipulator>
+
+        self.pixel_areas_manipulator.apply_animations(animations_manipulator=pixel_area_animation_manipulator)
+    
+
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
+
+        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_main_areas_as_rectangles()
+            
+        masks = self.pixel_areas_masks_controller.get_masks()
+        masks_copies = []
+
+        for mask in masks:
+                
+            if(mask.pixel_area_id in rectangles_with_ids.keys()):
+                rec = rectangles_with_ids[mask.pixel_area_id]
+                img_for_colour_ranges_for_current_mask =  img_for_colour_ranges[rec.x : rec.x+rec.w , rec.y : rec.y+rec.h , :]
+                mask.apply_regions(img_for_colour_ranges=img_for_colour_ranges_for_current_mask)
+                masks_copies.append(mask.copy())
+
+        self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
+    
+
+    def apply_image_version_controller(self):
+        
+        if(self.should_create_image_version_contoller()==True):
+            
+            image_version_start_index = 0 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
+            image_version_increment = 1 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
+            image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
+            
+            self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
+
+#functions for applying elements to the pixel area manipulator>
+
+
+
+#<functions for removing elements for the pixel area manipulator
+
+    def remove_pixel_areas_from__pixel_areas_manipulator(self):
+        self.pixel_areas_manipulator.remove_pixel_areas()
+    
+    def remove_rgb_formulas_from__pixel_areas_manipulator(self):
+        self.pixel_areas_manipulator.remove_rgb_formulas()
+    
+    def remove_animations_from__pixel_areas_manipulator(self):
+        self.pixel_areas_manipulator.remove_animations()
+    
+    def remove_masks(self):
+        self.pixel_areas_manipulator.remove_masks()
+    
+    def remove_image_version_controller(self):
+        self.pixel_areas_manipulator.remove_image_version_controller()
+    
+#functions for removing elements for the pixel area manipulator>
+
+
+
+#<fuctions for setting the values of boolean and enum elements in the pixel area manipulator
+
+    def set__areas_resize_behaviour_to__pixel_areas_manipulator(self):
+
+        areas_resize_behaviour = self.get_areas_resize_behaviour()
+        self.pixel_areas_manipulator.set__areas_behaviour_when_resizing_main_window(areas_behiour_when_resizing_main_window=areas_resize_behaviour, aspect_ratio_width=self.canvas_window.canvas.width(), aspect_ratio_height=self.canvas_window.canvas.height())
+    
+    def set__use_copy_for_replicas_to__pixel_areas_manipulator(self):
+
+        use_copy_for_replicas = self.form_window_pixel_areas.checkBox_use_copy_for_replicas.isChecked()
+        self.pixel_areas_manipulator.set__use_copy_for_replicas(use_copy_for_replicas=use_copy_for_replicas)
+
+#fuctions for setting the values of boolean and enum elements in the pixel area manipulator>
+
+
+## functions for applying/setting/removing elements for the pixel area manipulator>
+
+    #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+
+
+
+    #<helper methods
+
     def get_areas_resize_behaviour(self) -> Areas_behaviour_when_resizing_main_window:
         
         areas_resize_behaviour = None
@@ -623,7 +848,7 @@ class Swap_pixel_values_controller:
             return False
 
         return True
-    
+    """
     def try_to_create_image_version_controller(self, pixel_areas_manipulator:Pixel_areas_manipulator):
         
         if(self.should_create_image_version_contoller()==True):
@@ -633,7 +858,7 @@ class Swap_pixel_values_controller:
             image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
             
             pixel_areas_manipulator.create_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
-        
+    """
             
     
     #creates a dictonary which has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
@@ -655,6 +880,7 @@ class Swap_pixel_values_controller:
         
         return rgb_formulas_pixel_areas_dict
 
+    
 
     def get_rgb_formulas(self, rgb_formulas_for_pixel_area: str):   
                 
@@ -681,8 +907,11 @@ class Swap_pixel_values_controller:
 
         return (int(rgb_formula_id), rgb_formulas)
 
+    #helper methods>
 
 
+
+    """
     #this function must be called from outside
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
@@ -709,7 +938,7 @@ class Swap_pixel_values_controller:
         if(self.pixel_areas_manipulator is not None):
             self.pixel_areas_manipulator.remove_masks()
 
-
+    """
 
 
 

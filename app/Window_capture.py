@@ -558,6 +558,7 @@ class CaptureWindow(QtWidgets.QWidget):
         transformed_image = self.pixel_areas_manipulator.transform_image(img=img)
         return transformed_image
     
+    """
     def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
 
         if(pixel_areas_manipulator is not None):
@@ -565,6 +566,11 @@ class CaptureWindow(QtWidgets.QWidget):
     
     def remove_pixel_areas_manipulator(self):
         self.pixel_areas_manipulator = None
+    """
+
+    #the input must be a pixel areas manipulator or None
+    def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
+        self.pixel_areas_manipulator = pixel_areas_manipulator
     
     
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`

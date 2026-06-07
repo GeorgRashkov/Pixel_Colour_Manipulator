@@ -45,12 +45,13 @@ class Mask():
     def set_value_for__keep_ratio(self, new_value:bool):
         self.keep_ratio = new_value
 
-    def apply_regions(self, img_for_colour_ranges):
+    def apply_regions(self, img_for_colour_ranges:np.ndarray[np.uint8]):
         
         if(self.img_from_canvas is not None):
             self.rgb_formulas_mask.create_colour_regions(img_for_creating_a_mask=self.img_from_canvas, colours=self.colours, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
-            self.rgb_formulas_mask.create_colour_range_regions(img_for_creating_a_mask=img_for_colour_ranges, colour_ranges=self.colour_ranges, remove_previous_mask=False)
-        else:
+            if(img_for_colour_ranges.shape[0] > 0 and img_for_colour_ranges.shape[1] > 0):
+                self.rgb_formulas_mask.create_colour_range_regions(img_for_creating_a_mask=img_for_colour_ranges, colour_ranges=self.colour_ranges, remove_previous_mask=False)
+        elif(img_for_colour_ranges.shape[0] > 0 and img_for_colour_ranges.shape[1] > 0):
             self.rgb_formulas_mask.create_colour_range_regions(img_for_creating_a_mask=img_for_colour_ranges, colour_ranges=self.colour_ranges, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
 
 

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox, QRadioButton
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox, QRadioButton, QButtonGroup
 )
 import re
 from PyQt5.QtCore import Qt
@@ -33,6 +33,11 @@ class FormWindow_SwapPixelValues(QWidget):
         self.radioButton_areas_move = QRadioButton("move")
         self.radioButton_areas_keep_aspect_ratio = QRadioButton("keep ratio")
         self.radioButton_areas_keep_aspect_ratio.setChecked(True)
+
+        self.radioButtonGroup_resize_behaviour = QButtonGroup()
+        self.radioButtonGroup_resize_behaviour.addButton(self.radioButton_areas_resize)
+        self.radioButtonGroup_resize_behaviour.addButton(self.radioButton_areas_move)
+        self.radioButtonGroup_resize_behaviour.addButton(self.radioButton_areas_keep_aspect_ratio)
 
         self.checkBox_fast_area_creation = QCheckBox("use smallest area size")
         #pixel areas behaviour when resizing main window>
@@ -209,13 +214,26 @@ class FormWindow_SwapPixelValues(QWidget):
         """
 
 
-        
+        """
         self.button_apply_swap_areas = QPushButton("Apply areas")
         self.button_open_window__swap_areas_animations = QPushButton("Show animations")
         self.button_open_window__swap_areas_masks = QPushButton("Show masks")
         self.button_remove_swap_areas = QPushButton("Remove areas")
         self.button_clear_canvas = QPushButton("Clear canvas")
-        
+        """       
+
+        self.button_open_window__swap_areas_animations = QPushButton("Show animations")
+        self.button_open_window__swap_areas_masks = QPushButton("Show masks")
+        self.button_clear_canvas = QPushButton("Clear canvas") 
+
+        self.button_apply_swap_areas = QPushButton("Apply")
+        self.button_remove_swap_areas = QPushButton("Remove")
+
+        self.check_box_pixel_areas = QCheckBox("pixel areas")
+        self.check_box_rgb_formulas = QCheckBox("rgb formulas")
+        self.check_box_animations = QCheckBox("animations")
+        self.check_box_masks = QCheckBox("masks")
+        self.check_box_image_versions = QCheckBox("image versions")
 
 
 
@@ -328,7 +346,7 @@ class FormWindow_SwapPixelValues(QWidget):
         """
        
        
-
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_swap_areas)
         h_layout.addWidget(self.button_open_window__swap_areas_animations)
@@ -336,6 +354,24 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.button_remove_swap_areas)
         h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)
+        """
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_open_window__swap_areas_animations)
+        h_layout.addWidget(self.button_open_window__swap_areas_masks)
+        h_layout.addWidget(self.button_clear_canvas)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_apply_swap_areas)
+        h_layout.addWidget(self.button_remove_swap_areas)
+        h_layout.addWidget(self.check_box_pixel_areas)
+        h_layout.addWidget(self.check_box_rgb_formulas)
+        h_layout.addWidget(self.check_box_animations)
+        h_layout.addWidget(self.check_box_masks)
+        h_layout.addWidget(self.check_box_image_versions)
+        v_layout.addLayout(h_layout)
+
 
         self.setLayout(v_layout)
 
