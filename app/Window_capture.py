@@ -112,6 +112,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_captureMask = QPushButton('capture mask',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
+        self.button_open_drawFormula = QPushButton('draw formula',  QtWidgets.QWidget(self))
 
         #<color sliders
                
@@ -222,6 +223,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_captureMask)
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swapAreas)
+        h_layout.addWidget(self.button_open_drawFormula)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 

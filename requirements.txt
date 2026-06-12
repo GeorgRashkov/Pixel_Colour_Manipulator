@@ -3,3 +3,4 @@ PyQt5
 dxcam
 opencv-python
 pywin32
+matplotlib

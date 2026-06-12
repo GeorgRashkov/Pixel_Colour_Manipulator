@@ -1,0 +1,22 @@
+#<sample 1.0 - butterfly with waves below it
+
+#<contour
+x = np.linspace(-10, 10, 1_000)
+y = np.linspace(-10, 10, 1_000)
+Z = y - x*sin(x*x+y*y) + 5
+#contour>
+
+#<plot
+x = np.linspace(-30, 30, 10_000)
+y = np.linspace(-30, 30, 10_000)
+
+v = exp(sin(x)) - 2*cos(4*x) + sin((2*x - 3.14)/24)^5
+x = v[0] * cos(x)
+y = v[0] * sin(y)
+#plot>
+
+#sample 1.0 - butterfly with waves below it>
+
+
+
+

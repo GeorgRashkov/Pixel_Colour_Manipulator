@@ -7,6 +7,9 @@ from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
 from Z_RGB_formulas_mask import RGB_formulas_mask
 
+from Draw_formula_controller import Draw_formula_controller
+
+
 from DXCamera_Singleton import DXCamera_Singleton
 
 class MainApp: 
@@ -29,8 +32,9 @@ class MainApp:
         self.swap_pixel_values_controller.form_window_pixel_areas.button_remove_swap_areas.clicked.connect(self.remove_swap_pixel_areas)        
         
 
-        #capture window
-       
+        self.draw_formula_controller = Draw_formula_controller()
+
+        #capture window 
         self.camera = DXCamera_Singleton()
         self.capture_window = Window_capture.CaptureWindow()
 
@@ -40,6 +44,7 @@ class MainApp:
        
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
+        self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
         
         #settings window
         self.settings_window = Window_settings.FormWindow_Settings()
@@ -140,6 +145,9 @@ class MainApp:
     def open_windows_swop_pixel_areas(self):
         windows = [self.swap_pixel_values_controller.form_window_pixel_areas, self.swap_pixel_values_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
+    
+    def open_window_draw_formula(self):
+        open_or_minimize_window(window=self.draw_formula_controller.form_window_draw_formula)
        
         
 
