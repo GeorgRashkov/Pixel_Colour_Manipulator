@@ -9,11 +9,11 @@ class Draw_formula_validation_collections():
 
         self.letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
         
-        self.allowed_variable_chars = ['v','x','y']
+        self.allowed_variable_chars = ['v','x','y','r','g','b']
         self.allowed_variable_collection_chars = ['v']
         self.allowed_operator_chars = ['+','-','*','/','^','%','<','>','=']
         self.allowed_num_chars = ['0','1','2','3','4','5','6','7','8','9']
-        self.allowed_chars = ['.','(',')', 'v','x','y', '+','-','*','/','^','%','<','>','=', '0','1','2','3','4','5','6','7','8','9']
+        self.allowed_chars = ['.','(',')', 'v','x','y','r','g','b', '+','-','*','/','^','%','<','>','=', '0','1','2','3','4','5','6','7','8','9']
         self.allowed_special_formulas = ["sin(", "cos(", "tan(", "abs(", "exp(", "sqrt("]
 
 

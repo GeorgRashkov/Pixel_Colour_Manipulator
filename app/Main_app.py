@@ -33,6 +33,7 @@ class MainApp:
         
 
         self.draw_formula_controller = Draw_formula_controller()
+        self.draw_formula_controller.form_window_draw_formula.button_show_drawing.clicked.connect(self.show_draw_formula_drawing)
 
         #capture window 
         self.camera = DXCamera_Singleton()
@@ -124,6 +125,12 @@ class MainApp:
 
         self.capture_window.remove_rgb_kernels()
     
+
+
+    def show_draw_formula_drawing(self):
+        
+        img = self.get_rgb_pixel_values_from_capture_window()
+        self.draw_formula_controller.show_drawing(img=img)
 
 
     def open_window_settings(self):

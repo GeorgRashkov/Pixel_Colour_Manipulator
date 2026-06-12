@@ -11,7 +11,7 @@ class Draw_formula():
         main_expression = self.update_format_of_special_formulas(draw_formula = main_expression)
 
         main_expression = main_expression.replace('^','**').replace('=','==')
-        self.draw_function_str = f"lambda x,y: {main_expression}"
+        self.draw_function_str = f"lambda x,y,r,g,b: {main_expression}"
         self.draw_function = eval( self.draw_function_str)
     
     def fill_sub_expressions_with_expressions(self, sub_expressions:list[str]):

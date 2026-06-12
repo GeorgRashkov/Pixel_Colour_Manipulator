@@ -16,7 +16,7 @@ class Draw_formula_controller:
 
         self.form_window_draw_formula.button_add_draw_formula.clicked.connect(self.add_draw_formula)
         self.form_window_draw_formula.button_remove_draw_formula.clicked.connect(self.remove_draw_formula)
-        self.form_window_draw_formula.button_show_drawing.clicked.connect(self.show_drawing)
+        #self.form_window_draw_formula.button_show_drawing.clicked.connect(self.show_drawing)
         self.form_window_draw_formula.radioButtonGroup_draw_type.buttonToggled.connect(self.enable_only_elements_of_specific_draw_type)
         self.form_window_draw_formula.radioButtonGroup_resize_type.buttonToggled.connect(self.alter_resize_type)
         
@@ -329,9 +329,9 @@ class Draw_formula_controller:
 
     #functions for getting user input>
 
-
-    def show_drawing(self):
-        self.draw_formulas_collector.draw()
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def show_drawing(self, img):
+        self.draw_formulas_collector.draw(img=img)
     
 
     def display_draw_formulas_as_text(self):

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 from Draw_formula_pyplot import Draw_formula_pyplot
 from Draw_formula_type import Draw_formula_resize_type
@@ -33,10 +34,11 @@ class Draw_formulas_collector:
         self.draw_formula_resize_type = resize_type
 
     
-    def draw(self):
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def draw(self, img:np.ndarray[np.uint8]):
 
         for id in self.draw_formulas_pyplot.keys():
-            self.draw_formulas_pyplot[id].draw()
+            self.draw_formulas_pyplot[id].draw(img=img)
         
         manager = plt.get_current_fig_manager()
         manager.toolbar.pan()

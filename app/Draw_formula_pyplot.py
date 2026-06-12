@@ -10,8 +10,9 @@ class Draw_formula_pyplot:
 
     def __init__(self):
         pass
-
-    def draw(self):
+    
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def draw(self, img:np.ndarray[np.uint8]):
         pass
 
     def to_string(self):
@@ -44,13 +45,23 @@ class Draw_formula_pyplot_countour(Draw_formula_pyplot):
         self.levels = levels
     
 
-    def draw(self):
+    def draw(self, img:np.ndarray[np.uint8]):
         
         x = np.linspace(self.x_start_value, self.x_end_value, self.x_values_count)
         y = np.linspace(self.y_start_value, self.y_end_value, self.y_values_count)
+
+        h = min(len(y),img.shape[0])
+        w = min(len(x),img.shape[1])
+        
+        img_crop = np.zeros([len(y),len(x),3])
+        img_crop[:h,:w] = img[:h,:w]
+        r = img_crop[:,:,0]
+        g = img_crop[:,:,1]
+        b = img_crop[:,:,2]
+
         x, y = np.meshgrid(x, y)
 
-        plt.contour(x, y, self.Z.draw_function(x,y), levels=[self.levels], colors=self.line_colour.name(), linewidths=self.line_width)
+        plt.contour(x, y, self.Z.draw_function(x,y,r,g,b), levels=[self.levels], colors=self.line_colour.name(), linewidths=self.line_width)
     
 
     def to_string(self):
@@ -95,12 +106,21 @@ class Draw_formula_pyplot_plot(Draw_formula_pyplot):
         self.Y = Y
     
 
-    def draw(self):
+    def draw(self, img:np.ndarray[np.uint8]):
         
         x = np.linspace(self.x_start_value, self.x_end_value, self.x_values_count)
         y = np.linspace(self.y_start_value, self.y_end_value, self.y_values_count)
+
+        h = min(len(y),img.shape[0])
+        w = min(len(x),img.shape[1])
         
-        plt.plot(self.X.draw_function(x,y), self.Y.draw_function(x,y), color=self.line_colour.name(), linewidth=self.line_width)
+        img_crop = np.zeros([len(y),len(x),3])
+        img_crop[:h,:w] = img[:h,:w]
+        r = img_crop[:,:,0]
+        g = img_crop[:,:,1]
+        b = img_crop[:,:,2]
+
+        plt.plot(self.X.draw_function(x,y,r,g,b), self.Y.draw_function(x,y,r,g,b), color=self.line_colour.name(), linewidth=self.line_width)
     
 
     def to_string(self):
@@ -143,12 +163,21 @@ class Draw_formula_pyplot_scatter(Draw_formula_pyplot):
         self.Y = Y
     
 
-    def draw(self):
+    def draw(self, img:np.ndarray[np.uint8]):
         
         x = np.linspace(self.x_start_value, self.x_end_value, self.x_values_count)
         y = np.linspace(self.y_start_value, self.y_end_value, self.y_values_count)
 
-        plt.scatter(self.X.draw_function(x,y), self.Y.draw_function(x,y), color=self.line_colour.name(), linewidth=self.line_width)
+        h = min(len(y),img.shape[0])
+        w = min(len(x),img.shape[1])
+        
+        img_crop = np.zeros([len(y),len(x),3])
+        img_crop[:h,:w] = img[:h,:w]
+        r = img_crop[:,:,0]
+        g = img_crop[:,:,1]
+        b = img_crop[:,:,2]
+
+        plt.scatter(self.X.draw_function(x,y,r,g,b), self.Y.draw_function(x,y,r,g,b), color=self.line_colour.name(), linewidth=self.line_width)
     
 
     def to_string(self):
