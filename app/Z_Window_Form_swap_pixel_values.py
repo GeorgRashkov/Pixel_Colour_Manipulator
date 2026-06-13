@@ -226,8 +226,8 @@ class FormWindow_SwapPixelValues(QWidget):
         self.button_open_window__swap_areas_masks = QPushButton("Show masks")
         self.button_clear_canvas = QPushButton("Clear canvas") 
 
-        self.button_apply_swap_areas = QPushButton("Apply")
-        self.button_remove_swap_areas = QPushButton("Remove")
+        self.button_apply_elements_to_pixel_areas_manipulator = QPushButton("Apply")
+        self.button_remove_elements_from_pixel_areas_manipulator = QPushButton("Remove")
 
         self.check_box_pixel_areas = QCheckBox("pixel areas")
         self.check_box_rgb_formulas = QCheckBox("rgb formulas")
@@ -363,8 +363,8 @@ class FormWindow_SwapPixelValues(QWidget):
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.button_apply_swap_areas)
-        h_layout.addWidget(self.button_remove_swap_areas)
+        h_layout.addWidget(self.button_apply_elements_to_pixel_areas_manipulator)
+        h_layout.addWidget(self.button_remove_elements_from_pixel_areas_manipulator)
         h_layout.addWidget(self.check_box_pixel_areas)
         h_layout.addWidget(self.check_box_rgb_formulas)
         h_layout.addWidget(self.check_box_animations)
