@@ -1,3 +1,4 @@
+"""
 import numpy as np
 from Number_format_checker import check_for_positive_int_format
 
@@ -82,11 +83,7 @@ def check_draw_formula_expression_format(draw_formula: str, expression_name: str
             wrong_format_message+=f"the symbol {last_char} cannot be placed at the end of the formula"
 
         
-        """
-        elif(draw_formula.__contains__('r')==False and draw_formula.__contains__('g')==False and draw_formula.__contains__('b')==False):
-            is_format_correct = False
-            wrong_format_message+=f"error: no channels; you have to enter at least one RBG channel using 'r' or 'b' or 'g' "
-        """
+        
         
         
         #first and last symbol check>
@@ -107,18 +104,7 @@ def check_draw_formula_expression_format(draw_formula: str, expression_name: str
                         special_formula_found = True
                         i = i + ( len(allowed_special_formula)-2 )
                         break
-                """
-                if(special_formula_found == True):
-                    if(draw_formula[i-1] in allowed_operator_chars or draw_formula[i-1]=='('):
-                        i += len(allowed_special_formula)
-                    else:
-                        wrong_format_message += invalid_placement_message(draw_formula[i-1], draw_formula[i:len(allowed_special_formula)])
-                        is_format_correct = False
                 
-                else:
-                    wrong_format_message += invalid_symbol_message (draw_formula[i-1])
-                    is_format_correct = False
-                """
                 if(special_formula_found == False):
                     wrong_format_message += invalid_symbol_message (draw_formula[i-1])
                     is_format_correct = False
@@ -383,3 +369,31 @@ def does_draw_formula_contain_specific_variable(draw_formula:str, variable:str):
         start_index+=1
     
     return is_variable_found
+"""
+
+
+
+from Formula_validation_collections import Draw_formula_validation_collections
+from Formula_checker import check_formula_format, does_formula_contain_specific_variables
+
+def check_draw_formula_expressions_format(main_expression:str, sub_expressions:list[str]) -> bool:
+    
+    draw_formula_validation_collections = Draw_formula_validation_collections()
+    does_formula_contain_atleast_one_x_y_value = does_formula_contain_specific_variables(formula=main_expression, variables=["x","y"], formula_validation_collections=draw_formula_validation_collections, find_all=False)
+    if(does_formula_contain_atleast_one_x_y_value == False):
+        print("error: the main expression must contain at least at least one value for `x` or `y`")
+        return False
+
+    sub_expressions_len = len(sub_expressions)
+
+    for i in range(0, sub_expressions_len):
+        is_expression_valid = check_formula_format(formula=sub_expressions[i], expression_name = f"sub expression at index {i}", square_brackets_biggest_value = i-1, formula_validation_collections=draw_formula_validation_collections)
+        if(is_expression_valid == False):
+            return False
+    
+    is_expression_valid = check_formula_format(formula=main_expression, expression_name="main expression",  square_brackets_biggest_value = sub_expressions_len-1, formula_validation_collections=draw_formula_validation_collections)
+    if(is_expression_valid == False):
+        return False
+    else:
+        return True
+    

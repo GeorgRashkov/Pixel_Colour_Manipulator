@@ -21,11 +21,12 @@ class Formula_validation_collections:
         self.allowed_special_formulas = ["sin(", "cos(", "tan(", "abs(", "exp(", "sqrt("] if allowed_special_formulas == None else allowed_special_formulas
     
     
-    #<those functions can be called from outside
+    #<those functions can be called from outside; those functions should only be used on valid formulas 
     
     def update_format(self, formula:str, model_to_add_to_special_formula:str="np."):
         self.update_format_of_operators(formula=formula)
         self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
+        self.update_indexes_in_square_brackets(formula=formula)
 
     
     def update_format_of_operators(self, formula:str,) -> str:
@@ -54,6 +55,31 @@ class Formula_validation_collections:
                 i+=1
             
             return formula
+    
+    
+    def update_indexes_in_square_brackets(self, formula: str):
+
+        start_index = 0
+
+        while(True):
+
+            openining_bracket_index = formula.find(f"[",start_index)
+            if(openining_bracket_index == -1):
+                break
+
+            closing_bracket_index = formula.find("]",openining_bracket_index+1)
+            if(closing_bracket_index == -1):
+                break
+            
+            collection_char = formula[openining_bracket_index-1]
+            current_index_in_brackets = formula[openining_bracket_index+1:closing_bracket_index]
+                
+            formula = formula[:closing_bracket_index] + f" if {current_index_in_brackets} < len({collection_char}) else 0" + formula[closing_bracket_index:]
+
+            start_index = formula.find("]",closing_bracket_index+1)
+        
+        return formula
+
     
     #those functions can be called from outside>
 

@@ -257,7 +257,28 @@ def check_formula_format_2(formula: str, allowed_num_chars) -> str:
 
 
 
+
+
 #this function must be called from outside
+def does_formula_contain_specific_variables(formula:str, variables:list[str], formula_validation_collections:Formula_validation_collections, find_all:bool) -> bool:
+    
+    if(find_all == True):
+        for variable in variables:
+            is_variable_found = does_formula_contain_specific_variable(formula=formula, variable=variable, formula_validation_collections=formula_validation_collections)
+            if(is_variable_found == False):
+                return False
+        return True
+    
+    else:
+        for variable in variables:
+            is_variable_found = does_formula_contain_specific_variable(formula=formula, variable=variable, formula_validation_collections=formula_validation_collections)
+            if(is_variable_found == True):
+                return True
+        return False
+
+
+
+#this function can be called from outside
 def does_formula_contain_specific_variable(formula:str, variable:str, formula_validation_collections:Formula_validation_collections) -> bool:
 
     
