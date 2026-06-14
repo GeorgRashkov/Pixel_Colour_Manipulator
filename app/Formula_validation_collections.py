@@ -27,6 +27,7 @@ class Formula_validation_collections:
         
         formula = self.update_format_of_operators(formula=formula)
         formula = self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
+        formula = self.add_default_indexes_for__variable_collection_chars(formula=formula)
         formula = self.update_indexes_in_square_brackets(formula=formula)
 
         return formula
@@ -59,6 +60,42 @@ class Formula_validation_collections:
             
             return formula
     
+    
+    def add_default_indexes_for__variable_collection_chars(self, formula: str):
+        
+        default_index = "[0]"
+
+        if(len(formula) == 1):
+            if(formula in self.allowed_variable_collection_chars):
+                formula = formula+default_index
+            return formula
+            
+
+        for variable_collection_char in self.allowed_variable_collection_chars:
+
+            i = 0
+            while(True):
+                
+                i = formula.find(variable_collection_char,i)
+                if(i==-1):
+                    break
+
+                if(i==0):
+                    if(formula[i+1] == ")" or formula[i+1] in self.allowed_operator_chars):
+                        formula = formula[0] + default_index + formula[1:]
+                
+                elif(i==len(formula)-1):
+                    if(formula[i-1] in self.allowed_operator_chars):
+                        formula = formula + default_index
+                
+                elif( formula[i-1] in self.allowed_operator_chars and (formula[i+1] == ")" or formula[i+1] in self.allowed_operator_chars)):
+                    formula = formula[:i+1] + default_index + formula[i+1:]
+
+                i+=1
+        
+        return formula
+
+
     
     def update_indexes_in_square_brackets(self, formula: str):
 

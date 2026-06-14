@@ -409,7 +409,25 @@ def get_closing_square_bracket(text:str, start_index:int):
 
 
 
+def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_areas: bool = False):
+    
+    if(rgb_formula is None):
+        return False
 
+    rgb_function = eval(f"lambda r,g,b,areas_count=1,v=np.array([0], dtype=np.uint8): {rgb_formula}")
+    
+    try:
+        if(use_areas == False):
+            img =  np.array([ [[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]] ], dtype=np.uint8)
+            transformed_img = rgb_function(img[:,:,0], img[:,:,1], img[:,:,2])
+        else:
+            img = np.array([ [[[1,2,3],[10,20,30]],[[5,7,9],[50,70,90]]], [[[11,22,33],[110,220,35]],[[55,77,99],[150,170,190]]] ], dtype=np.uint8)
+            transformed_img = rgb_function(img[:,:,:,0], img[:,:,:,1], img[:,:,:,2], img.shape[0])
+    except:
+        print(f"Error: the formula for the {channel} channel was not compatible with dxcam. Try making the int values (or results of arithmetic operations between 2 variables) fit in the range 0-255.")
+        return False    
+        
+    return True
 
 
 def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = False) -> bool:
@@ -422,6 +440,7 @@ def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = 
     is_format_correct = check_formula_format(formula=rgb_formula, expression_name=f"{channel} channel formula",  square_brackets_biggest_value=999_999, formula_validation_collections=rgb_formula_validation_collections)     
     return is_format_correct
 
+"""
 def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_areas: bool = False):
     
     if(rgb_formula is None):
@@ -439,7 +458,7 @@ def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_are
         return False    
         
     return True
-
+"""
 
 
 
