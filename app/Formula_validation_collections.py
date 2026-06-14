@@ -19,6 +19,43 @@ class Formula_validation_collections:
         self.allowed_chars = self.allowed_special_chars + self.allowed_variable_chars + self.allowed_operator_chars + self.allowed_num_chars
 
         self.allowed_special_formulas = ["sin(", "cos(", "tan(", "abs(", "exp(", "sqrt("] if allowed_special_formulas == None else allowed_special_formulas
+    
+    
+    #<those functions can be called from outside
+    
+    def update_format(self, formula:str, model_to_add_to_special_formula:str="np."):
+        self.update_format_of_operators(formula=formula)
+        self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
+
+    
+    def update_format_of_operators(self, formula:str,) -> str:
+
+        formula = formula.replace('^','**').replace('=','==').replace('!','!=')
+        return formula
+
+    
+    def update_format_of_special_formulas(self, formula:str, model_to_add_to_special_formula:str="np.") -> str:
+            
+            
+            special_formulas = self.allowed_special_formulas
+            letters = self.letters
+
+            i = 0
+            while(i < len(formula)-1):
+                
+                if(formula[i] in letters and formula[i+1] in letters):
+                    
+                    for special_formula in special_formulas:
+                        if(formula[i:i+len(special_formula)] == special_formula):
+                            formula = formula[:i] + model_to_add_to_special_formula + formula[i:]
+                            i+=len(special_formula)
+                            break
+                
+                i+=1
+            
+            return formula
+    
+    #those functions can be called from outside>
 
 
 class RGB_formula_validation_collections(Formula_validation_collections):
