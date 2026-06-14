@@ -416,7 +416,7 @@ def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = 
     
     rgb_formula_validation_collections = RGB_formula_validation_collections()
     does_formula_contain_atleast_one_rgb_channel = does_formula_contain_specific_variables(formula=rgb_formula, variables={'r','g','b'},  formula_validation_collections=rgb_formula_validation_collections, find_all=False)
-    if(does_formula_contain_atleast_one_rgb_channel):
+    if(does_formula_contain_atleast_one_rgb_channel == False):
         return False
     
     is_format_correct = check_formula_format(formula=rgb_formula, expression_name=f"{channel} channel formula",  square_brackets_biggest_value=999_999, formula_validation_collections=rgb_formula_validation_collections)     

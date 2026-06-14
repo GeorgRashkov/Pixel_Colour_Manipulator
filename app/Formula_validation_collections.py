@@ -18,15 +18,18 @@ class Formula_validation_collections:
 
         self.allowed_chars = self.allowed_special_chars + self.allowed_variable_chars + self.allowed_operator_chars + self.allowed_num_chars
 
-        self.allowed_special_formulas = ["sin(", "cos(", "tan(", "abs(", "exp(", "sqrt("] if allowed_special_formulas == None else allowed_special_formulas
+        self.allowed_special_formulas = ["sin", "cos", "tan", "abs", "exp", "sqrt"] if allowed_special_formulas == None else allowed_special_formulas
     
     
     #<those functions can be called from outside; those functions should only be used on valid formulas 
     
-    def update_format(self, formula:str, model_to_add_to_special_formula:str="np."):
-        self.update_format_of_operators(formula=formula)
-        self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
-        self.update_indexes_in_square_brackets(formula=formula)
+    def update_format(self, formula:str, model_to_add_to_special_formula:str="np.") -> str:
+        
+        formula = self.update_format_of_operators(formula=formula)
+        formula = self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
+        formula = self.update_indexes_in_square_brackets(formula=formula)
+
+        return formula
 
     
     def update_format_of_operators(self, formula:str,) -> str:

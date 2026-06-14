@@ -71,6 +71,9 @@ def check_formula_format(formula: str, expression_name: str, square_brackets_big
                 elif( i==len(formula)-1 or formula[i+1]!="(" ):
                     wrong_format_message += special_formula_without_opening_bracket_message
                     is_format_correct = False
+                
+                else:
+                    i+=1
             
 
             #invalid symbol check
