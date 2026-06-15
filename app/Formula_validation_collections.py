@@ -85,10 +85,11 @@ class Formula_validation_collections:
                         formula = formula[0] + default_index + formula[1:]
                 
                 elif(i==len(formula)-1):
-                    if(formula[i-1] in self.allowed_operator_chars):
+                    if(formula[i-1] == "(" or formula[i-1] in self.allowed_operator_chars):
                         formula = formula + default_index
                 
-                elif( formula[i-1] in self.allowed_operator_chars and (formula[i+1] == ")" or formula[i+1] in self.allowed_operator_chars)):
+                elif( (formula[i-1] == "(" or formula[i-1] in self.allowed_operator_chars) and 
+                     (formula[i+1] == ")" or formula[i+1] in self.allowed_operator_chars)):
                     formula = formula[:i+1] + default_index + formula[i+1:]
 
                 i+=1
@@ -107,16 +108,14 @@ class Formula_validation_collections:
             if(openining_bracket_index == -1):
                 break
 
-            closing_bracket_index = formula.find("]",openining_bracket_index+1)
-            if(closing_bracket_index == -1):
-                break
+            closing_bracket_index = formula.find("]",openining_bracket_index)
             
             collection_char = formula[openining_bracket_index-1]
             current_index_in_brackets = formula[openining_bracket_index+1:closing_bracket_index]
                 
             formula = formula[:closing_bracket_index] + f" if {current_index_in_brackets} < len({collection_char}) else 0" + formula[closing_bracket_index:]
 
-            start_index = formula.find("]",closing_bracket_index+1)
+            start_index = formula.find("]",openining_bracket_index)
         
         return formula
 

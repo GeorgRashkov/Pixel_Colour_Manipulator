@@ -70,7 +70,7 @@ class RGB_formula_initializer():
                 
                 elif( formula[i+1] == "["):
                     
-                    if(i==0 or formula[i-1] in allowed_operator_chars):
+                    if(i==0 or formula[i-1] == '(' or formula[i-1] in allowed_operator_chars):
                         closing_square_bracket_index = formula.find("]",i)
                         formula = formula[:i+1] + formula[closing_square_bracket_index+1:]
 
