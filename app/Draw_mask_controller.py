@@ -9,7 +9,7 @@ from Z_RGB_formulas_mask import RGB_formulas_mask
 from Window_functions import get_rgb_pixel_values_from_window
 from Z_RGB_formula import RGB_formula
 from Colour import Colour
-from Z_RGB_formula_checker import check_RGB_formula_format
+from RGB_formula_initializer import RGB_formula_initializer
 from typing import Callable
 
 
@@ -37,6 +37,8 @@ class Draw_mask_controller():
 
         self.rgb_formulas:dict[int,RGB_formula] = {}
         self.mask_colours:dict[int,Colour] = {}
+
+        self.rgb_formula_initializer = RGB_formula_initializer(use_many_areas=False)
 
 
     #<drawing functions
@@ -120,7 +122,7 @@ class Draw_mask_controller():
 
     #<functions for altering the values of rgb formulas and colours of mask
     def create_rgb_formula(self):
-        
+        """
         rgb_formulas_str = self.get_text_in_rgb_function_fields()
         are_rgb_formulas_correct = False
 
@@ -132,7 +134,14 @@ class Draw_mask_controller():
         colour = Colour(r=self.form_window_draw_mask.colour.r, g=self.form_window_draw_mask.colour.g, b=self.form_window_draw_mask.colour.b)
         rgb_formula = RGB_formula(red_func=rgb_formulas_str["r"], green_func=rgb_formulas_str["g"], blue_func=rgb_formulas_str["b"], use_pixel_areas=False)
         colour_id = self.get_id_of_colour(colour = colour)
-
+        """
+        rgb_formulas_str = self.get_text_in_rgb_function_fields()
+        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas_without_pixel_areas(r_formula=rgb_formulas_str["r"], g_formula=rgb_formulas_str["g"], b_formula=rgb_formulas_str["b"])
+        if(rgb_formula is None):
+            return
+        
+        colour = Colour(r=self.form_window_draw_mask.colour.r, g=self.form_window_draw_mask.colour.g, b=self.form_window_draw_mask.colour.b)
+        colour_id = self.get_id_of_colour(colour = colour)
       
         if(colour_id is None):
             colour_id = self.rgb_formulas_mask.get_min_not_used_id_for_rgb_formula()

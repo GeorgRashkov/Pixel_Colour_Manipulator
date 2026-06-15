@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor, QKeySequence
 from PyQt5.QtGui import QIntValidator
 
-from Z_RGB_formula_checker import RGB_formula_validators
 import RGB_formula_elements
 
 class FormWindow_SwapPixelValues(QWidget):
@@ -20,7 +19,7 @@ class FormWindow_SwapPixelValues(QWidget):
         self.lable_for__text_area_swap_pixel_areas = QLabel("pixel areas")
         self.text_area_swap_pixel_areas = QTextEdit()
         self.lable_for__text_area_rgb_formulas = QLabel("rgb formulas")
-        self.text_area_rgb_formulas = Text_area(allowed_symbols_regex = RGB_formula_validators.rgb_formula_valid_symbols_for_swap_areas_regex)
+        self.text_area_rgb_formulas = Text_area()
 
         positive_int_validator = QIntValidator(0, 999_999)
         int_validator = QIntValidator(-999_999, 999_999)
@@ -378,7 +377,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
 
 class Text_area(QTextEdit):
-    
+    """
     def __init__(self, allowed_symbols_regex):
         super().__init__()
         self.regex = re.compile(allowed_symbols_regex)
@@ -403,7 +402,10 @@ class Text_area(QTextEdit):
             Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down#move options        
         ):
             super().keyPressEvent(event)
-    
+    """
+    def __init__(self):
+        super().__init__()
+
     def append_on_same_line(self, text):
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)

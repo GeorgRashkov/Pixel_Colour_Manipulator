@@ -2,14 +2,14 @@ import numpy as np
 from Number_format_checker import check_for_positive_int_format
 from Formula_validation_collections import RGB_formula_validation_collections
 from Formula_checker import check_formula_format, does_formula_contain_specific_variables
-
-
+from Formula_validation_collections import RGB_formula_validation_collections
+"""
 class RGB_formula_validators:
     rgb_formula_valid_symbols = ['.','(',')','r','g','b','v','+','-','*','/','^','%','<','>','=','0','1','2','3','4','5','6','7','8','9']
     rgb_formula_valid_symbols_regex = "[.()rgbv+\\-*\\/^%<>=0123456789]"
     rgb_formula_valid_symbols_for_swap_areas_regex = "[{}.()rgbv+\\-*\\/^%<>=0123456789 \\[\\]]"
     rgb_default_formula_for_swap_areas = "r->[r] g->[g] b->[b]"
-
+"""
 """
 def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = False):
         
@@ -406,13 +406,46 @@ def get_closing_square_bracket(text:str, start_index:int):
 
 
 """
+def remove_indexes_from_rgb_channel_formula(formula:str) -> str:
+        
+        rgb_chars = ['r','g','b']
 
+        if(len(formula) <= 3):
+            return formula
+        
+        rgb_formula_validation_collections = RGB_formula_validation_collections()
+        allowed_operator_chars = rgb_formula_validation_collections.allowed_operator_chars
+
+        for rgb_char in rgb_chars:
+
+            i = 0
+            while(True):
+                
+                i = formula.find(rgb_char,i)
+                if(i==-1 or i==len(formula)-1):
+                    break
+                
+                elif( formula[i+1] == "["):
+                    
+                    if(i==0 or formula[i-1] == '(' or formula[i-1] in allowed_operator_chars):
+                        closing_square_bracket_index = formula.find("]",i)
+                        formula = formula[:i+1] + formula[closing_square_bracket_index+1:]
+
+                i+=1
+        
+        return formula
 
 
 def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_areas: bool = False):
     
     if(rgb_formula is None):
         return False
+    
+    rgb_formula_validation_collections = RGB_formula_validation_collections()
+    rgb_formula = rgb_formula_validation_collections.update_format(formula=rgb_formula)
+    
+    if(use_areas == False):
+        rgb_formula = remove_indexes_from_rgb_channel_formula(formula=rgb_formula)
 
     rgb_function = eval(f"lambda r,g,b,areas_count=1,v=np.array([0], dtype=np.uint8): {rgb_formula}")
     
@@ -437,7 +470,10 @@ def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = 
     if(does_formula_contain_atleast_one_rgb_channel == False):
         return False
     
-    is_format_correct = check_formula_format(formula=rgb_formula, expression_name=f"{channel} channel formula",  square_brackets_biggest_value=999_999, formula_validation_collections=rgb_formula_validation_collections)     
+    is_format_correct = check_formula_format(formula=rgb_formula, expression_name=f"{channel} channel formula",  square_brackets_biggest_value=999_999, formula_validation_collections=rgb_formula_validation_collections)  
+    if(is_format_correct == True):
+        is_format_correct = is_RGB_formula_compatible_with_dxcam(rgb_formula=rgb_formula, channel=channel, use_areas=use_areas)
+
     return is_format_correct
 
 """
@@ -541,11 +577,11 @@ def check_rgb_formulas_format_for_pixel_area(rgb_formulas_for_pixel_area: str, i
         if (check_RGB_formula_format(rgb_formula, channel=rgb_channels[formulas_counter], use_areas=True) == False):
             print(f"the previous error occurred at rgb formula index {index} (id {rgb_formula_id})")
             return False
-
+        """
         if(is_RGB_formula_compatible_with_dxcam(rgb_formula=rgb_formula,channel=rgb_channels[formulas_counter], use_areas=True) == False):
             print(f"the previous error occurred at rgb formula index {index} (id {rgb_formula_id})")
             return False
-
+        """
         formulas_counter+=1
     
     if(rgb_formulas_for_pixel_area.find("[", rgb_formula_end_index) != -1):

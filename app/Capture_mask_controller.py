@@ -7,7 +7,7 @@ from Number_format_checker import check_for_positive_int_format
 from Z_RGB_formulas_mask import RGB_formulas_mask
 from Z_RGB_formula import RGB_formula
 from Colour import Colour_range
-from Z_RGB_formula_checker import check_RGB_formula_format
+from RGB_formula_initializer import RGB_formula_initializer
 from typing import Callable
 
 
@@ -26,6 +26,8 @@ class Capture_mask_controller():
         
         self.rgb_formulas:dict[int,RGB_formula] = {}
         self.mask_colour_ranges:dict[int,Colour_range] = {}
+
+        self.rgb_formula_initializer = RGB_formula_initializer(use_many_areas=False)
 
 
     #<get functions (helpers)
@@ -102,9 +104,9 @@ class Capture_mask_controller():
 
 
     #<functions for altering the values of rgb formulas and mask
-
+    
     def create_rgb_formula(self):
-        
+        """
         rgb_formulas_str = self.get_text_in_rgb_function_fields()
         are_rgb_formulas_correct = False
 
@@ -114,8 +116,15 @@ class Capture_mask_controller():
                 return
         
         rgb_formula = RGB_formula(red_func=rgb_formulas_str["r"], green_func=rgb_formulas_str["g"], blue_func=rgb_formulas_str["b"], use_pixel_areas=False)
+        """
+
+        rgb_formulas_str = self.get_text_in_rgb_function_fields()
+        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas_without_pixel_areas(r_formula=rgb_formulas_str["r"], g_formula=rgb_formulas_str["g"], b_formula=rgb_formulas_str["b"])
+        if(rgb_formula is None):
+            return
+
         colour_range = self.get_colour_ranges_from_user_input()
-        if(colour_range == None):
+        if(colour_range is None):
             print("error: the colour ranges must be integers in the range [0-255]")
             return
         

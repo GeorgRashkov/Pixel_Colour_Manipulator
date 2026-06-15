@@ -3,10 +3,8 @@ from PyQt5.QtCore import Qt
 
 import Window_canvas, Z_Window_Canvas_swap_pixel_values, Z_Window_Form_swap_pixel_values
 
-from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, check_for_int_format
-from Z_RGB_formula_checker import check_rgb_formulas_format_for_pixel_areas, get_closing_square_bracket
+from Number_format_checker import check_for_positive_int_format, check_for_int_format
 
-from Z_RGB_formula import RGB_formula
 from Z_Pixel_area import Pixel_area, Rectangle
 from Z_Pixel_area_initializer import Pixel_area_initializer
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
@@ -17,6 +15,8 @@ from Z_Pixel_area_animations_initializer import Pixel_area_animations_initialize
 from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
+
+from RGB_formula_initializer import RGB_formula_initializer
 
 from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 
@@ -673,6 +673,7 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator.apply_pixel_areas(pixel_areas_dict=pixel_areas_dict)
     
 
+    """
     def apply_rgb_formulas_to__pixel_areas_manipulator(self):
 
         rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
@@ -684,16 +685,20 @@ class Swap_pixel_values_controller:
         #the dictionary has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
         rgb_formulas_dict = self.get_dictionary_of_rgb_formulas(rgb_formulas_for_pixel_areas = rgb_formulas_str)
         
-        """
-        if(rgb_formulas_dict is None or len(rgb_formulas_dict) == 0):
-            return
-        """
+        
 
         for id in rgb_formulas_dict.keys():
             rgb_formulas_dict[id] = RGB_formula(red_func=rgb_formulas_dict[id]["r"],green_func=rgb_formulas_dict[id]["g"],blue_func=rgb_formulas_dict[id]["b"],use_pixel_areas=True)
         
         self.pixel_areas_manipulator.apply_rgb_formulas(rgb_formulas_dict=rgb_formulas_dict)
-    
+    """
+
+    def apply_rgb_formulas_to__pixel_areas_manipulator(self):
+
+        rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
+        rgb_formula_initializer = RGB_formula_initializer()
+        rgb_formulas_dict = rgb_formula_initializer.create_rgb_formulas_with_pixel_areas(rgb_formulas=rgb_formulas_str)
+        self.pixel_areas_manipulator.apply_rgb_formulas(rgb_formulas_dict=rgb_formulas_dict)
 
     def apply_animations_to__pixel_areas_manipulator(self):
         
@@ -860,7 +865,7 @@ class Swap_pixel_values_controller:
             pixel_areas_manipulator.create_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
     """
             
-    
+    """
     #creates a dictonary which has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
     #the input parameter `rgb_formulas_for_pixel_areas` must be in a valid format before calling the function
     def get_dictionary_of_rgb_formulas(self, rgb_formulas_for_pixel_areas:str)  -> dict[int,dict[str,str]] :
@@ -908,7 +913,7 @@ class Swap_pixel_values_controller:
         return (int(rgb_formula_id), rgb_formulas)
 
     #helper methods>
-
+    """
 
 
     """
