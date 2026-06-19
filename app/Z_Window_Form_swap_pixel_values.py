@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QTextEdit, QLineEdit, QCheckBox, QRadioButton, QButtonGroup
 )
-import re
+
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor, QKeySequence
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtGui import QIntValidator
 
 import RGB_formula_elements
@@ -155,71 +155,6 @@ class FormWindow_SwapPixelValues(QWidget):
                 
         #rgb formula elements>
         
-        """
-        #<values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas
-
-        #list of animation ids
-        self.label_animation_ids = QLabel("a_ids")
-        self.text_box_animation_ids = QLineEdit()        
-        self.label_animation_ids.setBuddy(self.text_box_animation_ids)
-
-        #list of the ids of groups of animations (a group of animations is an object which contains the ids of 1 or more animations)
-        self.label_animations_group_ids = QLabel("ag_ids")
-        self.text_box_animations_group_ids = QLineEdit()        
-        self.label_animations_group_ids.setBuddy(self.text_box_animations_group_ids)
-
-
-        #the id of the RGB formula
-        self.label_rgb_formula_id = QLabel("f_id")
-        self.text_box_rgb_formula_id = QLineEdit()
-        self.text_box_rgb_formula_id.setValidator(positive_int_validator)
-        self.label_rgb_formula_id.setBuddy(self.text_box_rgb_formula_id)
-
-        #contains the pixel area ids which will passed to the RGB formula
-        self.label_pixel_area_ids_as_input_for_rgb_func = QLabel("p_ids")
-        self.text_box_pixel_area_ids_as_input_for_rgb_func = QLineEdit()
-        self.label_pixel_area_ids_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_ids_as_input_for_rgb_func)
-
-        #this is a list which contains the horizontal position of the top left corner of not defined pixel areas which will passed to the RGB formula
-        self.label_pixel_area_x_locations_as_input_for_rgb_func = QLabel("p_x")
-        self.text_box_pixel_area_x_locations_as_input_for_rgb_func = QLineEdit()
-        self.label_pixel_area_x_locations_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_x_locations_as_input_for_rgb_func)
-
-        #this is a list which contains the vertical position of the top left corner of not defined pixel areas which will passed to the RGB formula
-        self.label_pixel_area_y_locations_as_input_for_rgb_func = QLabel("p_y")
-        self.text_box_pixel_area_y_locations_as_input_for_rgb_func = QLineEdit()
-        self.label_pixel_area_y_locations_as_input_for_rgb_func.setBuddy(self.text_box_pixel_area_y_locations_as_input_for_rgb_func)
-        
-        #determines the version of the input image which will be passed to the RGB formula
-        self.label_image_version_as_input_for_rgb_func = QLabel("img_in_v")
-        self.text_box_image_version_as_input_for_rgb_func = QLineEdit()
-        self.text_box_image_version_as_input_for_rgb_func.setValidator(positive_int_validator)
-        self.label_image_version_as_input_for_rgb_func.setBuddy(self.text_box_image_version_as_input_for_rgb_func)
-
-        #determines the version of the image to which the changed pixel values will be applied
-        self.label_image_version_as_output_from_rgb_func = QLabel("img_out_v")
-        self.text_box_image_version_as_output_from_rgb_func = QLineEdit()
-        self.text_box_image_version_as_output_from_rgb_func.setValidator(positive_int_validator)
-        self.label_image_version_as_output_from_rgb_func.setBuddy(self.text_box_image_version_as_output_from_rgb_func)
-
-        #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on
-        self.label_image_version_as_output_from_rgb_func_stack = QLabel("img_out_v")
-        self.text_box_image_version_as_output_from_rgb_func_stack = QLineEdit()
-        self.text_box_image_version_as_output_from_rgb_func_stack.setValidator(positive_int_validator)
-        self.label_image_version_as_output_from_rgb_func_stack.setBuddy(self.text_box_image_version_as_output_from_rgb_func_stack)
-
-
-        #values to insert in the text area (the one containing the swap pixel areas) when clicking the canvas>
-        """
-
-
-        """
-        self.button_apply_swap_areas = QPushButton("Apply areas")
-        self.button_open_window__swap_areas_animations = QPushButton("Show animations")
-        self.button_open_window__swap_areas_masks = QPushButton("Show masks")
-        self.button_remove_swap_areas = QPushButton("Remove areas")
-        self.button_clear_canvas = QPushButton("Clear canvas")
-        """       
 
         self.button_open_window__swap_areas_animations = QPushButton("Show animations")
         self.button_open_window__swap_areas_masks = QPushButton("Show masks")
@@ -309,51 +244,6 @@ class FormWindow_SwapPixelValues(QWidget):
         
         v_layout.addLayout(rgb_formulas_layout)
 
-        """
-        h_layout = QHBoxLayout()
-        h_layout.setAlignment(Qt.AlignLeft)
-
-        h_layout.addWidget(self.label_animation_ids)
-        h_layout.addWidget(self.text_box_animation_ids)
-
-        h_layout.addWidget(self.label_animations_group_ids)
-        h_layout.addWidget(self.text_box_animations_group_ids)
-
-        h_layout.addWidget(self.label_rgb_formula_id)
-        h_layout.addWidget(self.text_box_rgb_formula_id)
-
-        h_layout.addWidget(self.label_pixel_area_ids_as_input_for_rgb_func)
-        h_layout.addWidget(self.text_box_pixel_area_ids_as_input_for_rgb_func)
-
-        h_layout.addWidget(self.label_pixel_area_x_locations_as_input_for_rgb_func)
-        h_layout.addWidget(self.text_box_pixel_area_x_locations_as_input_for_rgb_func)
-
-        h_layout.addWidget(self.label_pixel_area_y_locations_as_input_for_rgb_func)
-        h_layout.addWidget(self.text_box_pixel_area_y_locations_as_input_for_rgb_func)
-
-        h_layout.addWidget(self.label_image_version_as_input_for_rgb_func)
-        h_layout.addWidget(self.text_box_image_version_as_input_for_rgb_func)
-
-        h_layout.addWidget(self.label_image_version_as_output_from_rgb_func)
-        h_layout.addWidget(self.text_box_image_version_as_output_from_rgb_func)
-
-        h_layout.addWidget(self.label_image_version_as_output_from_rgb_func_stack)
-        h_layout.addWidget(self.text_box_image_version_as_output_from_rgb_func_stack)
-       
-
-        v_layout.addLayout(h_layout) 
-        """
-       
-       
-        """
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(self.button_apply_swap_areas)
-        h_layout.addWidget(self.button_open_window__swap_areas_animations)
-        h_layout.addWidget(self.button_open_window__swap_areas_masks)
-        h_layout.addWidget(self.button_remove_swap_areas)
-        h_layout.addWidget(self.button_clear_canvas)
-        v_layout.addLayout(h_layout)
-        """
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_open_window__swap_areas_animations)
@@ -377,32 +267,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
 
 class Text_area(QTextEdit):
-    """
-    def __init__(self, allowed_symbols_regex):
-        super().__init__()
-        self.regex = re.compile(allowed_symbols_regex)
 
-    def keyPressEvent(self, event):
-        
-        # Allow standard shortcuts (Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A, etc.)
-        if event.matches(QKeySequence.Copy) or \
-            event.matches(QKeySequence.Paste) or \
-            event.matches(QKeySequence.Cut) or \
-            event.matches(QKeySequence.SelectAll) or \
-            event.matches (QKeySequence.Redo) or \
-            event.matches (QKeySequence.Undo):
-            super().keyPressEvent(event)
-            return
-        
-        # Allow only specific symbols to be used in the text area
-        text = event.text()
-        if self.regex.fullmatch(text) or event.key() in (
-            Qt.Key_Backspace, Qt.Key_Delete,#delete options 
-            Qt.Key_Return, Qt.Key_Enter,#new line option
-            Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down#move options        
-        ):
-            super().keyPressEvent(event)
-    """
     def __init__(self):
         super().__init__()
 

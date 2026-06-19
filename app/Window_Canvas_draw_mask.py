@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QPen, QMouseEvent, QColor, QImage, QCursor, QPixmap
 from PyQt5.QtCore import Qt, QPointF
-import numpy as np
 
 #import math
 
@@ -102,21 +101,4 @@ class Window_Canvas_draw_mask(QWidget):
         """Convert pixel point → normalized (0–1) coordinates."""
         return QPointF(point.x() / self.width(), point.y() / self.height())
     
-    def get_pixel_data(self):
-        """Return the current canvas as a NumPy array (H x W x 4, RGBA)."""
-        # Grab the widget’s current visual state as a QImage
-        qimage = self.grab().toImage()
-
-        # Ensure format is RGBA8888 for consistent bytes layout
-        qimage = qimage.convertToFormat(QImage.Format_RGBA8888)
-
-        width = qimage.width()
-        height = qimage.height()
-
-        # Get the raw pointer to the image data
-        ptr = qimage.bits()
-        ptr.setsize(qimage.byteCount())
-
-        # Create a NumPy array (height, width, 4)
-        arr = np.frombuffer(ptr, np.uint8).reshape((height, width, 4))
     

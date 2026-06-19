@@ -25,9 +25,6 @@ class Swap_pixel_values_controller:
     def __init__(self):
 
         self.pixel_areas_masks_controller = Pixel_areas_masks_controller()
-        """
-        self.pixel_areas_masks_controller.form_window_draw_mask.button_remove_masks.clicked.connect(self.remove_masks)
-        """
         
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
@@ -157,58 +154,6 @@ class Swap_pixel_values_controller:
 
     #<code for working with the text inside the text area containing the information for the pixel swap areas
 
-    """
-    #draws the rectangle and gets its coordinates
-    def canvas_clicked(self, pos, button):
-        
-        if button == Qt.LeftButton:
-            
-            x = pos.x()
-            y = pos.y()
-               
-            
-            #draws the rectangle and get's its coordinates
-            x, y, w, h = self.canvas_window.canvas.left_mouse_button_pressed(x = x, y = y)
-
-            #get a proper value for the id of the drawn area
-            swap_pixel_areas_from_text_area = self.get_text_area_swap_pixel_areas_formatted_text()
-            swap_pixel_area_id = self.get_first_unique_positive_number(text = swap_pixel_areas_from_text_area, start_separator = "id:", end_separator = ";", allowed_symbols_before_start_separator = ["{",";"] ,is_zero_allowed=False)
-            if(swap_pixel_area_id == -1):
-                print("error: the maximum number of areas was reached")
-                return
-
-            #get data which will be inserted in the text area for pixel swap values and the text area for rgb functions
-            area_id = str(swap_pixel_area_id)
-
-            #<pixel area properties
-            a_ids = self.form_window_pixel_areas.text_box_animation_ids.text().replace(" ", "")
-            ag_ids = self.form_window_pixel_areas.text_box_animations_group_ids.text().replace(" ", "")
-            f_id = self.form_window_pixel_areas.text_box_rgb_formula_id.text().replace(" ", "")
-            p_ids = self.form_window_pixel_areas.text_box_pixel_area_ids_as_input_for_rgb_func.text().replace(" ", "")
-            p_x = self.form_window_pixel_areas.text_box_pixel_area_x_locations_as_input_for_rgb_func.text().replace(" ", "")
-            p_y = self.form_window_pixel_areas.text_box_pixel_area_y_locations_as_input_for_rgb_func.text().replace(" ", "")
-            img_in_v = self.form_window_pixel_areas.text_box_image_version_as_input_for_rgb_func.text().replace(" ", "")
-            img_out_v = self.form_window_pixel_areas.text_box_image_version_as_output_from_rgb_func.text().replace(" ", "")
-            img_out_stack = self.form_window_pixel_areas.text_box_image_version_as_output_from_rgb_func_stack.text().replace(" ", "")
-            
-            a_ids = self.get_proper_int_values(values=a_ids, element_name = "a_ids")#animation ids
-            ag_ids = self.get_proper_int_values(values=ag_ids, element_name = "ag_ids")#animation groups ids
-            f_id = self.get_proper_int_value(value=f_id, element_name = "f_id")#rgb function id
-            p_ids = self.get_proper_int_values(values=p_ids, element_name = "p_ids")#pixel areas ids
-            p_x = self.get_proper_int_values(values=p_x, element_name = "p_x")#pixel areas x coordinates
-            p_y = self.get_proper_int_values(values=p_y, element_name = "p_y")#pixel areas y coordinates
-            img_in_v = self.get_proper_int_value(value=img_in_v, element_name = "img_in_v")#image input version
-            img_out_v = self.get_proper_int_value(value=img_out_v, element_name = "img_out_v")#image output version
-            img_out_stack = self.get_proper_int_value(value=img_out_stack, element_name = "img_out_stack")#image ouput stack
-            #pixel area properties>
-
-            #append the pixel are properties of the drawn rectangle to the text area
-            self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h, a_ids=a_ids, ag_ids=ag_ids,
-            f_id=f_id, p_ids=p_ids, p_x=p_x, p_y=p_y, img_in_v=img_in_v, img_out_v=img_out_v, img_out_stack=img_out_stack)
-            
-            #append the pixel are properties of the drawn rectangle to the text area
-            self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h,)
-    """
 
     #draws the rectangle and gets its coordinates
     def canvas_clicked(self, pos, button):
@@ -306,121 +251,6 @@ class Swap_pixel_values_controller:
 
         self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
 
-    """
-    def get_first_unique_positive_number(self, text:str, start_separator:str, end_separator:str, allowed_symbols_before_start_separator:list, is_zero_allowed:bool):
-
-        start_index = 0      
-        used_numbers = [] 
-
-        while (True):
-                        
-            start_separator_index = text.find(start_separator, start_index)#get's the index of the first symbol of the separator
-            if(start_separator_index == -1):
-                break
-            num_index = start_separator_index + len(start_separator) #get's the index of the first symbol of the number
-
-            end_separator_index = text.find(end_separator, num_index)#get's the index of the first symbol of the separator
-            if(end_separator_index == -1):
-                break
-            
-            if(num_index == end_separator_index):#execute this code if there is nothing between the start separator and the end separator
-                start_index = end_separator_index + len(end_separator) #get's the index placed after the last symbol of the separator
-                continue
-
-            if(num_index > 0):
-                if(text[num_index-len(start_separator)-1] not in allowed_symbols_before_start_separator):
-                    start_index = end_separator_index + len(end_separator) #get's the index placed after the last symbol of the separator
-                    continue
-
-            num = text[num_index:end_separator_index]
-            is_number_correct = check_for_positive_int_format(txt_value = num, is_zero_allowed=is_zero_allowed)
-            if(is_number_correct == True):
-                used_numbers.append(int(num))
-
-            start_index = end_separator_index + len(end_separator) #get's the index placed after the last symbol of the separator
-        
-        #finds the first unused number
-        for i in range (1, 1_000_000):
-            if(i not in used_numbers):
-                return i
-        
-        return -1 #this code should never be reached unless the user defines over 999_999 valid numbers
-
-            
-
-
-    def get_proper_int_value(self, value:str, element_name:str = ""):
-        
-        if(value == ""):
-            return None 
-        
-        is_number_in_correct_format = check_for_positive_int_format(value)
-        if(is_number_in_correct_format == False): 
-            value = None 
-            print(f"warning: the value of the element `{element_name}` is not applied because the element was in wrong format (only numbers are allowed)")
-                    
-        return value
-    
-    def get_proper_int_values(self, values:str, element_name:str = ""):
-        
-        if(values == ""):
-            return None 
-        
-        are_numbers_in_correct_format = check_numbers_from_string(txt_value=values,separator=",", search_for_floats=False, search_for_positives_only=True)
-        if( are_numbers_in_correct_format == False): 
-            values = None  
-            print(f"warning: the values of the element `{element_name}` are not applied because the element was in wrong format (only numbers and commas are allowed).")
-        
-        return values
-
-    def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str, a_ids:str, ag_ids:str, f_id:str, p_ids:str, p_x:str, p_y:str, img_in_v:str, img_out_v:str, img_out_stack:str): 
-        text = "{"
-        if(id is not None):
-            text = f"{text}id:{id}; "
-
-        if(x is not None):
-            text = f"{text}x:{x}; "
-
-        if(y is not None):
-            text = f"{text}y:{y}; "
-
-        if(w is not None):
-            text = f"{text}w:{w}; "
-
-        if(h is not None):
-            text = f"{text}h:{h}; "
-        
-        if(a_ids is not None):
-            text = f"{text}a_ids:[{a_ids}]; "
-        
-        if(ag_ids is not None):
-            text = f"{text}ag_ids:[{ag_ids}]; "
-
-        if(f_id is not None):
-            text = f"{text}f_id:{f_id}; "
-
-        if(p_ids is not None):
-            text = f"{text}p_ids:[{p_ids}]; "
-                
-        if(p_x is not None):
-            text = f"{text}p_x:[{p_x}]; "
-            
-        if(p_y is not None):
-            text = f"{text}p_y:[{p_y}]; "
-            
-        if(img_in_v is not None):
-            text = f"{text}img_in_v:{img_in_v}; "
-            
-        if(img_out_v is not None):
-            text = f"{text}img_out_v:{img_out_v}; "
-            
-        if(img_out_stack is not None):
-            text = f"{text}img_out_stack:{img_out_stack}; "
-        
-        text = text[0:-2] + "}" 
-
-        self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
-    """
     #code for working with the text inside the text area containing the information for the pixel swap areas>
 
     
@@ -497,108 +327,6 @@ class Swap_pixel_values_controller:
 
 
 
-#when called this function will remove everything from the canvas and will put in there rectangles based on the coordinates written in the text area 
-    """
-    def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
-        
-        #<rgb formulas
-
-        rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
-
-        #execute this code if the format of the rgb formulas is wrong 
-        if(check_rgb_formulas_format_for_pixel_areas(rgb_formulas_for_pixel_areas=rgb_formulas_str)== False):
-            return None
-        
-        #the dictionary has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
-        rgb_formulas_dict = self.get_dictionary_of_rgb_formulas(rgb_formulas_for_pixel_areas = rgb_formulas_str)
-        
-        if(rgb_formulas_dict is None or len(rgb_formulas_dict) == 0):
-            print("warning: the areas will not be applied because there was no rgb formula")
-            return None
-
-        for id in rgb_formulas_dict.keys():
-            rgb_formulas_dict[id] = RGB_formula(red_func=rgb_formulas_dict[id]["r"],green_func=rgb_formulas_dict[id]["g"],blue_func=rgb_formulas_dict[id]["b"],use_pixel_areas=True)
-
-        #rgb formulas>
-
-
-        #<pixel areas
-
-        pixel_area_initializer = Pixel_area_initializer()
-
-        #returns a list  of objects of type `Pixel_area`
-        pixel_areas = pixel_area_initializer.create_pixel_areas(text=self.get_text_area_swap_pixel_areas_formatted_text())
-
-        #execute this code if the format of the pixel areas is wrong 
-        if(pixel_areas is None or len(pixel_areas)==0):            
-            return None          
-
-        pixel_areas = self.update_canvas(pixel_areas=pixel_areas)# get's those areas whose top left corner and bottom right corner are inside the canvas
-        
-        #execute this code if all pixel areas with valid format were outside the canvas
-        if(pixel_areas is None or len(pixel_areas)==0):            
-            return None               
-
-        pixel_areas_dict = {}
-        for pixel_area in pixel_areas:
-            pixel_areas_dict[pixel_area.id] = pixel_area
-
-        
-        #pixel areas>
-
-        #<pixel areas animations
-
-        pixel_area_animations_initializer = Pixel_area_animations_initializer()
-        pixel_areas_animations_formatted_text = self.get_text_area_pixel_areas_animations_formatted_text()
-        pixel_areas_animations = None
-        pixel_areas_animations_dict = {}
-        
-        if(len(pixel_areas_animations_formatted_text) > 0):
-            pixel_areas_animations = pixel_area_animations_initializer.create_animations_for_pixel_areas(text=pixel_areas_animations_formatted_text)
-            if(pixel_areas_animations is None or len(pixel_areas_animations)==0):            
-                return None 
-            
-            for pixel_area_animation in pixel_areas_animations:
-                pixel_areas_animations_dict[pixel_area_animation.id] = pixel_area_animation
-        
-         
-        pixel_area_animations_groups_initializer = Pixel_area_animation_groups_initializer()
-        pixel_areas_animations_groups_formatted_text = self.get_text_area_pixel_areas_animations_groups_formatted_text()
-        pixel_areas_animations_groups = None
-        pixel_areas_animations_groups_dict = {}
-
-        if(len(pixel_areas_animations_groups_formatted_text) > 0):
-            pixel_areas_animations_groups = pixel_area_animations_groups_initializer.create_animation_groups_for_pixel_areas(text=pixel_areas_animations_groups_formatted_text)
-            if(pixel_areas_animations_groups is None or len(pixel_areas_animations_groups)==0):            
-                return None 
-        
-            for pixel_area_animation_group in pixel_areas_animations_groups:
-                pixel_areas_animations_groups_dict[pixel_area_animation_group.id] = pixel_area_animation_group
-
-        #pixel areas animations>
-
-        #<pixel area animation manipulator
-        
-        pixel_area_animation_manipulator = None
-        if(len(pixel_areas_animations_dict)>0 or len(pixel_areas_animations_groups_dict)>0):
-            pixel_area_animation_manipulator = Pixel_area_animation_manipulator(pixel_areas_animations_dict=pixel_areas_animations_dict, pixel_areas_animations_groups_dict=pixel_areas_animations_groups_dict)
-        
-        #pixel area animation manipulator>
-
-        #<pixel area manipulator
-        areas_resize_behaviour = self.get_areas_resize_behaviour()
-        pixel_areas_manipulator = Pixel_areas_manipulator(pixel_areas_dict=pixel_areas_dict, rgb_formulas_dict=rgb_formulas_dict, animations_manipulator=pixel_area_animation_manipulator, areas_behiour_when_resizing_main_window=areas_resize_behaviour, get_inner_areas_fast=self.form_window_pixel_areas.checkBox_fast_area_creation.isChecked(), use_copy_for_replicas=self.form_window_pixel_areas.checkBox_use_copy_for_replicas.isChecked())
-        pixel_areas_manipulator.set_aspect_ratio(initial_image_width=self.canvas_window.canvas.width(), initial_image_height=self.canvas_window.canvas.height())
-
-        self.try_to_create_image_version_controller(pixel_areas_manipulator=pixel_areas_manipulator)
-        #pixel area manipulator>
-        
-        self.pixel_areas_manipulator = pixel_areas_manipulator
-        
-        return self.pixel_areas_manipulator
-    """
-
-    #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     #<those functions must be called from the outside
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
@@ -672,26 +400,6 @@ class Swap_pixel_values_controller:
         
         self.pixel_areas_manipulator.apply_pixel_areas(pixel_areas_dict=pixel_areas_dict)
     
-
-    """
-    def apply_rgb_formulas_to__pixel_areas_manipulator(self):
-
-        rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
-
-        #check whether the format of the rgb formula is correct
-        if(check_rgb_formulas_format_for_pixel_areas(rgb_formulas_for_pixel_areas=rgb_formulas_str) == False):
-            return
-        
-        #the dictionary has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
-        rgb_formulas_dict = self.get_dictionary_of_rgb_formulas(rgb_formulas_for_pixel_areas = rgb_formulas_str)
-        
-        
-
-        for id in rgb_formulas_dict.keys():
-            rgb_formulas_dict[id] = RGB_formula(red_func=rgb_formulas_dict[id]["r"],green_func=rgb_formulas_dict[id]["g"],blue_func=rgb_formulas_dict[id]["b"],use_pixel_areas=True)
-        
-        self.pixel_areas_manipulator.apply_rgb_formulas(rgb_formulas_dict=rgb_formulas_dict)
-    """
 
     def apply_rgb_formulas_to__pixel_areas_manipulator(self):
 
@@ -815,9 +523,6 @@ class Swap_pixel_values_controller:
 
 ## functions for applying/setting/removing elements for the pixel area manipulator>
 
-    #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
-
-
 
     #<helper methods
 
@@ -853,106 +558,6 @@ class Swap_pixel_values_controller:
             return False
 
         return True
-    """
-    def try_to_create_image_version_controller(self, pixel_areas_manipulator:Pixel_areas_manipulator):
-        
-        if(self.should_create_image_version_contoller()==True):
-            
-            image_version_start_index = 0 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
-            image_version_increment = 1 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
-            image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
-            
-            pixel_areas_manipulator.create_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
-    """
-            
-    """
-    #creates a dictonary which has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
-    #the input parameter `rgb_formulas_for_pixel_areas` must be in a valid format before calling the function
-    def get_dictionary_of_rgb_formulas(self, rgb_formulas_for_pixel_areas:str)  -> dict[int,dict[str,str]] :
-
-        rgb_formulas_pixel_area_start_index = 0
-        rgb_formulas_pixel_area_end_index = 0        
-        rgb_formulas_pixel_areas_dict = {}
-        
-        while(rgb_formulas_pixel_area_end_index < len(rgb_formulas_for_pixel_areas)-1):
-
-            rgb_formulas_pixel_area_start_index = rgb_formulas_for_pixel_areas.find("{", rgb_formulas_pixel_area_end_index)
-            rgb_formulas_pixel_area_end_index = rgb_formulas_for_pixel_areas.find("}", rgb_formulas_pixel_area_start_index)
-
-            rgb_formulas_current_pixel_area = rgb_formulas_for_pixel_areas[rgb_formulas_pixel_area_start_index+1: rgb_formulas_pixel_area_end_index]
-            (rgb_formula_id, rgb_formulas_dict) = self.get_rgb_formulas(rgb_formulas_for_pixel_area = rgb_formulas_current_pixel_area)
-            rgb_formulas_pixel_areas_dict[rgb_formula_id] = rgb_formulas_dict
-        
-        return rgb_formulas_pixel_areas_dict
-
-    
-
-    def get_rgb_formulas(self, rgb_formulas_for_pixel_area: str):   
-                
-        rgb_formula_id_index_start = rgb_formulas_for_pixel_area.find("|", 0)
-        rgb_formula_id_index_end = rgb_formulas_for_pixel_area.find("|", rgb_formula_id_index_start+1)
-
-        rgb_formula_id = rgb_formulas_for_pixel_area[rgb_formula_id_index_start+1:rgb_formula_id_index_end]
-            
-        rgb_channel_index = 0
-        rgb_formula_start_index = 0
-        rgb_formula_end_index = 0
-        rgb_channels = ["r", "g", "b"]
-        rgb_formulas = {}
-
-        while (rgb_channel_index < 3):
-
-            rgb_formula_start_index = rgb_formulas_for_pixel_area.find("[", rgb_formula_end_index)
-            rgb_formula_end_index = get_closing_square_bracket(text=rgb_formulas_for_pixel_area,start_index=rgb_formula_start_index)
-           
-            rgb_formula = rgb_formulas_for_pixel_area[rgb_formula_start_index+1:rgb_formula_end_index]
-            rgb_formulas[rgb_channels[rgb_channel_index]] = rgb_formula
-            
-            rgb_channel_index+=1
-
-        return (int(rgb_formula_id), rgb_formulas)
-
-    #helper methods>
-    """
-
-
-    """
-    #this function must be called from outside
-    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
-
-        if(self.pixel_areas_manipulator is not None):
-
-            rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_main_areas_as_rectangles()
-            
-            masks = self.pixel_areas_masks_controller.get_masks()
-            masks_copies = []
-
-            for mask in masks:
-                
-                if(mask.pixel_area_id in rectangles_with_ids.keys()):
-                    rec = rectangles_with_ids[mask.pixel_area_id]
-                    img_for_colour_ranges_for_current_mask =  img_for_colour_ranges[rec.x : rec.x+rec.w , rec.y : rec.y+rec.h , :]
-                    mask.apply_regions(img_for_colour_ranges=img_for_colour_ranges_for_current_mask)
-                    masks_copies.append(mask.copy())
-
-            self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
-    
-    def remove_masks(self):
-
-        if(self.pixel_areas_manipulator is not None):
-            self.pixel_areas_manipulator.remove_masks()
-
-    """
-
-
-
-
-
-
-
-
-
 
 
 

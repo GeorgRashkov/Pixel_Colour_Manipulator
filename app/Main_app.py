@@ -60,9 +60,6 @@ class MainApp:
         self.convolutional_filter_window.button_apply_filters.clicked.connect(self.apply_convolutional_filters)
         self.convolutional_filter_window.button_remove_filters.clicked.connect(self.remove_convolutional_filters)
         
-        """
-        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_apply_masks.clicked.connect(self.apply_masks_to_swap_areas)
-        """
 
         self.window_dynamic_variables = Window_dynamic_variables()
         self.window_dynamic_variables.button_apply_dynamic_variables.clicked.connect(self.apply_dynamic_variables)
@@ -75,20 +72,6 @@ class MainApp:
     def run(self):
         sys.exit(self.app.exec_())
         
-    """
-    def apply_masks_to_swap_areas(self):
-        img_for_colour_ranges = self.get_rgb_pixel_values_from_capture_window()
-        self.swap_pixel_values_controller.apply_masks(img_for_colour_ranges=img_for_colour_ranges)
-
-    
-    def apply_swap_pixel_areas(self):
-        pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
-        self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
-    
-
-    def remove_swap_pixel_areas(self):
-        self.capture_window.remove_pixel_areas_manipulator()
-    """
 
     def apply_elements_to_pixel_areas_manipulator(self):
 

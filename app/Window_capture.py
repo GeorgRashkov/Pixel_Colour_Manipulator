@@ -46,14 +46,8 @@ class CaptureWindow(QtWidgets.QWidget):
         
         self.dynamic_variables:list[Dynamic_variable] = []
         self.dynamic_variables_values:np.ndarray[np.uint8] = np.array([0], dtype=np.uint8)
-        #self.mask_filters = None
-        #self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
-        #self.default_color_function = lambda r,g,b: np.stack([r, g, b], axis=-1)#{"r": lambda r,g,b: r, "g": lambda r,g,b: g, "b": lambda r,g,b: b}
         self.default_color_function = lambda r,g,b, areas_count=1, v=np.array([0], dtype=np.uint8) : np.stack([r, g, b], axis=-1)
         
-        # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
-        # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
-        self.swap_pixel_areas = None #when initialized it must a numpy array
         
 
         self.rgb_mask:RGB_formulas_mask = None
@@ -571,34 +565,11 @@ class CaptureWindow(QtWidgets.QWidget):
         transformed_image = self.pixel_areas_manipulator.transform_image(img=img, v=self.dynamic_variables_values)
         return transformed_image
     
-    """
-    def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
-
-        if(pixel_areas_manipulator is not None):
-            self.pixel_areas_manipulator = pixel_areas_manipulator
-    
-    def remove_pixel_areas_manipulator(self):
-        self.pixel_areas_manipulator = None
-    """
 
     #the input must be a pixel areas manipulator or None
     def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
         self.pixel_areas_manipulator = pixel_areas_manipulator
     
-    """
-    def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
-            
-        self.color_functions = None if(color_functions==None or len(color_functions)==0) else color_functions
-        self.default_color_function = self.default_color_function if(default_color_function==None) else default_color_function
-        self.mask_filters = None if(mask_filters==None or len(mask_filters)==0) else mask_filters
-
-    
-
-    def remove_mask(self):
-
-        self.color_functions = None
-        self.mask_filters = None                            
-    """
    
 
     def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):

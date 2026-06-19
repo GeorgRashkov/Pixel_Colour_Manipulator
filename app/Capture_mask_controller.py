@@ -106,17 +106,6 @@ class Capture_mask_controller():
     #<functions for altering the values of rgb formulas and mask
     
     def create_rgb_formula(self):
-        """
-        rgb_formulas_str = self.get_text_in_rgb_function_fields()
-        are_rgb_formulas_correct = False
-
-        for rgb_channel in rgb_formulas_str.keys():
-            are_rgb_formulas_correct = check_RGB_formula_format(rgb_formula=rgb_formulas_str[rgb_channel], channel=rgb_channel, use_areas=False)
-            if(are_rgb_formulas_correct == False):
-                return
-        
-        rgb_formula = RGB_formula(red_func=rgb_formulas_str["r"], green_func=rgb_formulas_str["g"], blue_func=rgb_formulas_str["b"], use_pixel_areas=False)
-        """
 
         rgb_formulas_str = self.get_text_in_rgb_function_fields()
         rgb_formula = self.rgb_formula_initializer.create_rgb_formulas_without_pixel_areas(r_formula=rgb_formulas_str["r"], g_formula=rgb_formulas_str["g"], b_formula=rgb_formulas_str["b"])

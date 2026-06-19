@@ -1,7 +1,5 @@
-import numpy as np
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLineEdit, QLabel
 from RGB_formula_elements import RGB_formula_elements
-from Colour import Colour
 from PyQt5.QtGui import QIntValidator
 
 class Group_box_for_setting_colour_map(QWidget):

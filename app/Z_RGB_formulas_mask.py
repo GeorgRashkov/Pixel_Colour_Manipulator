@@ -79,7 +79,7 @@ class RGB_formulas_mask:
         self.mask_resized = self.mask_original.copy()
     
 
-     #`img_mask` must be a numpy array with shape (Height, Width, 3[RGB])
+    #`img_mask` must be a numpy array with shape (Height, Width, 3[RGB])
     #`rgb_functions` must be a dictionary which has for keys the ids of rgb functions while the values must be a valid RGB formulas represented as lambda functions 
     #`colour_ranges` must be a dictionary which has for keys the ids of the colour ranges while the values must be objects of type `Colour_range`
     #a rgb formula (a lambda function inside `rgb_functions`) will be applied only to those regions whose colour range id (in `colour_ranges`) matches the id of the rgb formula 

@@ -32,37 +32,6 @@ class RGB_formula_elements(QWidget):
         message = f"Red channel formula: {self.red_func} \nGreen channel formula: {self.green_func} \nBlue channel formula: {self.blue_func}"
         print(message)
    
-    """
-    def change_RGB_formula(self):       
-
-        r_formula = self.text_boxes["r"].text().replace(' ', '')# removes spaces 
-        r_formula = None if (RGB_formula_checker.check_RGB_formula_format(r_formula, "red", self.use_areas)==False) else r_formula.replace('^','**').replace('=','==')#replaces '^' with '**' and '=' with '=='
-        r_formula = None if (RGB_formula_checker.is_RGB_formula_compatible_with_dxcam(r_formula, "red", self.use_areas)==False) else r_formula
-
-        g_formula = self.text_boxes["g"].text().replace(' ', '')# removes spaces
-        g_formula = None if (RGB_formula_checker.check_RGB_formula_format(g_formula, "green", self.use_areas)==False) else g_formula.replace('^','**').replace('=','==')#replaces '^' with '**' and '=' with '=='
-        g_formula = None if (RGB_formula_checker.is_RGB_formula_compatible_with_dxcam(g_formula, "green", self.use_areas)==False) else g_formula
-        
-        b_formula = self.text_boxes["b"].text().replace(' ', '')# removes spaces
-        b_formula = None if (RGB_formula_checker.check_RGB_formula_format(b_formula, "blue", self.use_areas)==False) else b_formula.replace('^','**').replace('=','==')#replaces '^' with '**' and '=' with '=='
-        b_formula = None if (RGB_formula_checker.is_RGB_formula_compatible_with_dxcam(b_formula, "blue", self.use_areas)==False) else b_formula
-
-        if(r_formula is not None and g_formula is not None and b_formula is not None):
-            self.set_color_variables(r_formula, g_formula, b_formula)
-    
-
-    def set_color_variables(self, r_formula, g_formula, b_formula):
-
-        rgb_formula = RGB_formula(red_func=r_formula, green_func=g_formula, blue_func=b_formula, use_pixel_areas=False)
-        
-        self.rgb_function_str = rgb_formula.rgb_function_str
-        self.rgb_function = rgb_formula.rgb_function
-
-        self.red_func = rgb_formula.red_func
-        self.green_func = rgb_formula.green_func
-        self.blue_func = rgb_formula.blue_func
-    """
-
 
 
 

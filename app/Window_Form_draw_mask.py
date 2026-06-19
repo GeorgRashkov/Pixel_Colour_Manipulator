@@ -52,7 +52,6 @@ class Window_Form_draw_mask(QWidget):
         self.sliders_min_value = 0
         self.sliders_max_value = 5
         self.slider_step = 51
-        #self.sliders_values = {"r":self.sliders_min_value, "g":self.sliders_min_value, "b":self.sliders_min_value}
 
         self.slider_red = get_colour_slider(colour_str="red", min_value=self.sliders_min_value, max_value=self.sliders_max_value, initial_value=self.sliders_min_value)
         self.slider_green = get_colour_slider(colour_str="green", min_value=self.sliders_min_value, max_value=self.sliders_max_value, initial_value=self.sliders_min_value)
