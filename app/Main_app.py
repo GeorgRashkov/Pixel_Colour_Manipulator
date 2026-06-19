@@ -1,8 +1,11 @@
 from PyQt5 import QtWidgets
-from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 import sys
 import numpy as np
+
+from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
+
 import Window_capture, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
+from Window_dynamic_variables import Window_dynamic_variables
 from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
 from Z_RGB_formulas_mask import RGB_formulas_mask
@@ -46,6 +49,7 @@ class MainApp:
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
+        self.capture_window.button_open_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
         
         #settings window
         self.settings_window = Window_settings.FormWindow_Settings()
@@ -59,6 +63,11 @@ class MainApp:
         """
         self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_apply_masks.clicked.connect(self.apply_masks_to_swap_areas)
         """
+
+        self.window_dynamic_variables = Window_dynamic_variables()
+        self.window_dynamic_variables.button_apply_dynamic_variables.clicked.connect(self.apply_dynamic_variables)
+        self.window_dynamic_variables.button_remove_dynamic_variables.clicked.connect(self.remove_dynamic_variables)
+
     
         self.capture_window.show()
         sys.exit(self.app.exec_())
@@ -126,6 +135,13 @@ class MainApp:
         self.capture_window.remove_rgb_kernels()
     
 
+    def apply_dynamic_variables(self):
+        dynamic_variables = self.window_dynamic_variables.get_dynamic_variables()
+        self.capture_window.set_dynamic_variables(dynamic_variables=dynamic_variables)
+
+    def remove_dynamic_variables(self):
+        self.capture_window.set_dynamic_variables(dynamic_variables=[])
+
 
     def show_draw_formula_drawing(self):
         
@@ -156,7 +172,9 @@ class MainApp:
     def open_window_draw_formula(self):
         open_or_minimize_window(window=self.draw_formula_controller.form_window_draw_formula)
        
-        
+    def open_window_dynamic_variables(self):
+        open_or_minimize_window(self.window_dynamic_variables)
+
 
     def apply_settings(self):
         capture_time, slider_min_value, slider_max_value, RGB_use_doubles, color_functions_execution_order = self.settings_window.apply_settings()

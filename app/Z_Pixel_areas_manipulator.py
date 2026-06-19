@@ -193,7 +193,7 @@ class Pixel_areas_manipulator:
     #this is the main function for applying the manipulator on an image
     #this function must be called from outside
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image(self, img:np) -> np.array:
+    def transform_image(self, img:np, v:np.ndarray[np.uint8]) -> np.array:
 
         if(len(self.pixel_areas_dict) == 0 or len(self.rgb_formulas_dict) == 0):
             return img       
@@ -225,7 +225,8 @@ class Pixel_areas_manipulator:
                 continue
             
             image_version_input = image_versions[pixel_area.img_in_v]
-            rgb_formula_dynamic_variables = np.array(pixel_area.current_f_vars, dtype=np.uint8) if( len(pixel_area.current_f_vars) > 0 ) else np.array([0], dtype=np.uint8)
+            #rgb_formula_dynamic_variables = np.array(pixel_area.current_f_vars, dtype=np.uint8) if( len(pixel_area.current_f_vars) > 0 ) else np.array([0], dtype=np.uint8)
+            rgb_formula_dynamic_variables = np.array(np.concatenate([pixel_area.current_f_vars, v]), dtype=np.uint8)
             rgb_formulas_for_masks:list = [self.rgb_formulas_dict[f_id] for f_id in pixel_area.mask_f_ids if f_id in self.rgb_formulas_dict]
             
             #this is a numpy array of shape (AREA, Height, Width, 3[RGB])

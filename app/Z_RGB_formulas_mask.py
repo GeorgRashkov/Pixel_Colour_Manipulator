@@ -112,7 +112,7 @@ class RGB_formulas_mask:
 
 
 
-    def apply_mask_to_image(self, img:np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:#`img` must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
+    def apply_mask_to_image(self, img:np.ndarray[np.uint8], v:np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:#`img` must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
         
         if(self.mask_original is None or self.mask_resized is None):
             return img
@@ -132,7 +132,7 @@ class RGB_formulas_mask:
             g = img_g[boolean_mask]
             b = img_b[boolean_mask]
             
-            img[boolean_mask] = self.rgb_functions[rgb_function_id](r=r, g=g, b=b)
+            img[boolean_mask] = self.rgb_functions[rgb_function_id](r=r, g=g, b=b,v=v)
 
         return img
 

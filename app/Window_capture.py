@@ -11,6 +11,8 @@ from Z_RGB_formulas_mask import RGB_formulas_mask
 from PyQt5.QtWidgets import QApplication
 from dxcam import DXCamera
 
+from Dynamic_variable import Dynamic_variable
+
 from DXCamera_Singleton import DXCamera_Singleton
 
 class Kernel():
@@ -42,9 +44,12 @@ class CaptureWindow(QtWidgets.QWidget):
         self.screen_width = QApplication.primaryScreen().geometry().width()
         self.screen_height = QApplication.primaryScreen().geometry().height()
         
-        self.mask_filters = None
-        self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
-        self.default_color_function = lambda r,g,b: np.stack([r, g, b], axis=-1)#{"r": lambda r,g,b: r, "g": lambda r,g,b: g, "b": lambda r,g,b: b}
+        self.dynamic_variables:list[Dynamic_variable] = []
+        self.dynamic_variables_values:np.ndarray[np.uint8] = np.array([0], dtype=np.uint8)
+        #self.mask_filters = None
+        #self.color_functions = [lambda r,g,b: np.stack([255-r+g*0+b*0, r*0+255-g+b*0, r*0+0*g+255-b], axis=-1)]#[{"r": lambda r,g,b:255-r+g*0+b*0, "g": lambda r,g,b:r*0+255-g+b*0, "b": lambda r,g,b:r*0+0*g+255-b}]
+        #self.default_color_function = lambda r,g,b: np.stack([r, g, b], axis=-1)#{"r": lambda r,g,b: r, "g": lambda r,g,b: g, "b": lambda r,g,b: b}
+        self.default_color_function = lambda r,g,b, areas_count=1, v=np.array([0], dtype=np.uint8) : np.stack([r, g, b], axis=-1)
         
         # each element in `swap_pixel_areas` must be a rectangle pair (a numpy array of two rectangles)
         # a rectangle looks like this f"[ [{x}, {y}, {size}], [{int(use_red)}, {int(use_green)}, {int(use_blue)}], [{int(rgb_function_id)}] ]" (all elements in the rectangle must be integers) (`y` and `x` are the coordinates of the top left corner of the rectangle)
@@ -113,6 +118,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
         self.button_open_drawFormula = QPushButton('draw formula',  QtWidgets.QWidget(self))
+        self.button_open_dynamic_variables = QPushButton('DVs',  QtWidgets.QWidget(self))
 
         #<color sliders
                
@@ -224,6 +230,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swapAreas)
         h_layout.addWidget(self.button_open_drawFormula)
+        h_layout.addWidget(self.button_open_dynamic_variables)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 
@@ -502,7 +509,9 @@ class CaptureWindow(QtWidgets.QWidget):
           #print("Capture/update error:", e)
     
     def transform_image(self, img):
-        
+
+        self.update_dynamic_variables_values()
+
         #applies all methods that change that change the RGB channel values
         for method_index in self.color_methods_execution_order:
             img = self.color_methods[method_index - 1](img)
@@ -510,6 +519,8 @@ class CaptureWindow(QtWidgets.QWidget):
         if(self.RGB_use_doubles==False):
             img = img.astype(np.uint8)
 
+        self.update_dynamic_variables_frequences()
+        
         return img
 
     
@@ -531,12 +542,12 @@ class CaptureWindow(QtWidgets.QWidget):
         return transformed_image           
     
     
-    def apply_rgb_mask(self, img):
+    def apply_rgb_mask(self, img:np.ndarray):
 
         if(self.rgb_mask is None):
             return img
         
-        transformed_image = self.rgb_mask.apply_mask_to_image(img=img)
+        transformed_image = self.rgb_mask.apply_mask_to_image(img=img, v=self.dynamic_variables_values)
         return transformed_image
     
     def set_rgb_mask(self, rgb_mask:RGB_formulas_mask):
@@ -548,16 +559,16 @@ class CaptureWindow(QtWidgets.QWidget):
         self.rgb_mask = None
 
 
-    def apply_default_color_function(self, img):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
-        transformed_image = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2])
+    def apply_default_color_function(self, img:np.ndarray):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
+        transformed_image = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2], v=self.dynamic_variables_values)
         return transformed_image
 
-    def apply_pixel_areas_manipulator(self, img):
+    def apply_pixel_areas_manipulator(self, img:np.ndarray):
 
         if(self.pixel_areas_manipulator is None):
             return img
         
-        transformed_image = self.pixel_areas_manipulator.transform_image(img=img)
+        transformed_image = self.pixel_areas_manipulator.transform_image(img=img, v=self.dynamic_variables_values)
         return transformed_image
     
     """
@@ -574,7 +585,7 @@ class CaptureWindow(QtWidgets.QWidget):
     def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
         self.pixel_areas_manipulator = pixel_areas_manipulator
     
-    
+    """
     def apply_mask_settings(self, mask_filters, color_functions, default_color_function):#`color_functions[0]` can has this value `eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
             
         self.color_functions = None if(color_functions==None or len(color_functions)==0) else color_functions
@@ -587,8 +598,34 @@ class CaptureWindow(QtWidgets.QWidget):
 
         self.color_functions = None
         self.mask_filters = None                            
-
+    """
    
+
+    def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
+        self.dynamic_variables = dynamic_variables
+
+    def update_dynamic_variables_values(self):
+
+        updated_values_for_dynamic_variables = []
+        dynamic_variables_current_values = self.dynamic_variables_values.tolist()
+
+        for dynamic_variable in self.dynamic_variables:
+            
+            dynamic_variable_updated_value = dynamic_variable.get_variable(v=dynamic_variables_current_values)
+            dynamic_variable_updated_value = dynamic_variable_updated_value%256
+            updated_values_for_dynamic_variables.append(np.uint8(dynamic_variable_updated_value))
+        
+        if(len(updated_values_for_dynamic_variables)>0):
+            self.dynamic_variables_values = np.array(updated_values_for_dynamic_variables, dtype=np.uint8)
+        else:
+            self.dynamic_variables_values = np.array([0], dtype=np.uint8)
+
+    def update_dynamic_variables_frequences(self):
+
+        for dynamic_variable in self.dynamic_variables:
+            dynamic_variable.update_frequency()
+
+
     
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
