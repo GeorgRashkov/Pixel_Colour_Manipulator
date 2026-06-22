@@ -6,13 +6,15 @@ class Pixel_area_initializer:
 
     def __init__(self):
         self.area_properties_names = ["id", "x", "y", "w", "h", "a_ids", "ag_ids", "f_id", "mask_id", "mask_f_ids",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y", "img_in_v", "img_out_v", "img_out_stack",                            
+                                    "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim",
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
                                     "f_ids_rep", "rotations_rep", "mask_ids_rep"]
         
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h", "f_id", "img_in_v", "img_out_v", "img_out_stack", "mask_id"]
         
-        self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v"]
+        self.area_properties_with_non_zero_int_value = ["w", "h", "img_out_v",
+                                                        "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim"]
         
         self.area_properties_with_list_of_ints_value = ["a_ids", "ag_ids", "mask_f_ids", "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency", "p_ids", "p_x", "p_y",                                     
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
@@ -26,6 +28,7 @@ class Pixel_area_initializer:
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
     #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; 
+    # tr_h:2; tr_w:3; tr_dim:23; tr_count_row:5; tr_count_col:10; tr_count_dim:23;
     # x_rep_start_p1:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p1:[10,10,10], y_rep_end_p1:[10,10,10], x_rep_step_p1:[10,10,10], y_rep_step_p1:[10,10,10], x_rep_count_p1:[5,1,4], y_rep_count_p1:[3,1], w_rep_p1:[5,1,4], h_rep_p1:[3,1],
     # x_rep_start_p2:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p2:[10,10,10], y_rep_end_p2:[10,10,10], x_rep_step_p2:[10,10,10], y_rep_step_p2:[10,10,10], x_rep_count_p2:[5,1,4], y_rep_count_p2:[3,1], w_rep_p2:[5,1,4], h_rep_p2:[3,1],  
     # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)], rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
@@ -48,6 +51,7 @@ class Pixel_area_initializer:
     #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
     #{id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30]; f_id:1; p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50]; img_in_v:0; img_out_v:6; img_out_stack:2; 
+    # tr_h:2; tr_w:3; tr_dim:23; tr_count_row:5; tr_count_col:10; tr_count_dim:23;
     # x_rep_start_p1:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p1:[10,10,10], y_rep_end_p1:[10,10,10], x_rep_step_p1:[10,10,10], y_rep_step_p1:[10,10,10], x_rep_count_p1:[5,1,4], y_rep_count_p1:[3,1], w_rep_p1:[5,1,4], h_rep_p1:[3,1],
     # x_rep_start_p2:[10,10,10],y_rep_start_p1:[10,10,10], x_rep_end_p2:[10,10,10], y_rep_end_p2:[10,10,10], x_rep_step_p2:[10,10,10], y_rep_step_p2:[10,10,10], x_rep_count_p2:[5,1,4], y_rep_count_p2:[3,1], w_rep_p2:[5,1,4], h_rep_p2:[3,1],  
     # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)], rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]}
@@ -250,6 +254,13 @@ class Pixel_area_initializer:
         f_id = int(area_properties_dict["f_id"]) if area_properties_dict["f_id"] is not None else 0
         mask_id = int(area_properties_dict["mask_id"]) if area_properties_dict["mask_id"] is not None else 0
 
+        tr_h = int(area_properties_dict["tr_h"]) if area_properties_dict["tr_h"] is not None else 0
+        tr_w = int(area_properties_dict["tr_w"]) if area_properties_dict["tr_w"] is not None else 0
+        tr_dim = int(area_properties_dict["tr_dim"]) if area_properties_dict["tr_dim"] is not None else 0
+        tr_count_row = int(area_properties_dict["tr_count_row"]) if area_properties_dict["tr_count_row"] is not None else 0
+        tr_count_col = int(area_properties_dict["tr_count_col"]) if area_properties_dict["tr_count_col"] is not None else 0
+        tr_count_dim = int(area_properties_dict["tr_count_dim"]) if area_properties_dict["tr_count_dim"] is not None else 0
+
         #the default input image version is `0` which will always contain the pixel values of the original image
         img_in_v = int(area_properties_dict["img_in_v"]) if area_properties_dict["img_in_v"] is not None else 0
 
@@ -305,6 +316,7 @@ class Pixel_area_initializer:
 
         pixel_area = Pixel_area(id = id, 
         x = x, y = y, w = w, h = h,
+        tr_h=tr_h, tr_w=tr_w, tr_dim=tr_dim, tr_count_row=tr_count_row, tr_count_col=tr_count_col, tr_count_dim=tr_count_dim,
         a_ids = a_ids, ag_ids = ag_ids, 
         f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
         p_ids = p_ids, p_x = p_x, p_y = p_y,

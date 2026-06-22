@@ -4,6 +4,7 @@ class Pixel_area:
     
     # all input parameters must be integers or lists of integers
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
+                 tr_h:int, tr_w:int, tr_dim:int, tr_count_row:int, tr_count_col:int, tr_count_dim:int,
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
                  p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,  
                  mask_id:int, mask_f_ids:list,               
@@ -49,6 +50,13 @@ class Pixel_area:
         
         self.mask_id = mask_id
         self.mask_f_ids = mask_f_ids
+
+        self.tr_h = tr_h
+        self.tr_w = tr_w
+        self.tr_dim = tr_dim
+        self.tr_count_row = tr_count_row
+        self.tr_count_col = tr_count_col
+        self.tr_count_dim = tr_count_dim
 
 
         #<repeat areas arguments

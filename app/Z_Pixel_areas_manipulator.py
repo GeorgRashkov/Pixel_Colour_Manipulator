@@ -9,7 +9,7 @@ from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resiz
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Z_Mask import Mask
 
-
+from Traspose_dimensions_list import traspose_dimensions_list
 
 class Pixel_areas_manipulator:
 
@@ -206,6 +206,7 @@ class Pixel_areas_manipulator:
             #the rgb formula is this `eval(f"lambda r,g,b,areas_count,v=[0]: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
             rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
             rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0], v = rgb_formula_dynamic_variables)
+            rgb_formula_result = self.transpose_image(img=rgb_formula_result, pixel_area=pixel_area)
             pixel_area.update_dynamic_variables_for_rgb_function()
 
             starting_image_version = pixel_area.img_out_v
@@ -731,3 +732,79 @@ class Pixel_areas_manipulator:
         return Rectangle(x=x, y=y, w=width, h=height)
 
     #functions for creating rectangles used by pixel area>
+
+
+
+    #<in testing state
+
+    def transpose_image(self, img:np.ndarray[np.uint8], pixel_area:Pixel_area) -> np.ndarray:
+
+        if(pixel_area.tr_h>0 and pixel_area.tr_w>0):
+            traspose_dimensions_index = pixel_area.tr_dim if (pixel_area.tr_dim>0 and pixel_area.tr_dim<len(traspose_dimensions_list)) else 0
+            traspose_dimensions = traspose_dimensions_list[traspose_dimensions_index]
+            img = self.transpose_with_block_size(img=img, block_height=pixel_area.tr_h, block_width=pixel_area.tr_w, transpose_dimensions=traspose_dimensions)
+        
+        if(pixel_area.tr_count_row>0 and pixel_area.tr_count_col>0):
+            traspose_dimensions_index = pixel_area.tr_count_dim if (pixel_area.tr_count_dim>0 and pixel_area.tr_count_dim<len(traspose_dimensions_list)) else 0
+            traspose_dimensions = traspose_dimensions_list[traspose_dimensions_index]
+            img = self.transpose_with_block_count(img=img, blocks_count_per_row=pixel_area.tr_count_row, blocks_count_per_column=pixel_area.tr_count_col, transpose_dimensions=traspose_dimensions)
+
+        return img
+
+
+    def transpose_with_block_size(self, img:np.ndarray, block_height:int, block_width:int, transpose_dimensions:list[int]) -> np.ndarray:
+        image_height, image_width, rgb_values = img.shape
+
+        """
+        if(block_height>image_height or block_width>image_width):
+            block_height=image_height
+            block_width=image_width
+        """
+
+        if(block_height>image_height):
+            block_height=image_height
+        if(block_width>image_width):
+            block_width=image_width
+
+        height_crop = image_height % block_height
+        width_crop = image_width % block_width
+
+        height_transpose = image_height - height_crop
+        width_transpose = image_width - width_crop
+        
+        blocks_count_per_column = height_transpose // block_height
+        blocks_count_per_row = width_transpose // block_width
+
+        t_d = transpose_dimensions
+        img[:height_transpose, :width_transpose, :] = img[:height_transpose, :width_transpose, :].reshape(blocks_count_per_column, block_height, blocks_count_per_row, block_width, rgb_values).transpose(t_d[0], t_d[1], t_d[2], t_d[3], 4).reshape(height_transpose, width_transpose, rgb_values)
+        return img
+
+    def transpose_with_block_count(self, img:np.ndarray, blocks_count_per_row:int, blocks_count_per_column:int, transpose_dimensions:list[int]):
+        
+        image_height, image_width, rgb_values = img.shape
+        block_height = image_height//blocks_count_per_column
+        block_width = image_width//blocks_count_per_row
+        """
+        if(block_height>image_height or block_width>image_width):
+            block_height=image_height
+            block_width=image_width
+        """
+        if(block_height>image_height):
+            block_height=image_height
+        if(block_width>image_width):
+            block_width=image_width
+        """
+        height_crop = image_height % block_height
+        width_crop = image_width % block_width
+        """
+        height_crop = image_height % blocks_count_per_column
+        width_crop = image_width % blocks_count_per_row
+
+        height_transpose = image_height - height_crop
+        width_transpose = image_width - width_crop
+
+        t_d = transpose_dimensions
+        img[:height_transpose, :width_transpose, :] = img[:height_transpose, :width_transpose, :].reshape(blocks_count_per_column, block_height, blocks_count_per_row, block_width, rgb_values).transpose(t_d[0], t_d[1], t_d[2], t_d[3], 4).reshape(height_transpose, width_transpose, rgb_values)
+        return img
+    
+    #in testing state>

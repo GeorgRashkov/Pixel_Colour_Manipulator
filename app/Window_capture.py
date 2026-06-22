@@ -502,7 +502,7 @@ class CaptureWindow(QtWidgets.QWidget):
         #except Exception as e:
           #print("Capture/update error:", e)
     
-    def transform_image(self, img):
+    def transform_image(self, img:np.ndarray):
 
         self.update_dynamic_variables_values()
 
@@ -519,7 +519,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
     
 
-    def apply_sliders_values_to_image(self, img):
+    def apply_sliders_values_to_image(self, img:np.ndarray):
                
         image_red = img[:,:,0]
         image_green = img[:,:,1]
