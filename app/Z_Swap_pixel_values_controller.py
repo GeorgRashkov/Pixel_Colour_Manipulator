@@ -455,7 +455,7 @@ class Swap_pixel_values_controller:
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
 
-        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_main_areas_as_rectangles()
+        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_all_main_areas_as_rectangles()
             
         masks = self.pixel_areas_masks_controller.get_masks()
         masks_copies = []

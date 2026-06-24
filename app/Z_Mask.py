@@ -62,6 +62,14 @@ class Mask():
     def transform_image(self, img:np.ndarray[np.uint8], rgb_formulas:list[RGB_formula], rgb_formulas_dynamic_variables:np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
         transformed_img = self.rgb_formulas_mask.transform_image(img=img, rgb_formulas=rgb_formulas, rgb_formulas_dynamic_variables=rgb_formulas_dynamic_variables, keep_ratio=self.keep_ratio)
         return transformed_img
+    
+
+    #`img` must be a "numpy.ndarray" in the shape of (Areas, Height, Width, 3) Where 3 is for the RGB color channels
+    #`region_images` must be a list which contains elements of type "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
+    #the first region image will be applied to the first region, the second region image will be applied to the second region and so on
+    def transform_image_using_other_images(self, img:np.ndarray[np.uint8], region_images:list[np.ndarray[np.uint8]]) -> np.ndarray[np.uint8]:
+        transformed_img = self.rgb_formulas_mask.transform_image_using_other_images(img=img, region_images=region_images, keep_ratio=self.keep_ratio)
+        return transformed_img
 
     
     

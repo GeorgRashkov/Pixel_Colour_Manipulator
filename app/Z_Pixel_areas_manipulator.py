@@ -42,9 +42,10 @@ class Pixel_areas_manipulator:
 
         self.masks:dict[int,Mask] = {}
 
+    """
     #This function must be called from outside
     #The function returns a dictionary which has the ids of the main areas for keys and the rectangles corresponding to the main areas for values 
-    def get_main_areas_as_rectangles(self) -> dict[int, Rectangle]:
+    def get_all_main_areas_as_rectangles(self) -> dict[int, Rectangle]:
         
         rectangles_with_ids = {}
 
@@ -59,7 +60,48 @@ class Pixel_areas_manipulator:
             rectangles_with_ids[pixel_area.id] = rectangles[0]
             
         return rectangles_with_ids
+    """
+    #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
+    #This function must be called from outside
+    #The function returns a dictionary which has the ids of the main areas for keys and the rectangles corresponding to the main areas for values 
+    def get_all_main_areas_as_rectangles(self) -> dict[int, Rectangle]:
+        
+        rectangles_with_ids = {}
+
+        for pixel_area in self.pixel_areas_dict.values():
+            
+            rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
+            if(rectangle is None):
+                continue
+        
+            
+            rectangles_with_ids[pixel_area.id] = rectangle
+            
+        return rectangles_with_ids
+    
+    def get_main_areas_as_rectangles(self, pixel_areas_ids:list[int]) -> list["Rectangle"]:
+        
+        rectangles: list[Rectangle] = []
+
+        #<those are the areas used by the main pixel area
+        
+        #cycle through the ids of the used areas
+        for pixel_area_id in pixel_areas_ids:
+
+            #check whether the id of the current used area exists
+            if(pixel_area_id in self.pixel_areas_dict.keys()):
+                pixel_area = self.pixel_areas_dict[pixel_area_id]
+
+                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
+                if(rectangle is not None):
+                    rectangles.append(rectangle)
+        #those are the areas used by the main pixel area>  
+
+        return rectangles
+    
+    #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+
     #<Those functions must be called from the outside
 
     def apply_pixel_areas(self, pixel_areas_dict: dict[int,Pixel_area]):
@@ -153,12 +195,12 @@ class Pixel_areas_manipulator:
     #this is the main function for applying the manipulator on an image
     #this function must be called from outside
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image(self, img:np, v:np.ndarray[np.uint8]) -> np.array:
+    def transform_image(self, img:np, v:np.ndarray[np.uint8]) -> np.ndarray:
 
         if(len(self.pixel_areas_dict) == 0 or len(self.rgb_formulas_dict) == 0):
             return img       
 
-        image_versions : list[np.array] = []
+        image_versions : list[np.ndarray] = []
         for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
             image_versions.append(img.copy())
 
@@ -198,8 +240,19 @@ class Pixel_areas_manipulator:
             
             if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no rectangles were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
                 continue
+            
+            if(len(pixel_area.mask_p_ids) > 0):
+                if(pixel_area.mask_id_p in self.masks.keys()):
+                    mask = self.masks[pixel_area.mask_id_p]
+                    rectangles = self.get_main_areas_as_rectangles(pixel_areas_ids=pixel_area.mask_p_ids)
+                    if(len(rectangles) > 0):
+                        region_images = []
+                        for rectangle in rectangles:
+                            region_images.append(image_version_input[rectangle.y:rectangle.y+rectangle.h, rectangle.x:rectangle.x+rectangle.w,:])
+                        pixel_areas_as_parameters_for_rgb_formula = mask.transform_image_using_other_images(img = pixel_areas_as_parameters_for_rgb_formula, region_images=region_images)
 
-            if(pixel_area.mask_id in self.masks.keys()):
+
+            if(pixel_area.mask_id in self.masks.keys() and len(rgb_formulas_for_masks)>0):
                 mask = self.masks[pixel_area.mask_id]
                 pixel_areas_as_parameters_for_rgb_formula = mask.transform_image(img = pixel_areas_as_parameters_for_rgb_formula, rgb_formulas=rgb_formulas_for_masks, rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
             
@@ -753,7 +806,10 @@ class Pixel_areas_manipulator:
 
 
     def transpose_with_block_size(self, img:np.ndarray, block_height:int, block_width:int, transpose_dimensions:list[int]) -> np.ndarray:
+        
         image_height, image_width, rgb_values = img.shape
+        if(image_height == 0 or image_width==0):
+            return img
 
         """
         if(block_height>image_height or block_width>image_width):
@@ -779,9 +835,12 @@ class Pixel_areas_manipulator:
         img[:height_transpose, :width_transpose, :] = img[:height_transpose, :width_transpose, :].reshape(blocks_count_per_column, block_height, blocks_count_per_row, block_width, rgb_values).transpose(t_d[0], t_d[1], t_d[2], t_d[3], 4).reshape(height_transpose, width_transpose, rgb_values)
         return img
 
-    def transpose_with_block_count(self, img:np.ndarray, blocks_count_per_row:int, blocks_count_per_column:int, transpose_dimensions:list[int]):
+    def transpose_with_block_count(self, img:np.ndarray, blocks_count_per_row:int, blocks_count_per_column:int, transpose_dimensions:list[int]) -> np.ndarray:
         
         image_height, image_width, rgb_values = img.shape
+        if(image_height == 0 or image_width==0):
+            return img
+
         block_height = image_height//blocks_count_per_column
         block_width = image_width//blocks_count_per_row
         """

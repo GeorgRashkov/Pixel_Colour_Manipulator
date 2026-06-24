@@ -6,8 +6,9 @@ class Pixel_area:
     def __init__(self, id:int, x:int, y:int, w:int, h:int, a_ids:list, ag_ids:list, 
                  tr_h:int, tr_w:int, tr_dim:int, tr_count_row:int, tr_count_col:int, tr_count_dim:int,
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
-                 p_ids:list, p_x:list, p_y:list, img_in_v:int, img_out_v:int, img_out_stack:int,  
-                 mask_id:int, mask_f_ids:list,               
+                 p_ids:list, p_x:list, p_y:list, 
+                 img_in_v:int, img_out_v:int, img_out_stack:int,  
+                 mask_id:int, mask_f_ids:list, mask_id_p:int, mask_p_ids:list,               
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
                  f_ids_rep:list, rotations_rep:list, mask_ids_rep:list):
@@ -50,6 +51,8 @@ class Pixel_area:
         
         self.mask_id = mask_id
         self.mask_f_ids = mask_f_ids
+        self.mask_id_p = mask_id_p
+        self.mask_p_ids = mask_p_ids
 
         self.tr_h = tr_h
         self.tr_w = tr_w
