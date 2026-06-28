@@ -6,9 +6,9 @@ from Formula_checker import check_formula_format
 class Dynamic_variable_initializer:
 
     def __init__(self):
-        self.properties_names = ["id", "frequency", "start", "end", "step"]
+        self.properties_names = ["id", "frequency", "modulo_loop", "start", "end", "step"]
         
-        self.properties_with_positive_int_value = ["id", "frequency"]
+        self.properties_with_positive_int_value = ["id", "frequency", "modulo_loop"]
         self.properties_with_float_value = ["start", "end"]
         self.properties_with_formula_value = ["step"]
     
@@ -222,6 +222,7 @@ class Dynamic_variable_initializer:
         #makes the string values into ints
         id = int(dynamic_variables_dict["id"]) if dynamic_variables_dict["id"] is not None else 0
         frequency = int(dynamic_variables_dict["frequency"]) if dynamic_variables_dict["frequency"] is not None else 0
+        modulo_loop = int(dynamic_variables_dict["modulo_loop"]) if dynamic_variables_dict["modulo_loop"] is not None else 0
 
         #makes the string values into floats
         start = float(dynamic_variables_dict["start"]) if dynamic_variables_dict["start"] is not None else 0
@@ -229,6 +230,6 @@ class Dynamic_variable_initializer:
 
         step = dynamic_variables_dict["step"] if dynamic_variables_dict["step"] is not None else "0"
         step = self.dynamic_variable_formula_validation_collections.update_format(formula=step)
-        dynamic_variable = Dynamic_variable(id=id, frequency=frequency, start=start, end=end, step=step)
+        dynamic_variable = Dynamic_variable(id=id, frequency=frequency, start=start, end=end, step=step, modulo_loop=modulo_loop==1)
 
         return dynamic_variable

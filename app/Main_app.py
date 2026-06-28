@@ -120,7 +120,8 @@ class MainApp:
 
     def apply_dynamic_variables(self):
         dynamic_variables = self.window_dynamic_variables.get_dynamic_variables()
-        self.capture_window.set_dynamic_variables(dynamic_variables=dynamic_variables)
+        if(dynamic_variables is not None):
+            self.capture_window.set_dynamic_variables(dynamic_variables=dynamic_variables)
 
     def remove_dynamic_variables(self):
         self.capture_window.set_dynamic_variables(dynamic_variables=[])

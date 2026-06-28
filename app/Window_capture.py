@@ -46,6 +46,8 @@ class CaptureWindow(QtWidgets.QWidget):
         
         self.dynamic_variables:list[Dynamic_variable] = []
         self.dynamic_variables_values:np.ndarray[np.uint8] = np.array([0], dtype=np.uint8)
+        self.dynamic_variables_float_values:list[float] = [0]
+
         self.default_color_function = lambda r,g,b, areas_count=1, v=np.array([0], dtype=np.uint8) : np.stack([r, g, b], axis=-1)
         
         
@@ -572,9 +574,35 @@ class CaptureWindow(QtWidgets.QWidget):
     
    
 
+    """
     def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
         self.dynamic_variables = dynamic_variables
+    """
 
+    def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
+        
+        if(len(dynamic_variables) == 0):
+            self.dynamic_variables = []
+            self.dynamic_variables_values = np.array([0], dtype=np.uint8)
+            self.dynamic_variables_float_values = [0]
+
+        else:
+            self.dynamic_variables = dynamic_variables
+            updated_values_for_dynamic_variables = []
+            updated_float_values_for_dynamic_variables = []
+
+            for dynamic_variable in dynamic_variables:
+                
+                dynamic_variable_current_value = dynamic_variable.get_current_value()
+                updated_float_values_for_dynamic_variables.append(dynamic_variable_current_value)
+                
+                dynamic_variable_current_value = dynamic_variable_current_value%256
+                updated_values_for_dynamic_variables.append(np.uint8(dynamic_variable_current_value))
+            
+            self.dynamic_variables_values = np.array(updated_values_for_dynamic_variables, dtype=np.uint8)
+            self.dynamic_variables_float_values = updated_float_values_for_dynamic_variables
+
+    """
     def update_dynamic_variables_values(self):
 
         updated_values_for_dynamic_variables = []
@@ -590,6 +618,27 @@ class CaptureWindow(QtWidgets.QWidget):
             self.dynamic_variables_values = np.array(updated_values_for_dynamic_variables, dtype=np.uint8)
         else:
             self.dynamic_variables_values = np.array([0], dtype=np.uint8)
+    """
+    
+    def update_dynamic_variables_values(self):
+
+        updated_values_for_dynamic_variables = []
+        updated_float_values_for_dynamic_variables = []
+
+        for dynamic_variable in self.dynamic_variables:
+            
+            dynamic_variable_updated_value = dynamic_variable.get_variable(v=self.dynamic_variables_float_values)
+            updated_float_values_for_dynamic_variables.append(dynamic_variable_updated_value)
+
+            dynamic_variable_updated_value = dynamic_variable_updated_value%256
+            updated_values_for_dynamic_variables.append(np.uint8(dynamic_variable_updated_value))
+        
+        if(len(updated_values_for_dynamic_variables)>0):
+            self.dynamic_variables_values = np.array(updated_values_for_dynamic_variables, dtype=np.uint8)
+            self.dynamic_variables_float_values = updated_float_values_for_dynamic_variables
+        else:
+            self.dynamic_variables_values = np.array([0], dtype=np.uint8)
+            self.dynamic_variables_float_values = [0]
 
     def update_dynamic_variables_frequences(self):
 

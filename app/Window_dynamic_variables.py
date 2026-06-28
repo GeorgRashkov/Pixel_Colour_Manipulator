@@ -27,11 +27,13 @@ class Window_dynamic_variables(QtWidgets.QWidget):
         self.setLayout(v_layout)
     
 
+    #the function may return None, or empty list
     def get_dynamic_variables(self) -> list[Dynamic_variable]:
         
         text = self.text_area.toPlainText().replace(' ', '').replace('\n', '')
 
         dynamic_variable_initializer = Dynamic_variable_initializer()
         dynamic_variables = dynamic_variable_initializer.create_dynamic_variables(text=text)
-        if(dynamic_variables != None):
-            return dynamic_variables
+        
+        return dynamic_variables
+    
