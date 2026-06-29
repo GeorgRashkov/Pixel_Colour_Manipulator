@@ -331,7 +331,10 @@ class Draw_formula_controller:
 
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def show_drawing(self, img):
-        self.draw_formulas_collector.draw(img=img)
+        try:
+            self.draw_formulas_collector.draw(img=img)
+        except ZeroDivisionError:
+            print("division by zero detected in draw formula")
     
 
     def display_draw_formulas_as_text(self):

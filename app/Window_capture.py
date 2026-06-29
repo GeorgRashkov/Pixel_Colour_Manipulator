@@ -485,7 +485,12 @@ class CaptureWindow(QtWidgets.QWidget):
            
             if img is not None:
                 
-                self.transformed_image = self.transform_image(img)
+                try:
+                    self.transformed_image = self.transform_image(img)
+                except ZeroDivisionError:
+                    print("division by zero detected in image transform formula")
+                    self.checkBox_auto_capture.setChecked(False)#disable autocapture when division by zero occurs
+                    self.transformed_image = np.zeros(shape=img.shape, dtype=np.uint8)#make sure the tranformed image is not `None` when division by zero occurs
                
                 # Convert to QImage
                 h, w = self.transformed_image.shape[:2]

@@ -3,9 +3,6 @@ from typing import Callable
 
 class Dynamic_variable:
 
-    """
-    def __init__(self, id:int, frequency:int, start:float, end:float, step:str):
-    """
     def __init__(self, id:int, frequency:int, start:float, end:float, step:str, modulo_loop:bool=False):
         
         self.id = id
@@ -15,11 +12,7 @@ class Dynamic_variable:
         self.end = max(start,end)
 
         self.current_value = start
-        
-        """
-        self.step_str = f"lambda v=0: {step}"
-        self.step = eval(self.step_str)
-        """
+
         self.step_str = f"lambda v=[0]: {step}"
         self.step:Callable[[list[float]], float] = eval(self.step_str)
 
@@ -33,40 +26,28 @@ class Dynamic_variable:
         if(self.frequency > 0):
             return self.current_value
         
-        """
-        self.current_value = self.step(v=v)
-        """
         try:
             self.current_value = self.step(v=v)
-        except:
+        except ZeroDivisionError:
             return 1
 
         if(self.current_value < self.start):
-            """
-            self.current_value = self.end
-            """
+            
             if(self.modulo_loop == False):
                 self.current_value = self.end
 
-            elif( self.end == 0 or
-               (self.end < 0 and self.end > -0.000_001) or
-               (self.end > 0 and self.end < 0.000_001)):
-                
+            elif(self.end > -0.000_001 and self.end < 0.000_001):                
                 self.current_value = self.end
             else:
                 self.current_value %= self.end
             
 
         elif(self.current_value > self.end):
-            """
-            self.current_value = self.start
-            """
+            
             if(self.modulo_loop == False):
                 self.current_value = self.start
 
-            elif( self.start == 0 or
-               (self.start < 0 and self.start > -0.000_001) or
-               (self.start > 0 and self.start < 0.000_001)):
+            elif( self.start > -0.000_001 and self.start < 0.000_001):
                 
                 self.current_value = self.start
             else:
