@@ -93,6 +93,38 @@ def get_opening_closing_brackets(bracket_type:Bracket) -> tuple[str, str]:
     elif(bracket_type ==Bracket.curly):
         return ("{", "}")
 
+#get's the index of the proper closing bracket based on the first openning bracket
+#if the input text has no proper closing bracket the function returns `-1`
+#the input text must start with a bracket
+def get_closing_bracket_index(txt:str) -> int:
+
+    brackets = {'(':')','[':']','{':'}'}
+
+    if(len(txt) == 0 or txt[0] not in brackets.keys()):
+        raise Exception("the text input must start with a bracket")
+        
+    openning_bracket = txt[0]
+    closing_bracket = brackets[txt[0]]
+
+    non_closed_brackets_count = 1
+    txt_index = 1
+
+    while(non_closed_brackets_count != 0 and txt_index<len(txt)):
+
+            if(txt[txt_index] == openning_bracket):
+                non_closed_brackets_count +=1
+                
+            elif(txt[txt_index] == closing_bracket):
+                non_closed_brackets_count -=1
+               
+            txt_index+=1
+    
+    if(non_closed_brackets_count != 0):
+        return -1
+    
+    txt_index -= 1
+    return txt_index
+
 
 #the function returns a dictionary whose keys are the parameters while the values are the values of the parameters
 #the values must be placed in the brackets
@@ -179,7 +211,7 @@ def check_parameters(valid_parameters:set[str], required_parameters:set[str], pa
 
 
 
-def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Bracket, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]:
+def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Bracket, inner_bracket_type:Bracket, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]:
     
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
 
@@ -187,17 +219,17 @@ def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(
     if(txt == ""):
         return subjects_represented_as__parameters_and_values
     
-    subjects = get_expressions_in_brackets(bracket_type=bracket_type, expressions_str=txt)
+    subjects = get_expressions_in_brackets(bracket_type=outer_bracket_type, expressions_str=txt)
     if(subjects[-1] is None):
-        print(f"error: the brackets around the subject on index {len(subjects)-1} were not properly openned or closed")
+        print(f"error: the brackets around the {subject_name} on index {len(subjects)-1} were not properly openned or closed")
         return None
 
     subject_index = 0
     for subject in subjects:
         
-        subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=bracket_type, valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
+        subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=inner_bracket_type, valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
         if(subject_represented_as__parameters_and_values is None):
-            print(f"the previous error occurred on the subject at index {subject_index}")
+            print(f"the previous error occurred on the {subject_name} at index {subject_index}")
             return None
         
         subjects_represented_as__parameters_and_values.append(subject_represented_as__parameters_and_values)
