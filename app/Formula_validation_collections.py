@@ -174,7 +174,7 @@ class Formula_validation_collections:
 class RGB_formula_validation_collections(Formula_validation_collections):
 
     def __init__(self):
-        super().__init__(allowed_variable_collection_chars = ['v','r','g','b'], allowed_variable_chars = [])
+        super().__init__(allowed_variable_collection_chars = ['v','r','g','b'], allowed_variable_chars = [], allowed_special_formulas=["sin", "cos", "tan", "abs", "exp", "sqrt"])
 
 class Draw_formula_validation_collections(Formula_validation_collections):
 
