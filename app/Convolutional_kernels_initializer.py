@@ -190,7 +190,7 @@ class Convolutional_kernels_initializer():
         self.additional_value_formula_str:str = "0"
         self.convolutional_kernel_lambda_parameters__validation_collections = Convolutional_kernel_lambda_parameters_validation_collections()
 
-    def create_convolutional_kernels(self, cks_parameters_for_rgb_channel_str:str, cks_parameters_for_image_str:str, dynamic_variables_str:str, additional_value_formula_str:str) -> dict[int, Convolutional_kernel_for_image]:
+    def create_convolutional_kernels(self, cks_parameters_for_rgb_channel_str:str, cks_parameters_for_image_str:str, dynamic_variables:list[Dynamic_variable], additional_value_formula_str:str) -> dict[int, Convolutional_kernel_for_image]:
         
         additional_value_formula_str = additional_value_formula_str.replace(" ","").replace("\n","")
         if(len(additional_value_formula_str) > 0):
@@ -200,11 +200,6 @@ class Convolutional_kernels_initializer():
                 self.additional_value_formula_str = additional_value_formula_str
             else:
                 print("warning: the additional value formula will not be used because it was in wrong format")
-
-        dynamic_variable_initializer = Dynamic_variable_initializer()
-        dynamic_variables = dynamic_variable_initializer.create_dynamic_variables(text=dynamic_variables_str)
-        if(dynamic_variables == None):
-            return None
 
         cks_parameters_for_rgb_channel_str = cks_parameters_for_rgb_channel_str.replace(" ","").replace("\n","")
         cks_parameters_for_image_str = cks_parameters_for_image_str.replace(" ","").replace("\n","")
@@ -852,6 +847,9 @@ class Convolutional_kernels_initializer():
             dynamic_variables_values.append(dynamic_variable_value)
             dynamic_variable.update_frequency()
         
+        if(len(dynamic_variables_values) == 0):
+            dynamic_variables_values.append(0)
+
         return dynamic_variables_values
 
     def reset_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
