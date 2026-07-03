@@ -123,7 +123,18 @@ def check_for_positive_int_format(txt_value:str, is_zero_allowed:bool=True):
         return False
 
     return check_for_leading_zeros(txt_value)
-            
+
+def is_number_in_range(num_as_str:str, min:float, max:float):
+    
+    is_number_valid = check_for_float_format(num_as_str)
+    if(is_number_valid == False):
+        return False
+    
+    num = float(num_as_str)
+    if(num<min or num>max):
+        return False
+    
+    return True
 
 #the input must be a valid int or float value (leading zeros are allowed - for instance the function works good with values like '001' )
 #if the function returns `True` it means that the input contains no leading zeros

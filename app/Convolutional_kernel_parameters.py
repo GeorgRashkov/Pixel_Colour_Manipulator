@@ -1,28 +1,53 @@
 from typing import Callable
 
 from Enums import Enum__rgb_channels
+from Number_format_checker import check_for_float_format
 
 #Warning: do not use directly the fields which are lambda functions; use the methods in the class which call the lambda function fields
 class Convolutional_kernel_parameters:
 
-    def __init__(self, 
-                  height:str, width:str, dilation_height:str, dilation_width:str, stride_height:str, stride_width:str, 
-                  hole_height:str, hole_width:str, vertical_hole_frequency:str, horizontal_hole_frequency:str, hole_content:str,
-                  min_kernel_value:str, max_kernel_value:str, min_hole_value:str, max_hole_value:str,
-                  move_x:str, move_y:str,
-                  convolutions_count:str, 
-                  image_pad_mode:str, 
-                  frequency__move_x:str, frequency__move_y:str,
-                  recreate_kernel_frequency:str, frequency__update_kernel_values:str, frequency__update_kernel_hole_values:str,
-                  frequency__update_dynamic_variables__using_kernel_value:str, frequency__update_dynamic_variables__using_kernel_hole_row:str, frequency__update_dynamic_variables_using_kernel_hole_column:str, 
-                  frequency__update_dynamic_variables__while_processing_rgb_channel:str, frequency__update_dynamic_variables__after_processing_rgb_channel:str,
-                  should_update_move_x:bool, should_update_move_y:bool,
-                  should_recreate_kernel:bool, should_update_kernel_values:bool, should_update_kernel_hole_values:bool,
-                  should_update_dynamic_variables__using_kernel_value:bool, should_update_dynamic_variables__using_kernel_hole_row:bool, should_update_dynamic_variables__using_kernel_hole_column:bool, 
-                  should_update_dynamic_variables__while_processing_rgb_channel:bool, should_update_dynamic_variables__after_processing_rgb_channel:bool,
-                  process_image_fast:bool,
-                  input_rgb_channel:Enum__rgb_channels):
-     
+    def __init__(self, id:int, 
+                 
+                min_height:int, max_height:int, min_width:int, max_width:int, 
+                min_dilation_height:int, max_dilation_height:int, min_dilation_width:int, max_dilation_width:int,
+                min_stride_height:int, max_stride_height:int, min_stride_width:int, max_stride_width:int,
+                  
+                height:str, width:str, dilation_height:str, dilation_width:str, stride_height:str, stride_width:str, 
+                hole_height:str, hole_width:str, vertical_hole_frequency:str, horizontal_hole_frequency:str, hole_content:str,
+                min_kernel_value:str, max_kernel_value:str, min_hole_value:str, max_hole_value:str,
+                move_x:str, move_y:str,
+                convolutions_count:str, 
+                image_pad_mode:str, 
+                frequency__move_x:str, frequency__move_y:str,
+                frequency__recreate_kernel:str, frequency__update_kernel_values:str, frequency__update_kernel_hole_values:str,
+                frequency__update_dynamic_variables__using_kernel_value:str, frequency__update_dynamic_variables__using_kernel_hole_row:str, frequency__update_dynamic_variables_using_kernel_hole_column:str, 
+                frequency__update_dynamic_variables__while_processing_rgb_channel:str, frequency__update_dynamic_variables__after_processing_rgb_channel:str,
+                  
+                should_update_move_x:bool, should_update_move_y:bool,
+                should_recreate_kernel:bool, should_update_kernel_values:bool, should_update_kernel_hole_values:bool,
+                should_update_dynamic_variables__using_kernel_value:bool, should_update_dynamic_variables__using_kernel_hole_row:bool, should_update_dynamic_variables__using_kernel_hole_column:bool, 
+                should_update_dynamic_variables__while_processing_rgb_channel:bool, should_update_dynamic_variables__after_processing_rgb_channel:bool,
+                  
+                process_image_fast:bool,
+                  
+                input_rgb_channel:Enum__rgb_channels):
+        
+        self.id = id
+
+        self.min_height = min(999, max(1, min_height))
+        self.max_height = min(999, max(1, max_height))
+        self.min_width = min(999, max(1, min_width))
+        self.max_width = min(999, max(1, max_width))
+
+        self.min_dilation_height = min(999, max(1, min_dilation_height))
+        self.max_dilation_height = min(999, max(1, max_dilation_height))
+        self.min_dilation_width = min(999, max(1, min_dilation_width))
+        self.max_dilation_width = min(999, max(1, max_dilation_width))
+
+        self.min_stride_height = min(999, max(1, min_stride_height))
+        self.max_stride_height = min(999, max(1, max_stride_height))
+        self.min_stride_width = min(999, max(1, min_stride_width))
+        self.max_stride_width = min(999, max(1, max_stride_width))
 
         self.height:Callable[[list[float]], float] = eval(f"lambda v=[0]: {height}")
         self.width:Callable[[list[float]], float] = eval(f"lambda v=[0]: {width}")
@@ -56,7 +81,7 @@ class Convolutional_kernel_parameters:
         self.frequency__move_x:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__move_x}")
         self.frequency__move_y:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__move_y}")
 
-        self.recreate_kernel_frequency:Callable[[list[float]], float] = eval(f"lambda v=[0]: {recreate_kernel_frequency}")
+        self.frequency__recreate_kernel:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__recreate_kernel}")
         self.frequency__update_kernel_values:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_kernel_values}")
         self.frequency__update_kernel_hole_values:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_kernel_hole_values}")
 
@@ -81,7 +106,7 @@ class Convolutional_kernel_parameters:
         self.should_update_dynamic_variables__while_processing_rgb_channel:bool = should_update_dynamic_variables__while_processing_rgb_channel
         self.should_update_dynamic_variables__after_processing_rgb_channel:bool = should_update_dynamic_variables__after_processing_rgb_channel
         
-
+        self.is_hole_content_formula = check_for_float_format(txt_value=hole_content) == False
 
         self.process_image_fast = process_image_fast
 
@@ -90,42 +115,42 @@ class Convolutional_kernel_parameters:
 
     def get__height(self, v:list[float]) -> int:
         try:
-            height = max(1, int(self.height(v)) )
+            height = min( self.max_height, max(self.min_height, int(self.height(v))) )
             return height
         except ZeroDivisionError:
             return 1
     
     def get__width(self, v:list[float]) -> int:
         try:
-            width = max(1, int(self.width(v)) )
+            width = min( self.max_width, max(self.min_width, int(self.width(v))) )
             return width
         except ZeroDivisionError:
             return 1
     
     def get__dilation_height(self, v:list[float]) -> int:
         try:
-            dilation_height = max(1, int(self.dilation_height(v)) )
+            dilation_height = min( self.max_dilation_height, max(self.min_dilation_height, int(self.dilation_height(v))) )
             return dilation_height
         except ZeroDivisionError:
             return 1
     
     def get__dilation_width(self, v:list[float]) -> int:
         try:
-            dilation_width = max(1, int(self.dilation_width(v)) )
+            dilation_width = min( self.max_dilation_width, max(self.min_dilation_width, int(self.dilation_width(v))) )
             return dilation_width
         except ZeroDivisionError:
             return 1
     
     def get__stride_height(self, v:list[float]) -> int:
         try:
-            stride_height = max(1, int(self.stride_height(v)) )
+            stride_height = min( self.max_stride_height, max(self.min_stride_height, int(self.stride_height(v))) )
             return stride_height
         except ZeroDivisionError:
             return 1
     
     def get__stride_width(self, v:list[float]) -> int:
         try:
-            stride_width = max(1, int(self.stride_width(v)) )
+            stride_width = min( self.max_stride_width, max(self.min_stride_width, int(self.stride_width(v))) )
             return stride_width
         except ZeroDivisionError:
             return 1
@@ -248,8 +273,8 @@ class Convolutional_kernel_parameters:
 
     def get__frequency__recreate_kernel(self, v:list[float]) -> int:
         try:
-            recreate_kernel_frequency = max(0, int(self.recreate_kernel_frequency(v)) )
-            return recreate_kernel_frequency
+            frequency__recreate_kernel = max(0, int(self.frequency__recreate_kernel(v)) )
+            return frequency__recreate_kernel
         except ZeroDivisionError:
             return 0
     

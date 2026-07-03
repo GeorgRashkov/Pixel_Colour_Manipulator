@@ -185,3 +185,8 @@ class Dynamic_variable_formula_validation_collections(Formula_validation_collect
 
     def __init__(self):
         super().__init__(allowed_variable_collection_chars = ['v'], allowed_variable_chars = [])
+
+class Convolutional_kernel_lambda_parameters_validation_collections(Formula_validation_collections):
+    
+    def __init__(self):
+        super().__init__(allowed_variable_collection_chars = ['v'], allowed_variable_chars = [])

@@ -632,7 +632,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
         for dynamic_variable in self.dynamic_variables:
             
-            dynamic_variable_updated_value = dynamic_variable.get_variable(v=self.dynamic_variables_float_values)
+            dynamic_variable_updated_value = dynamic_variable.get_value(v=self.dynamic_variables_float_values)
             updated_float_values_for_dynamic_variables.append(dynamic_variable_updated_value)
 
             dynamic_variable_updated_value = dynamic_variable_updated_value%256
@@ -683,6 +683,12 @@ class CaptureWindow(QtWidgets.QWidget):
         green_convolution = self.apply_convolution_to_color_channel(stride = rgb_kernels.g_kernel.stride, holes_count = rgb_kernels.g_kernel.holes_count, kernel_values = rgb_kernels.g_kernel.kernel_values, channel_values = img[:,:,1])
         blue_convolution = self.apply_convolution_to_color_channel(stride = rgb_kernels.b_kernel.stride, holes_count = rgb_kernels.b_kernel.holes_count, kernel_values = rgb_kernels.b_kernel.kernel_values, channel_values = img[:,:,2])
         
+        """
+        img_h = min(red_convolution.shape[0], green_convolution.shape[0], blue_convolution.shape[0])
+        img_w = min(red_convolution.shape[1], green_convolution.shape[1], blue_convolution.shape[1])
+        convolved_image = np.dstack((red_convolution[:img_h, :img_w], green_convolution[:img_h, :img_w], blue_convolution[:img_h, :img_w]))
+        
+        """
         convolved_image = np.dstack((red_convolution, green_convolution, blue_convolution))
         return convolved_image
 
@@ -775,3 +781,69 @@ class CaptureWindow(QtWidgets.QWidget):
         self.RGB_use_doubles = RGB_use_doubles
 
         self.color_methods_execution_order = color_functions_execution_order
+
+
+    
+
+
+    """
+    def apply_convolution_to_color_channel(self, stride: int, holes_count: int, kernel_values: np.ndarray, channel_values: np.ndarray) -> np.ndarray:
+       
+        if(kernel_values.shape[0]==0 or kernel_values.shape[1]==0):#if the kernel has 0 columns or 0 rows - return the input channel values unchanged
+            return channel_values
+
+        img_height, img_width = channel_values.shape
+        kernel_height, kernel_width = kernel_values.shape
+
+        dilation = holes_count + 1
+        dilated_kernel_height = (kernel_height - 1) * dilation + 1#this is the heigh which the kernel will have after adding the dilation (the holes) to it
+        dilated_kernel_width = (kernel_width - 1) * dilation + 1#this is the width which the kernel will have after adding the dilation (the holes) to it
+
+        # Calculate necessary padding to maintain same output size
+        #padding makes sure the image size of the convolved image will always be equal to the size of the original image no matter the values of (stride, dilation, image/kernel width/height)
+        image_pad_y = ((img_height - 1) * stride + dilated_kernel_height - img_height) // 2 + 1#this is the number of pixel values to add above and below the image;
+        image_pad_x = ((img_width - 1) * stride + dilated_kernel_width - img_width) // 2 + 1 #this is the number of pixel values to add left and right the image;
+
+        # apply zero-padding to the image; 
+        # the padded image will be the same as the original one but it will also have `pad_y` pixels (each with value 0) placed above and below the original image 
+        # and it will also have `pad_x` pixels (each with value 0) placed left and right from the original image
+        padded_image = np.pad(channel_values, ((image_pad_y, image_pad_y), (image_pad_x, image_pad_x)), mode='constant', constant_values=0)
+
+        # Output dimensions
+        out_height = img_height
+        out_width = img_width
+        output = np.zeros((out_height, out_width))
+
+        #takes every possible image area from the padded image where the width and height of the area is equal to the width and height of the dilated kernel
+        image_areas = np.lib.stride_tricks.sliding_window_view(
+            padded_image,
+            (dilated_kernel_height, dilated_kernel_width)
+        )
+
+        #apply stride and dilation to the image areas 
+        image_areas = image_areas[
+            ::stride,      # image area height
+            ::stride,      # image area width
+            ::dilation,    # rows containing image areas
+            ::dilation     # columns containing image areas
+        ]
+
+        
+        #the string parameter in `np.einsum` represents the dimetions of the second parameter, the third parameter and the array which the function returns:
+        # the first letters before the comma are used to name the dimensions of the second parameter (`image_areas`);
+        # the values between the comma and the arrow specify the demensions of the second and the third parameter which will be used for perform a (element-by-element) multiplication
+        # the values after the arrow indicate the dimesions of the second parameter which will be preserved in the array (a value in the output array is obtained from the summation of the element-by-element multiplication) which the function returns
+        #Apply the kernel to the image areas:
+        #take the image areas on every row and column (every row and column is specified with `ij`); 
+        #multiply the curent image area (element-by-element) with the kernel - the demensions which will be used for the element-by-element multiplication for both the current image area and the kernel are specified by `kl`;
+        #sum the multipliaction and store the result from the sumation in the output image at index [i,j] specified by the values after the arrow
+        output = np.einsum(
+            "ijkl,kl->ij",
+            image_areas,
+            kernel_values
+        )
+       
+        return output
+        
+    """
+    

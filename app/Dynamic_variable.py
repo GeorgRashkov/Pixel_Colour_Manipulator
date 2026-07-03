@@ -21,7 +21,7 @@ class Dynamic_variable:
     def get_current_value(self):
         return self.current_value
 
-    def get_variable(self, v:list[float]) -> float:
+    def get_value(self, v:list[float]) -> float:
         
         if(self.frequency > 0):
             return self.current_value
@@ -64,4 +64,9 @@ class Dynamic_variable:
             self.frequency-=1
         else:
             self.frequency = self.initial_frequency
+    
+    def reset_value_and_frequency(self):
+
+        self.frequency = self.initial_frequency
+        self.current_value = self.start
 

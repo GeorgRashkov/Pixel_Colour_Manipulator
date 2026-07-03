@@ -1,5 +1,8 @@
 from enum import Enum
 
+
+#<helper enum elements
+
 class Enum__behaviour_get_enums_as_string_when_number_out_of_range(Enum):
 
     modulo = 0
@@ -37,6 +40,15 @@ def get_Enum_as_string(elements:list[str], num:int, out_of_range_behaviour:Enum_
 
 
 
+class Enum__range(Enum):
+
+    min = 0
+    max = 1
+
+#helper enum elements>
+
+
+#<enum elements for "rgb channles"
 
 class Enum__rgb_channels(Enum):
 
@@ -44,66 +56,62 @@ class Enum__rgb_channels(Enum):
     g = 1
     b = 2
 
-def get_Enum__rgb_channels__as_string(num:int, out_of_range_behaviour:Enum__behaviour_get_enums_as_string_when_number_out_of_range = Enum__behaviour_get_enums_as_string_when_number_out_of_range.modulo) -> str:
-    
-    elements = ["r", "g", "b"]
-    output = get_Enum_as_string(elements=elements, num=num, out_of_range_behaviour=out_of_range_behaviour)
-    return output
+#enum elements for "rgb channles">
 
 
-
-
-
-class Enum__convolutional_kernel_parameters(Enum):
-    
-    height = 0
-    width = 1
-
-    hole_height = 2
-    hole_width = 3
-    vertical_hole_frequency = 4
-    horizontal_hole_frequency = 5
-    hole_content = 6
-
-    min_kernel_value = 7
-    max_kernel_value = 8
-
-    recreate_kernel_frequency = 9
-    
-    frequency__update_dynamic_variables__using_kernel_value = 10
-    frequency__update_dynamic_variables__using_kernel_hole_row = 11
-    frequency__update_dynamic_variables_using_kernel_hole_column = 12
-    frequency__update_dynamic_variables__using_rgb_channel = 13
-
-
-
+#<enum elements for "image pad modes"
 
 class Enum__image_pad_modes(Enum):
     
     constant=0
     edge=1
     linear_ramp=2
+
     maximum=3
     mean=4
     median=5
     minimum=6
+
     reflect=7
     symmetric=8
     wrap=9
 
-def get_Enum__image_pad_modes__as_string(num:int, out_of_range_behaviour:Enum__behaviour_get_enums_as_string_when_number_out_of_range = Enum__behaviour_get_enums_as_string_when_number_out_of_range.modulo) -> str:
-    
-    elements = ["constant", "edge", "linear_ramp", "maximum", "mean", "median", "minimum", "reflect", "symmetric", "wrap"]
-    output = get_Enum_as_string(elements=elements, num=num, out_of_range_behaviour=out_of_range_behaviour)
-    return output
+class Functions_for__Enum__image_pad_modes():
+    def get_image_pad_modes_as_strings(self)  -> list[str]:
+        
+        elements = [
+            Enum__image_pad_modes.constant.name, 
+            Enum__image_pad_modes.edge.name, 
+            Enum__image_pad_modes.linear_ramp.name, 
+            
+            Enum__image_pad_modes.maximum.name, 
+            Enum__image_pad_modes.mean.name, 
+            Enum__image_pad_modes.median.name, 
+            Enum__image_pad_modes.minimum.name, 
+            
+            Enum__image_pad_modes.reflect.name, 
+            Enum__image_pad_modes.symmetric.name, 
+            Enum__image_pad_modes.wrap.name
+        ]
+        
+        return elements
 
+    def get_image_pad_modes_as_string(self, num:int, out_of_range_behaviour:Enum__behaviour_get_enums_as_string_when_number_out_of_range = Enum__behaviour_get_enums_as_string_when_number_out_of_range.modulo) -> str:
+        
+        elements = self.get_image_pad_modes_as_strings()
+        output = get_Enum_as_string(elements=elements, num=num, out_of_range_behaviour=out_of_range_behaviour)
+        return output
 
+#enum elements for "image pad modes">
 
+#<enum elements for "brackets"
 
-class Bracket(Enum):
+class Enum__brackets(Enum):
 
     round = 0
     square = 1
     curly = 2
+
+#enum elements for "brackets">
 
     

@@ -5,24 +5,21 @@ from typing import Callable
 from Convolutional_kernel_parameters import Convolutional_kernel_parameters
 from Dynamic_variable import Dynamic_variable
 
-from Enums import Enum__rgb_channels, get_Enum__image_pad_modes__as_string
+from Enums import Enum__rgb_channels, Functions_for__Enum__image_pad_modes
 
 class Convolutional_kernel_for_rgb_channel:
-    # `values` must be a numpy array which has width and heigh, containing all the values of the kernel (both hole values and non hole values)
     #each list in `non_hole_values` must have the same number of floats
     # `non_hole_values_as_formulas` can contain `None` values and it must have the same shape as `non_hole_values`;
-    #`non_hole_values_as_formulas_row_indexes` must contain the row indexes in `non_hole_values_as_formulas` where the values of `non_hole_values_as_formulas` are not `None`
-    #`non_hole_values_as_formulas_column_indexes` must contain the column indexes in `non_hole_values_as_formulas` where the values of `non_hole_values_as_formulas` are not `None`
-    def __init__(self, c_k_parameters: Convolutional_kernel_parameters, is_hole_content_formula:bool,
-                 values:np.ndarray, non_hole_values:list[list[float]], row_indexes_of__non_hole_values_in_values:list[int], column_indexes_of__non_hole_values_in_values:list[int],
-                 non_hole_values_as_formulas:list[list[Callable[[list[float]], float]]], row_indexes_of__non_hole_values_as_formulas:list[int], column_indexes_of__non_hole_values_as_formulas:list[int],
-                 dynamic_variables:list[Dynamic_variable], dynamic_variables_values:list[float]):
+    #`row_indexes_of__non_hole_values_as_formulas` must contain the row indexes in `non_hole_values_as_formulas` where the values of `non_hole_values_as_formulas` are not `None`
+    #`column_indexes_of__non_hole_values_as_formulas` must contain the column indexes in `non_hole_values_as_formulas` where the values of `non_hole_values_as_formulas` are not `None`
+    def __init__(self, c_k_parameters: Convolutional_kernel_parameters,
+                 non_hole_values:list[list[float]], non_hole_values_as_formulas:list[list[Callable[[list[float]], float]]], 
+                 row_indexes_of__non_hole_values_as_formulas:list[int], column_indexes_of__non_hole_values_as_formulas:list[int]):
         
         #<convolutional kernel parameters
         self.c_k_parameters:Convolutional_kernel_parameters = c_k_parameters
 
-        self.max_height = 999
-        self.max_width = 999
+        
 
         self.height:int = 0
         self.width:int = 0
@@ -98,28 +95,30 @@ class Convolutional_kernel_for_rgb_channel:
         self.update_convolutional_kernel_parameters()
         #convolutional kernel parameters>
 
-        self.is_hole_content_formula:bool = is_hole_content_formula
+        self.is_hole_content_formula:bool = self.c_k_parameters.is_hole_content_formula
 
         #<convolutional kernel values
-        self.values = values #it represents the kernel because it contains all kernel values including non hole values and hole values (stride and dilation are not part of it) 
-        self.non_hole_values = non_hole_values #contains only non hole values
-        self.row_indexes_of__non_hole_values_in_values = row_indexes_of__non_hole_values_in_values #contains the row indexes in `values` where the value is a non hole value
-        self.column_indexes_of__non_hole_values_in_values = column_indexes_of__non_hole_values_in_values #contains the column indexes in `values` where the value is a non hole value
+        self.values:np.ndarray = None #it represents the kernel because it contains all kernel values including non hole values and hole values (stride and dilation are not part of it) 
+        self.non_hole_values:list[list[float]] = non_hole_values #contains only non hole values
+        self.row_indexes_of__non_hole_values_in_values:list[int] = None #contains the row indexes in `values` where the value is a non hole value
+        self.column_indexes_of__non_hole_values_in_values:list[int] = None #contains the column indexes in `values` where the value is a non hole value
         
         #contains the user defined formulas which are used to obtain the values in the collection of non hole values; 
         #if the user entered just a number instead of an expression then the collection will add the value `None` instead of a lambda funtion;
         #it has the same shape as `non_hole_values`
-        self.non_hole_values_as_formulas = non_hole_values_as_formulas 
+        self.non_hole_values_as_formulas:list[list[Callable[[list[float]], float]]] = non_hole_values_as_formulas 
         
-        self.row_indexes_of__non_hole_values_as_formulas = row_indexes_of__non_hole_values_as_formulas #contains the row indexes inside `non_hole_values` where the values are obtained by user defined formula
-        self.column_indexes_of__non_hole_values_as_formulas = column_indexes_of__non_hole_values_as_formulas #contains the column indexes inside `non_hole_values` where the values are obtained by user defined formula
+        self.row_indexes_of__non_hole_values_as_formulas:list[int] = row_indexes_of__non_hole_values_as_formulas #contains the row indexes inside `non_hole_values` where the values are obtained by user defined formula
+        self.column_indexes_of__non_hole_values_as_formulas:list[int] = column_indexes_of__non_hole_values_as_formulas #contains the column indexes inside `non_hole_values` where the values are obtained by user defined formula
         #convolutional kernel values>
 
         #<dynamic variables
-        self.dynamic_variables:list[Dynamic_variable] = dynamic_variables
-        self.dynamic_variables_values:list[float] = dynamic_variables_values
+        self.dynamic_variables:list[Dynamic_variable] = []
+        self.dynamic_variables_values:list[float] = [0]
+        
         #dynamic variables>
-    
+
+        self.functions_for__Enum__image_pad_modes = Functions_for__Enum__image_pad_modes()
     
     #<functions for updating convolutional kernel values and parameters
     
@@ -156,8 +155,8 @@ class Convolutional_kernel_for_rgb_channel:
         
         if(self.should_update_move_x == True):
             if(self.frequency__move_x <= 0):
-                self.move_x = self.c_k_parameters.move_x(self.dynamic_variables_values)
-                self.frequency__move_x = self.c_k_parameters.get__frequency__move_x(v=self.dynamic_variables_values)
+                self.move_x = self.c_k_parameters.get__move_x(v = self.dynamic_variables_values)
+                self.frequency__move_x = self.c_k_parameters.get__frequency__move_x(v = self.dynamic_variables_values)
             else:
                 self.frequency__move_x -= 1
     
@@ -166,8 +165,8 @@ class Convolutional_kernel_for_rgb_channel:
         
         if(self.should_update_move_y == True):
             if(self.frequency__move_y <= 0):
-                self.move_y = self.c_k_parameters.move_y(self.dynamic_variables_values)
-                self.frequency__move_y = self.c_k_parameters.get__frequency__move_y(v=self.dynamic_variables_values)
+                self.move_y = self.c_k_parameters.get__move_y(v = self.dynamic_variables_values)
+                self.frequency__move_y = self.c_k_parameters.get__frequency__move_y(v = self.dynamic_variables_values)
             else:
                 self.frequency__move_y -= 1
 
@@ -195,8 +194,8 @@ class Convolutional_kernel_for_rgb_channel:
             
             self.values = np.zeros([width, height])
 
-            self.height = min(height, self.max_height)
-            self.width = min(width, self.max_width)
+            self.height = height
+            self.width = width
             self.hole_height = hole_height
             self.hole_width = hole_width
             self.vertical_hole_frequency = vertical_hole_frequency
@@ -249,69 +248,6 @@ class Convolutional_kernel_for_rgb_channel:
 
 
 
-
-
-
-    """
-    def update_convolutional_kernel_hole_values_v1(self):
-
-        non_hole_values_rows_count = len(self.non_hole_values)
-        non_hole_values_columns_count = len(self.non_hole_values[0])
-
-        values_columns_count = self.values.shape[1]
-
-        vertical_hole_frequency = self.vertical_hole_frequency
-        horizontal_hole_frequency = self.horizontal_hole_frequency
-
-        values_row = 0
-        values_column = 0
-        
-        for non_hole_values_row in range(0, non_hole_values_rows_count):
-            
-            vertical_hole_frequency -= 1 
-
-            #<creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width
-            if(vertical_hole_frequency <= 0):
-                
-                for vertical_hole_row in range(0, self.hole_height):
-                    
-                    for values_col in range(0, values_columns_count):
-
-                        self.update__hole_content_value()
-                        self.values[values_row][values_col] = self.hole_content                      
-                        self.update_dynamic_variables__using_kernel_hole_row()
-
-                    values_row+=1
-                
-                vertical_hole_frequency = self.vertical_hole_frequency
-            #creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width>
-
-            values_column = 0
-
-            for non_hole_values_column in range(0, non_hole_values_columns_count):
-                
-                horizontal_hole_frequency -= 1 
-
-                #<creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width
-                if(horizontal_hole_frequency <= 0):
-
-                    for hole_values_column in range(0, self.hole_width):
-
-                        self.update__hole_content_value()
-                        self.values[values_row][values_column] = self.hole_content
-                        self.update_dynamic_variables__using_kernel_hole_column()
-
-                        values_column += 1
-                    
-                    horizontal_hole_frequency = self.horizontal_hole_frequency
-                #creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width>
-
-                self.values[values_row][values_column] = self.non_hole_values[non_hole_values_row][non_hole_values_column]
-                values_column += 1
-            
-            values_row+=1 
-    """
-
     def update_convolutional_kernel_hole_values(self):
 
         non_hole_values_rows_count = len(self.non_hole_values)
@@ -341,7 +277,7 @@ class Convolutional_kernel_for_rgb_channel:
 
                     kernel_row+=1
                 
-                self.vertical_hole_frequency = self.c_k_parameters.get__vertical_hole_frequency(v=self.dynamic_variables_values)
+                self.vertical_hole_frequency = self.c_k_parameters.get__vertical_hole_frequency(v = self.dynamic_variables_values)
             
             self.vertical_hole_frequency -= 1 
             #creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width>
@@ -369,7 +305,7 @@ class Convolutional_kernel_for_rgb_channel:
 
                         kernel_column += 1
                     
-                    self.horizontal_hole_frequency = self.c_k_parameters.get__horizontal_hole_frequency(v=self.dynamic_variables_values)
+                    self.horizontal_hole_frequency = self.c_k_parameters.get__horizontal_hole_frequency(v = self.dynamic_variables_values)
                 #creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width>
 
                 updated_indexes_for__row_indexes_of__non_hole_values_in_values.append(kernel_row)
@@ -418,7 +354,7 @@ class Convolutional_kernel_for_rgb_channel:
         
         kernel_value = 0
         try:
-            kernel_value = self.non_hole_values_as_formulas[kernel_values__row][kernel_values__column](self.dynamic_variables_values)
+            kernel_value = self.non_hole_values_as_formulas[kernel_values__row][kernel_values__column](v = self.dynamic_variables_values)
         except ZeroDivisionError:
             return 0
 
@@ -464,7 +400,7 @@ class Convolutional_kernel_for_rgb_channel:
 
         for dynamic_variable in self.dynamic_variables:
             
-            dynamic_variable_updated_value = dynamic_variable.get_variable(v=self.dynamic_variables_values)
+            dynamic_variable_updated_value = dynamic_variable.get_value(v = self.dynamic_variables_values)
             
             updated_values_for_dynamic_variables.append(dynamic_variable_updated_value)
 
@@ -481,7 +417,7 @@ class Convolutional_kernel_for_rgb_channel:
         if(self.should_update_dynamic_variables__using_kernel_value == True):
             if(self.frequency__update_dynamic_variables__using_kernel_value <= 0):
                 self.update_dynamic_variables_values()
-                self.frequency__update_dynamic_variables__using_kernel_value = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_value(v=self.dynamic_variables_values)
+                self.frequency__update_dynamic_variables__using_kernel_value = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_value(v = self.dynamic_variables_values)
             else:
                 self.frequency__update_dynamic_variables__using_kernel_value -= 1
 
@@ -490,7 +426,7 @@ class Convolutional_kernel_for_rgb_channel:
         if(self.should_update_dynamic_variables__using_kernel_hole_row == True):
             if(self.frequency__update_dynamic_variables__using_kernel_hole_row <= 0):
                 self.update_dynamic_variables_values()
-                self.frequency__update_dynamic_variables__using_kernel_hole_row = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_hole_row(v=self.dynamic_variables_values) 
+                self.frequency__update_dynamic_variables__using_kernel_hole_row = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_hole_row(v = self.dynamic_variables_values) 
             else:
                 self.frequency__update_dynamic_variables__using_kernel_hole_row -= 1
 
@@ -499,7 +435,7 @@ class Convolutional_kernel_for_rgb_channel:
         if(self.should_update_dynamic_variables__using_kernel_hole_column == True):
             if(self.frequency__update_dynamic_variables_using_kernel_hole_column <= 0):
                 self.update_dynamic_variables_values()
-                self.frequency__update_dynamic_variables_using_kernel_hole_column = self.c_k_parameters.get__frequency__update_dynamic_variables_using_kernel_hole_column(v=self.dynamic_variables_values)
+                self.frequency__update_dynamic_variables_using_kernel_hole_column = self.c_k_parameters.get__frequency__update_dynamic_variables_using_kernel_hole_column(v = self.dynamic_variables_values)
             else:
                 self.frequency__update_dynamic_variables_using_kernel_hole_column -= 1
 
@@ -508,7 +444,7 @@ class Convolutional_kernel_for_rgb_channel:
         if(self.should_update_dynamic_variables__while_processing_rgb_channel == True):
             if(self.frequency__update_dynamic_variables__while_processing_rgb_channel <= 0):
                 self.update_dynamic_variables_values()
-                self.frequency__update_dynamic_variables__while_processing_rgb_channel = self.c_k_parameters.get__frequency__update_dynamic_variables__while_processing_rgb_channel(v=self.dynamic_variables_values)
+                self.frequency__update_dynamic_variables__while_processing_rgb_channel = self.c_k_parameters.get__frequency__update_dynamic_variables__while_processing_rgb_channel(v = self.dynamic_variables_values)
             else:
                 self.frequency__update_dynamic_variables__while_processing_rgb_channel -= 1
     
@@ -517,7 +453,7 @@ class Convolutional_kernel_for_rgb_channel:
         if(self.should_update_dynamic_variables__after_processing_rgb_channel == True):
             if(self.frequency__update_dynamic_variables__after_processing_rgb_channel <= 0):
                 self.update_dynamic_variables_values()
-                self.frequency__update_dynamic_variables__after_processing_rgb_channel = self.c_k_parameters.get__frequency__update_dynamic_variables__after_processing_rgb_channel(v=self.dynamic_variables_values)
+                self.frequency__update_dynamic_variables__after_processing_rgb_channel = self.c_k_parameters.get__frequency__update_dynamic_variables__after_processing_rgb_channel(v = self.dynamic_variables_values)
             else:
                 self.frequency__update_dynamic_variables__after_processing_rgb_channel -= 1
 
@@ -531,9 +467,11 @@ class Convolutional_kernel_for_rgb_channel:
     def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
         self.dynamic_variables = dynamic_variables
     
+    """
     #this function must be called from outside
     def get_dynamic_variables(self):
         return self.dynamic_variables
+    """
     
 
     #<functions for applying convolution to colour channel
@@ -555,7 +493,7 @@ class Convolutional_kernel_for_rgb_channel:
         image_pad_y = ((img_height - 1) * self.stride_height + dilated_kernel_height - img_height) // 2 + 1 #this is the number of pixel values to add above and below the image;
         image_pad_x = ((img_width - 1) * self.stride_width + dilated_kernel_width - img_width) // 2 + 1 #this is the number of pixel values to add left and right the image;
 
-        image_pad_mode = get_Enum__image_pad_modes__as_string(num=self.image_pad_mode)
+        image_pad_mode = self.functions_for__Enum__image_pad_modes.get_image_pad_modes_as_string(num=self.image_pad_mode)
 
         # apply zero-padding to the image; 
         # the padded image will be the same as the original one but it will also have `pad_y` pixels (each with value 0) placed above and below the original image 
@@ -585,6 +523,30 @@ class Convolutional_kernel_for_rgb_channel:
             (dilated_kernel_height, dilated_kernel_width)
         )
 
+        
+        move_y = self.move_y
+        move_x = self.move_x
+
+        if(move_y < 0 and move_x < 0):
+            image_areas = np.flip(image_areas, axis=(2,3))
+            move_y = -move_y
+            move_x = -move_x
+        
+        elif(move_y < 0 ):
+            image_areas = np.flip(image_areas, axis=2)
+            move_y = -move_y
+        
+        elif(move_x < 0 ):
+            image_areas = np.flip(image_areas, axis=3)
+            move_x = -move_x
+        
+        image_areas = image_areas[
+            move_y::self.stride_height,
+            move_x::self.stride_width,
+            ::self.dilation_height,
+            ::self.dilation_width
+        ]
+
         #don't delete the next comment - it might be needed
         """
         #apply stride and dilation to the image areas 
@@ -596,6 +558,7 @@ class Convolutional_kernel_for_rgb_channel:
         ]
         """
 
+        """
         #apply stride and dilation to the image areas 
         image_areas = image_areas[
             ::self.stride_height,                   # image area height
@@ -603,6 +566,7 @@ class Convolutional_kernel_for_rgb_channel:
             ::self.dilation_height+self.move_y,     # rows containing image areas
             ::self.dilation_width+self.move_x       # columns containing image areas
         ]
+        """
 
         
         #the string parameter in `np.einsum` represents the dimetions of the second parameter, the third parameter and the array which the function returns:
@@ -635,12 +599,22 @@ class Convolutional_kernel_for_rgb_channel:
         for y in range(out_height):
             for x in range(out_width):
                 
-                x += self.move_x
-                y += self.move_y
+                move_y = y + self.move_y
+                move_x = x + self.move_x
+
+                step_y = self.dilation_height
+                step_x = self.dilation_width
+
+                if(move_y < 0):
+                    dilated_kernel_height = -dilated_kernel_height
+                    step_y = -step_y
+                if(move_x < 0):
+                    dilated_kernel_width = -dilated_kernel_width
+                    step_x = -step_x
 
                 image_area = padded_image[
-                    y * self.stride_height : y * self.stride_height + dilated_kernel_height : self.dilation_height,
-                    x * self.stride_width : x * self.stride_width + dilated_kernel_width : self.dilation_width
+                    move_y * self.stride_height : move_y * self.stride_height + dilated_kernel_height : step_y,
+                    move_x * self.stride_width : move_x * self.stride_width + dilated_kernel_width : step_x
                 ]
 
                 # Handle edges where the image area is smaller than the kernel - occurs when the kernel goes outside the image (overlaps the left or bottom end of the padded image)

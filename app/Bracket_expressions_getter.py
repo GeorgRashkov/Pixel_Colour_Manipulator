@@ -1,4 +1,4 @@
-from Enums import Bracket
+from Enums import Enum__brackets
 
 # the function returns a list containing the found expressions
 # expression is considered anything inside the brackets
@@ -8,7 +8,7 @@ from Enums import Bracket
 # invalid expression is: any content outside the brackets; any expression whose brackets are not properly closed
 # the number of expressions specifies the maximum number of expressions which the function will return
 # there will be no maximum number of expressions if `expressions_count` is equal to zero (the function tries to extract all expressions)
-def get_expressions_in_brackets(bracket_type:Bracket, expressions_str:str, expressions_count:int=0) -> list[str]:
+def get_expressions_in_brackets(bracket_type:Enum__brackets, expressions_str:str, expressions_count:int=0) -> list[str]:
     
     if (expressions_count < 0):
         raise Exception(f"`expressions_count` must be a positive number")
@@ -82,15 +82,15 @@ def get_expressions_in_brackets(bracket_type:Bracket, expressions_str:str, expre
     return expressions
 
 
-def get_opening_closing_brackets(bracket_type:Bracket) -> tuple[str, str]:
+def get_opening_closing_brackets(bracket_type:Enum__brackets) -> tuple[str, str]:
     
-    if(bracket_type ==Bracket.round):
+    if(bracket_type ==Enum__brackets.round):
         return ("(", ")")
     
-    elif(bracket_type ==Bracket.square):
+    elif(bracket_type ==Enum__brackets.square):
        return ("[", "]")
 
-    elif(bracket_type ==Bracket.curly):
+    elif(bracket_type ==Enum__brackets.curly):
         return ("{", "}")
 
 #get's the index of the proper closing bracket based on the first openning bracket
@@ -128,7 +128,7 @@ def get_closing_bracket_index(txt:str) -> int:
 
 #the function returns a dictionary whose keys are the parameters while the values are the values of the parameters
 #the values must be placed in the brackets
-def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Bracket, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]:
+def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]:
     
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
 
@@ -211,7 +211,7 @@ def check_parameters(valid_parameters:set[str], required_parameters:set[str], pa
 
 
 
-def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Bracket, inner_bracket_type:Bracket, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]:
+def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]:
     
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
 
