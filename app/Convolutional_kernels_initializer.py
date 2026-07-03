@@ -66,6 +66,9 @@ class ck_enum(Enum):
     pad_mode = auto()
 
 
+    freq_update_img_y = auto()
+    freq_update_img_x = auto()
+
     freq_move_x = auto()
     freq_move_y = auto()
 
@@ -114,6 +117,7 @@ class Convolutional_kernels_initializer():
             ck_enum.move_x.name, ck_enum.move_y.name, 
             ck_enum.convolutions_count.name, 
             ck_enum.pad_mode.name, 
+            ck_enum.freq_update_img_y.name, ck_enum.freq_update_img_x.name,
             ck_enum.freq_move_x.name, ck_enum.freq_move_y.name, 
             ck_enum.freq_recreate_k.name, ck_enum.freq_update_k_v.name, ck_enum.freq_update_k_hole_v.name, 
             ck_enum.freq_update_d_v_using_k_v.name, ck_enum.freq_update_d_v_using_k_hole_row.name, ck_enum.freq_update_d_v_using_k_hole_col.name, 
@@ -136,6 +140,7 @@ class Convolutional_kernels_initializer():
             ck_enum.move_x.name, ck_enum.move_y.name, 
             ck_enum.convolutions_count.name, 
             ck_enum.pad_mode.name, 
+            ck_enum.freq_update_img_y.name, ck_enum.freq_update_img_x.name,
             ck_enum.freq_move_x.name, ck_enum.freq_move_y.name, 
             ck_enum.freq_recreate_k.name, ck_enum.freq_update_k_v.name, ck_enum.freq_update_k_hole_v.name, 
             ck_enum.freq_update_d_v_using_k_v.name, ck_enum.freq_update_d_v_using_k_hole_row.name, ck_enum.freq_update_d_v_using_k_hole_col.name, 
@@ -492,6 +497,8 @@ class Convolutional_kernels_initializer():
         k = ck_parameters_dict
         n0 = "0"
         n1 = "1"
+        n999 = "999999"
+        n_minus_999 = "-999999"
 
         if ck_enum.id not in k:
             k[ck_enum.id] = n1
@@ -501,39 +508,39 @@ class Convolutional_kernels_initializer():
             k[ck_enum.min_h] = n1
         
         if ck_enum.max_h not in k:
-            k[ck_enum.max_h] = n1
+            k[ck_enum.max_h] = n999
         
         if ck_enum.min_w not in k:
             k[ck_enum.min_w] = n1
         
         if ck_enum.max_w not in k:
-            k[ck_enum.max_w] = n1
+            k[ck_enum.max_w] = n999
         
 
         if ck_enum.min_dilation_h not in k:
             k[ck_enum.min_dilation_h] = n1
         
         if ck_enum.max_dilation_h not in k:
-            k[ck_enum.max_dilation_h] = n1
+            k[ck_enum.max_dilation_h] = n999
         
         if ck_enum.min_dilation_w not in k:
             k[ck_enum.min_dilation_w] = n1
         
         if ck_enum.max_dilation_w not in k:
-            k[ck_enum.max_dilation_w] = n1
+            k[ck_enum.max_dilation_w] = n999
         
 
         if ck_enum.min_stride_h not in k:
             k[ck_enum.min_stride_h] = n1
         
         if ck_enum.max_stride_h not in k:
-            k[ck_enum.max_stride_h] = n1
+            k[ck_enum.max_stride_h] = n999
         
         if ck_enum.min_stride_w not in k:
             k[ck_enum.min_stride_w] = n1
         
         if ck_enum.max_stride_w not in k:
-            k[ck_enum.max_stride_w] = n1
+            k[ck_enum.max_stride_w] = n999
         
 
         
@@ -575,16 +582,16 @@ class Convolutional_kernels_initializer():
         
         
         if ck_enum.min_k_v not in k:
-            k[ck_enum.min_k_v] = n0
+            k[ck_enum.min_k_v] = n_minus_999
         
         if ck_enum.max_k_v not in k:
-            k[ck_enum.max_k_v] = n0
+            k[ck_enum.max_k_v] = n999
         
         if ck_enum.min_hole_v not in k:
-            k[ck_enum.min_hole_v] = n0
+            k[ck_enum.min_hole_v] = n_minus_999
         
         if ck_enum.max_hole_v not in k:
-            k[ck_enum.max_hole_v] = n0
+            k[ck_enum.max_hole_v] = n999
         
 
         if ck_enum.move_x not in k:
@@ -595,13 +602,20 @@ class Convolutional_kernels_initializer():
         
 
         if ck_enum.convolutions_count not in k:
-            k[ck_enum.convolutions_count] = n0
+            k[ck_enum.convolutions_count] = n1
         
 
         if ck_enum.pad_mode not in k:
             k[ck_enum.pad_mode] = n0
         
 
+
+        if ck_enum.freq_update_img_y not in k:
+            k[ck_enum.freq_update_img_y] = n0
+        
+        if ck_enum.freq_update_img_x not in k:
+            k[ck_enum.freq_update_img_x] = n0
+        
 
         if ck_enum.freq_move_x not in k:
             k[ck_enum.freq_move_x] = n0
@@ -649,7 +663,7 @@ class Convolutional_kernels_initializer():
         
 
         if ck_enum.process_fast not in k:
-            k[ck_enum.process_fast] = n0
+            k[ck_enum.process_fast] = n1
         
         if ck_enum.input_channel not in k:
             k[ck_enum.input_channel] = n0
@@ -663,6 +677,7 @@ class Convolutional_kernels_initializer():
               move_x=k[ck_enum.move_x], move_y=k[ck_enum.move_y],
               convolutions_count=k[ck_enum.convolutions_count], 
               image_pad_mode=k[ck_enum.pad_mode], 
+              frequency__update_image_y=k[ck_enum.freq_update_img_y], frequency__update_image_x=k[ck_enum.freq_update_img_x],
               frequency__move_x=k[ck_enum.freq_move_x], frequency__move_y=k[ck_enum.freq_move_y],
               frequency__recreate_kernel=k[ck_enum.freq_recreate_k], frequency__update_kernel_values=k[ck_enum.freq_update_k_v], frequency__update_kernel_hole_values=k[ck_enum.freq_update_k_hole_v],
               frequency__update_dynamic_variables__using_kernel_value=k[ck_enum.freq_update_d_v_using_k_v], frequency__update_dynamic_variables__using_kernel_hole_row=k[ck_enum.freq_update_d_v_using_k_hole_row], frequency__update_dynamic_variables_using_kernel_hole_column=k[ck_enum.freq_update_d_v_using_k_hole_col], 

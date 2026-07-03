@@ -49,6 +49,9 @@ class Convolutional_kernel_for_rgb_channel:
 
         self.image_pad_mode:int = 0
 
+        self.frequency__update_image_y:int = 0
+        self.frequency__update_image_x:int = 0
+
             #<frequencies
         # each frequency is intialized with the user formula; 
         # after that when code execution reaches the frequency, the frequency will be lowered by one
@@ -226,6 +229,12 @@ class Convolutional_kernel_for_rgb_channel:
 
         self.image_pad_mode = self.c_k_parameters.get__image_pad_mode(v = self.dynamic_variables_values)
 
+        #no need to update those as they will be updated
+        """
+        self.frequency__update_image_y = self.c_k_parameters.get__frequency__update_image_y(v = self.dynamic_variables_values)
+        self.frequency__update_image_x = self.c_k_parameters.get__frequency__update_image_x(v = self.dynamic_variables_values)
+        """
+
         #no need to update those as they will be updated by the `recreate_kernel` function
         """
         self.frequency__move_x = self.c_k_parameters.get__frequency__move_x(v = self.dynamic_variables_values)
@@ -236,7 +245,7 @@ class Convolutional_kernel_for_rgb_channel:
         self.frequency__update_kernel_hole_values = self.c_k_parameters.get__frequency__update_kernel_hole_values(v = self.dynamic_variables_values)
         """
         
-         #no need to update those as they will be updated
+        #no need to update those as they will be updated
         """
         self.frequency__update_dynamic_variables__using_kernel_value = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_value(v = self.dynamic_variables_values)
         self.frequency__update_dynamic_variables__using_kernel_hole_row = self.c_k_parameters.get__frequency__update_dynamic_variables__using_kernel_hole_row(v = self.dynamic_variables_values)
@@ -496,8 +505,8 @@ class Convolutional_kernel_for_rgb_channel:
         image_pad_mode = self.functions_for__Enum__image_pad_modes.get_image_pad_modes_as_string(num=self.image_pad_mode)
 
         # apply zero-padding to the image; 
-        # the padded image will be the same as the original one but it will also have `pad_y` pixels (each with value 0) placed above and below the original image 
-        # and it will also have `pad_x` pixels (each with value 0) placed left and right from the original image
+        # the padded image will be the same as the original one but it will also have `pad_y` pixels (each with value 0 when `mode` is `constant`) placed above and below the original image 
+        # and it will also have `pad_x` pixels (each with value 0 when `mode` is `constant`) placed left and right from the original image
         padded_image = np.pad(channel_values, ((image_pad_y, image_pad_y), (image_pad_x, image_pad_x)), mode=image_pad_mode)
 
         while(self.convolutions_count > 0):
@@ -577,11 +586,21 @@ class Convolutional_kernel_for_rgb_channel:
         #take the image areas on every row and column (every row and column is specified with `ij`); 
         #multiply the curent image area (element-by-element) with the kernel - the demensions which will be used for the element-by-element multiplication for both the current image area and the kernel are specified by `kl`;
         #sum the multipliaction and store the result from the sumation in the output image at index [i,j] specified by the values after the arrow
-        output = np.einsum(
+        output:np.ndarray = np.einsum(
             "ijkl,kl->ij",
             image_areas,
             self.values
         )
+
+        self.frequency__update_image_y = self.c_k_parameters.get__frequency__update_image_y(v=self.dynamic_variables_values)
+        self.frequency__update_image_x = self.c_k_parameters.get__frequency__update_image_x(v=self.dynamic_variables_values)
+
+        frequency__update_image_y = max(1, self.frequency__update_image_y)
+        frequency__update_image_x = max(1, self.frequency__update_image_x)
+        
+        output_height, output_width = output.shape[0], output.shape[1]
+        padded_image[:output_height:frequency__update_image_y, :output_width:frequency__update_image_x] = output[:output_height:frequency__update_image_y, :output_width:frequency__update_image_x]
+        output[:output_height, :output_width] = padded_image[:output_height, :output_width]
 
         self.recreate_kernel()
         self.update_dynamic_variables__while_processing_rgb_channel()
@@ -590,14 +609,20 @@ class Convolutional_kernel_for_rgb_channel:
     
     def apply_convolution_to_color_channel_slow(self, padded_image: np.ndarray, original_image_height:int, original_image_width:int, dilated_kernel_height:int, dilated_kernel_width:int) -> np.ndarray:
 
+        """
         # Output dimensions
         out_height = original_image_height
         out_width = original_image_width
         output = np.zeros((out_height, out_width))
+        """
+        output = padded_image[:original_image_height,:original_image_width]
 
         # Perform convolution
-        for y in range(out_height):
-            for x in range(out_width):
+        y = 0
+        while (y < original_image_height):
+
+            x = 0
+            while (x < original_image_width):
                 
                 move_y = y + self.move_y
                 move_x = x + self.move_x
@@ -637,6 +662,12 @@ class Convolutional_kernel_for_rgb_channel:
 
                 self.recreate_kernel()
                 self.update_dynamic_variables__while_processing_rgb_channel()
+
+                self.frequency__update_image_x = self.c_k_parameters.get__frequency__update_image_x(v=self.dynamic_variables_values)
+                x += self.frequency__update_image_x + 1
+            
+            self.frequency__update_image_y = self.c_k_parameters.get__frequency__update_image_y(v=self.dynamic_variables_values)
+            y += self.frequency__update_image_y + 1
 
         return output
     

@@ -18,6 +18,9 @@ class Convolutional_kernel_parameters:
                 move_x:str, move_y:str,
                 convolutions_count:str, 
                 image_pad_mode:str, 
+
+                frequency__update_image_y:str, frequency__update_image_x:str,
+
                 frequency__move_x:str, frequency__move_y:str,
                 frequency__recreate_kernel:str, frequency__update_kernel_values:str, frequency__update_kernel_hole_values:str,
                 frequency__update_dynamic_variables__using_kernel_value:str, frequency__update_dynamic_variables__using_kernel_hole_row:str, frequency__update_dynamic_variables_using_kernel_hole_column:str, 
@@ -78,6 +81,9 @@ class Convolutional_kernel_parameters:
         self.image_pad_mode:Callable[[list[float]], float] = eval(f"lambda v=[0]: {image_pad_mode}")
 
 
+        self.frequency__update_image_y:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_image_y}")
+        self.frequency__update_image_x:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_image_x}")
+
         self.frequency__move_x:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__move_x}")
         self.frequency__move_y:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__move_y}")
 
@@ -91,7 +97,7 @@ class Convolutional_kernel_parameters:
         
         self.frequency__update_dynamic_variables__while_processing_rgb_channel:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_dynamic_variables__while_processing_rgb_channel}")
         self.frequency__update_dynamic_variables__after_processing_rgb_channel:Callable[[list[float]], float] = eval(f"lambda v=[0]: {frequency__update_dynamic_variables__after_processing_rgb_channel}")
-        
+
         self.should_update_move_x:bool = should_update_move_x
         self.should_update_move_y:bool = should_update_move_y
 
@@ -255,6 +261,21 @@ class Convolutional_kernel_parameters:
             return 0
     
 
+
+    def get__frequency__update_image_y(self, v:list[float]) -> int:
+        try:
+            frequency__update_image_y = max(0, int(self.frequency__update_image_y(v)) )
+            return frequency__update_image_y
+        except ZeroDivisionError:
+            return 0
+    
+    def get__frequency__update_image_x(self, v:list[float]) -> int:
+        try:
+            frequency__update_image_x = max(0, int(self.frequency__update_image_x(v)) )
+            return frequency__update_image_x
+        except ZeroDivisionError:
+            return 0
+        
 
     def get__frequency__move_x(self, v:list[float]) -> int:
         try:
