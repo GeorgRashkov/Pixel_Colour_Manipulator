@@ -151,6 +151,20 @@ class Pixel_areas_manipulator:
     
     def set__use_copy_for_replicas(self, use_copy_for_replicas:bool):
         self.use_copy_for_replicas = use_copy_for_replicas
+    
+    def set_pixel_area__size_location(self, id:int, pixel_area_rec:Rectangle, window_h:int, window_w:int):
+        
+        if(id in self.pixel_areas_dict.keys()):
+
+            aspect_ratio_vertical = self.img_height/window_h
+            aspect_ratio_horizontal = self.img_width/window_w
+            
+            pixel_area = self.pixel_areas_dict[id]
+
+            pixel_area.y = int(pixel_area_rec.y * aspect_ratio_vertical)
+            pixel_area.x = int(pixel_area_rec.x * aspect_ratio_horizontal)
+            pixel_area.h = int(pixel_area_rec.h * aspect_ratio_vertical)
+            pixel_area.w = int(pixel_area_rec.w * aspect_ratio_horizontal)
 
     #Those functions must be called from the outside>
 

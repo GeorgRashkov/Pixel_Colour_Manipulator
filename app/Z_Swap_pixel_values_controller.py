@@ -42,11 +42,14 @@ class Swap_pixel_values_controller:
         self.form_window_pixel_areas.button_open_window__swap_areas_masks.clicked.connect(self.show_window_pixel_areas_mask)
 
         self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
+        self.canvas_window.canvas.mouseMoved.connect(self.update_dynamic_pixel_area)
 
         self.form_window_pixel_areas.radioButtonGroup_resize_behaviour.buttonToggled.connect(self.set__areas_resize_behaviour_to__pixel_areas_manipulator)
         self.form_window_pixel_areas.checkBox_use_copy_for_replicas.clicked.connect(self.set__use_copy_for_replicas_to__pixel_areas_manipulator)
         
         self.pixel_areas_manipulator:Pixel_areas_manipulator = Pixel_areas_manipulator()
+
+        self.dynamic_pixel_area_id:int = -1
 
 
 
@@ -180,7 +183,18 @@ class Swap_pixel_values_controller:
            
             #append the pixel are properties of the drawn rectangle to the text area
             self.insertTextIn_formWindow_textArea_swapPixelAreas( id=area_id, x=x, y=y, w=w, h=h,)
-    
+        
+        elif(button == Qt.RightButton):
+
+            pixel_area_id = self.canvas_window.canvas.get_pixel_area_id()
+            self.dynamic_pixel_area_id = pixel_area_id
+
+    def update_dynamic_pixel_area(self, dynamic_pixel_area:Rectangle):
+
+        if(self.dynamic_pixel_area_id > -1):
+            canvas_window_h = self.canvas_window.size().height()
+            canvas_window_w = self.canvas_window.size().width()
+            self.pixel_areas_manipulator.set_pixel_area__size_location(id = self.dynamic_pixel_area_id, pixel_area_rec=dynamic_pixel_area, window_h=canvas_window_h, window_w=canvas_window_w)
 
     def get_first_unused_pixel_area_id(self):
 

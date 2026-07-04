@@ -1,12 +1,15 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QLineEdit
 from PyQt5.QtGui import QPainter, QPen, QColor, QCursor, QPixmap
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtCore import pyqtSignal, QPoint
 
+from Number_format_checker import check_for_positive_int_format
+from Z_Pixel_area import Rectangle
 
 class DrawingWidget(QWidget):
     
     mousePressed = pyqtSignal(QPoint, Qt.MouseButton) #this is a mouse button signal which will be used from outside the class to determine which outside function to call
+    mouseMoved = pyqtSignal(Rectangle)
 
     def __init__(self):
         super().__init__()
@@ -25,6 +28,11 @@ class DrawingWidget(QWidget):
         self.brush_delta_height = 50 #the value which will be use to increase or decrease the brush height
         
         self.set_cursor()
+        self.setMouseTracking(True)
+
+       
+
+        self.textbox_pixel_area_id:QLineEdit = None
       
 
     def get_window_title(self):
@@ -71,7 +79,25 @@ class DrawingWidget(QWidget):
     
     def mousePressEvent(self, event):
         self.mousePressed.emit(event.pos(), event.button())#emiting the signal will call a function specified from outside the class
-   
+    
+    #emits a signal which returns the current position of the cursor as well as the brush size
+    def mouseMoveEvent(self, event):
+        pos = event.pos()
+        
+        #position of the cursor on the canvas
+        y = pos.y()
+        x = pos.x()
+
+        h = self.brush_height
+        w = self.brush_width
+
+        #position of the top left corner of the brush (which has rectangle shape) on the canvas
+        y = max(0, int(y - h/2))
+        x = max(0, int(x - w/2))
+
+
+        rectangle = Rectangle(x=x, y=y, w=w, h=h)
+        self.mouseMoved.emit(rectangle)
 
     #this function decides where to drawn the rectangle and determines its size
     def left_mouse_button_pressed(self, x: int, y: int):#this is called from outside the class
@@ -83,7 +109,26 @@ class DrawingWidget(QWidget):
         self.update()#calls `paintEvent` indirectly
 
         return x, y, width, height
-
+    
+    def get_pixel_area_id(self) -> int:#this is called from outside the class
+        
+        if(self.textbox_pixel_area_id is None):
+            
+            self.textbox_pixel_area_id = QLineEdit(self)
+            self.textbox_pixel_area_id.move(0, 0)
+            self.textbox_pixel_area_id.show()
+            self.textbox_pixel_area_id.setFocus()
+            
+        else:
+            txt = self.textbox_pixel_area_id.text()
+            self.textbox_pixel_area_id.deleteLater()
+            self.textbox_pixel_area_id = None
+            is_txt_valid_id = check_for_positive_int_format(txt_value=txt)
+            if(is_txt_valid_id == True and txt!=""):
+                return int(txt)
+        
+        return -1
+    
     def set_and_get_coordinates_of_drawn_rectangle(self, x:int, y:int):
 
         width = self.brush_width
