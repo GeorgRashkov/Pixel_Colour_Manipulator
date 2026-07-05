@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QLineEdit, QPushButton
+    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QLineEdit, QPushButton, QButtonGroup, QRadioButton
 )
+from PyQt5.QtGui import QIntValidator
 
 from Convolutional_kernels_initializer import Convolutional_kernels_initializer
 from Formula_validation_collections import Convolutional_kernel_lambda_parameters_validation_collections
@@ -12,11 +13,41 @@ class Window_form_convolutional_kernels(QWidget):
         self.setWindowTitle("Convolutional kernels")
         self.setMinimumSize(200, 30)
 
+        int_validator = QIntValidator()
+
 
         self.button_apply_cks = QPushButton("Apply")
         self.button_remove_cks = QPushButton("Remove")
-        self.button_show_dynamiv_variables = QPushButton("Dynamic variables:")
+        self.button_show_dynamic_variables = QPushButton("Dynamic variables:")
         self.button_show_info = QPushButton("Info")
+
+
+        self.button_order_cks_ids = QPushButton("order ids: ")
+
+        self.label_order_cks_ids__start = QLabel("start")
+        self.textBox_order_cks_ids__start = QLineEdit()
+        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__start.setValidator(int_validator)
+
+        self.label_order_cks_ids__end = QLabel("end")
+        self.textBox_order_cks_ids__end = QLineEdit()
+        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__end.setValidator(int_validator)
+
+        self.label_order_cks_ids__step = QLabel("step")
+        self.textBox_order_cks_ids__step = QLineEdit()
+        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__step.setValidator(int_validator)
+
+        self.radioButton_ascending = QRadioButton("ascending")
+        self.radioButton_descending = QRadioButton("descending")
+        self.radioButton_random = QRadioButton("random")
+        self.radioButtons_group_order = QButtonGroup()
+        self.radioButtons_group_order.addButton(self.radioButton_ascending)
+        self.radioButtons_group_order.addButton(self.radioButton_descending)
+        self.radioButtons_group_order.addButton(self.radioButton_random)
+        self.radioButton_ascending.setChecked(True)
+
         
         self.label_cks_for_rgb_channel = QLabel("convolutional kernels for rgb channels:")
         self.textArea_cks_for_rgb_channel = QTextEdit()
@@ -35,8 +66,21 @@ class Window_form_convolutional_kernels(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_cks)
         h_layout.addWidget(self.button_remove_cks)
-        h_layout.addWidget(self.button_show_dynamiv_variables)
+        h_layout.addWidget(self.button_show_dynamic_variables)
         h_layout.addWidget(self.button_show_info)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_order_cks_ids)
+        h_layout.addWidget(self.label_order_cks_ids__start)
+        h_layout.addWidget(self.textBox_order_cks_ids__start)
+        h_layout.addWidget(self.label_order_cks_ids__end)
+        h_layout.addWidget(self.textBox_order_cks_ids__end)
+        h_layout.addWidget(self.label_order_cks_ids__step)
+        h_layout.addWidget(self.textBox_order_cks_ids__step)
+        h_layout.addWidget(self.radioButton_ascending)
+        h_layout.addWidget(self.radioButton_descending)
+        h_layout.addWidget(self.radioButton_random)
         v_layout.addLayout(h_layout)
 
 

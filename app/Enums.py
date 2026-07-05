@@ -114,4 +114,11 @@ class Enum__brackets(Enum):
 
 #enum elements for "brackets">
 
+
+class Enum_order(Enum):
+
+    ascending = 0
+    descending = 1
+    random = 2
+
     
