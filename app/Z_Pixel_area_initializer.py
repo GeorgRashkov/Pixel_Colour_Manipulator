@@ -286,7 +286,7 @@ class Pixel_area_initializer:
         tr_count_dim = int(area_properties_dict["tr_count_dim"]) if area_properties_dict["tr_count_dim"] is not None else 0
 
         #the default input image version is `0` which will always contain the pixel values of the original image
-        img_in_v = int(area_properties_dict["img_in_v"]) if area_properties_dict["img_in_v"] is not None else 0
+        img_in_v = int(area_properties_dict["img_in_v"]) if area_properties_dict["img_in_v"] is not None else 1
 
         #the default output image version is the input image verion; 
         #if the input image version is `0` the default output image version will be `1` (assures that image version `0` will always contain the pixel vaues of the orginal image) 

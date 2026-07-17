@@ -9,6 +9,9 @@ from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resiz
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Z_Mask import Mask
 
+from Order_obj import Order_obj
+from Number_operatios import order_numbers
+
 from Traspose_dimensions_list import traspose_dimensions_list
 
 class Pixel_areas_manipulator:
@@ -16,6 +19,8 @@ class Pixel_areas_manipulator:
 
     def __init__(self):
         
+        self.pixel_areas_ids: list[int] = []
+
         self.pixel_areas_dict: dict[int,Pixel_area] = {}
         self.rgb_formulas_dict: dict[int,RGB_formula] = {}
         
@@ -61,6 +66,12 @@ class Pixel_areas_manipulator:
             
         return rectangles_with_ids
     """
+    def order_pixel_areas_ids(self, order_obj: Order_obj):
+        self.pixel_areas_ids = order_numbers(nums=self.pixel_areas_ids, order_type=order_obj.order_type, start=order_obj.start, end=order_obj.end, step=order_obj.step)
+
+    def get_pixel_areas_ids(self) -> list[int]:
+        return self.pixel_areas_ids.copy()
+
     #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     #This function must be called from outside
@@ -105,6 +116,7 @@ class Pixel_areas_manipulator:
     #<Those functions must be called from the outside
 
     def apply_pixel_areas(self, pixel_areas_dict: dict[int,Pixel_area]):
+        self.pixel_areas_ids = list(pixel_areas_dict.keys())
         self.pixel_areas_dict = pixel_areas_dict
         self.set_image_versions()
 
@@ -127,6 +139,7 @@ class Pixel_areas_manipulator:
     
     
     def remove_pixel_areas(self):
+        self.pixel_areas_ids = []
         self.pixel_areas_dict = {}
     
     def remove_rgb_formulas(self):
@@ -230,7 +243,9 @@ class Pixel_areas_manipulator:
         
         
 
-        for pixel_area in  self.pixel_areas_dict.values():
+        for pixel_area_id in  self.pixel_areas_ids:
+
+            pixel_area = self.pixel_areas_dict[pixel_area_id]
 
             if(self.animations_manipulator is not None):
                 self.animations_manipulator.apply_animations(pixel_area=pixel_area, img=img)

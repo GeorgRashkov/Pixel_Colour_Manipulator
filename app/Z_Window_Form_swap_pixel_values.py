@@ -8,6 +8,8 @@ from PyQt5.QtGui import QIntValidator
 
 import RGB_formula_elements
 
+from Form_elements__order_numbers import Form_elements__order_numbers
+
 class FormWindow_SwapPixelValues(QWidget):
     def __init__(self):
         super().__init__()
@@ -40,6 +42,12 @@ class FormWindow_SwapPixelValues(QWidget):
 
         self.checkBox_fast_area_creation = QCheckBox("use smallest area size")
         #pixel areas behaviour when resizing main window>
+
+        #<pixel areas elements to order ids
+        self.form_elements__order_ids = Form_elements__order_numbers()
+        #pixel areas elements to order ids>
+
+
 
         self.checkBox_use_copy_for_replicas = QCheckBox("use copy for replicas")
         self.checkBox_use_copy_for_replicas.setChecked(True)
@@ -181,6 +189,10 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.radioButton_areas_move)
         h_layout.addWidget(self.radioButton_areas_keep_aspect_ratio)
         h_layout.addWidget(self.checkBox_fast_area_creation)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.form_elements__order_ids, alignment=Qt.AlignLeft)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()

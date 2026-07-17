@@ -18,6 +18,8 @@ from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
 
 from RGB_formula_initializer import RGB_formula_initializer
 
+from Order_obj import Order_obj
+
 from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 
 class Swap_pixel_values_controller: 
@@ -30,7 +32,9 @@ class Swap_pixel_values_controller:
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
         self.form_window_pixel_areas = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
         self.form_window_pixel_areas_animations = FormWindow_PixelAreasAnimations()
-                
+        
+        self.form_window_pixel_areas.form_elements__order_ids.button_order_nums.clicked.connect(self.order_pixel_areas_ids)
+
         self.form_window_pixel_areas.button_clear_canvas.clicked.connect(self.clear_canvas)
 
         self.form_window_pixel_areas.button_add_rgb_formula.clicked.connect(self.add_rgb_function)
@@ -533,6 +537,16 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator.set__use_copy_for_replicas(use_copy_for_replicas=use_copy_for_replicas)
 
 #fuctions for setting the values of boolean and enum elements in the pixel area manipulator>
+
+
+    def order_pixel_areas_ids(self):
+        
+        order_obj: Order_obj = self.form_window_pixel_areas.form_elements__order_ids.get__order_obj()
+        if(order_obj is not None):
+            self.pixel_areas_manipulator.order_pixel_areas_ids(order_obj=order_obj)
+            pixel_areas_ids = self.pixel_areas_manipulator.get_pixel_areas_ids()
+            print(f"the order of the pixel areas ids is: {pixel_areas_ids}")
+
 
 
 ## functions for applying/setting/removing elements for the pixel area manipulator>
