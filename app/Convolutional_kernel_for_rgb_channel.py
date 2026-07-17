@@ -94,8 +94,6 @@ class Convolutional_kernel_for_rgb_channel:
         self.process_image_fast:bool = self.c_k_parameters.process_image_fast
 
         self.input_rgb_channel:Enum__rgb_channels = self.c_k_parameters.input_rgb_channel
-
-        self.update_convolutional_kernel_parameters()
         #convolutional kernel parameters>
 
         self.is_hole_content_formula:bool = self.c_k_parameters.is_hole_content_formula
@@ -122,6 +120,8 @@ class Convolutional_kernel_for_rgb_channel:
         #dynamic variables>
 
         self.functions_for__Enum__image_pad_modes = Functions_for__Enum__image_pad_modes()
+
+        self.update_convolutional_kernel_parameters()
     
     #<functions for updating convolutional kernel values and parameters
     
@@ -195,7 +195,7 @@ class Convolutional_kernel_for_rgb_channel:
            or self.hole_height != hole_height or self.hole_width != hole_width 
            or self.vertical_hole_frequency != vertical_hole_frequency or self.horizontal_hole_frequency != horizontal_hole_frequency):
             
-            self.values = np.zeros([width, height])
+            self.values = np.zeros([height, width])
 
             self.height = height
             self.width = width
@@ -256,8 +256,8 @@ class Convolutional_kernel_for_rgb_channel:
         """
 
 
-
-    def update_convolutional_kernel_hole_values(self):
+    """
+    def update_convolutional_kernel_hole_values_v1(self):
 
         non_hole_values_rows_count = len(self.non_hole_values)
         non_hole_values_columns_count = len(self.non_hole_values[0])
@@ -322,7 +322,7 @@ class Convolutional_kernel_for_rgb_channel:
                 self.values[kernel_row, kernel_column] = self.non_hole_values[non_hole_values_row][non_hole_values_column]
 
                 kernel_column += 1
-                if(kernel_column > self.width):
+                if(kernel_column >= self.width):
                     break
             
             kernel_row+=1 
@@ -331,6 +331,99 @@ class Convolutional_kernel_for_rgb_channel:
         
         self.row_indexes_of__non_hole_values_in_values = updated_indexes_for__row_indexes_of__non_hole_values_in_values
         self.column_indexes_of__non_hole_values_in_values = updated_indexes_for__column_indexes_of__non_hole_values_in_values
+    
+    """
+
+    def update_convolutional_kernel_hole_values(self):
+
+        non_hole_values_rows_count = len(self.non_hole_values)
+        non_hole_values_columns_count = len(self.non_hole_values[0])
+
+        kernel_row = 0
+        kernel_column = 0
+
+        updated_indexes_for__row_indexes_of__non_hole_values_in_values:list[int] = []
+        updated_indexes_for__column_indexes_of__non_hole_values_in_values:list[int] = []
+        updated_kernel_values:list[list[int]] = []
+        updated_kernel_values__row:list[int] = []
+        
+        for non_hole_values_row in range(0, non_hole_values_rows_count):
+
+            #<creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width
+            if(self.vertical_hole_frequency <= 0):
+                
+                for vertical_hole_row in range(0, self.hole_height):
+
+                    updated_kernel_values__row = []
+
+                    for values_col in range(0, self.width):
+
+                        self.update__hole_content_value()
+                        updated_kernel_values__row.append(self.hole_content)                     
+                        self.update_dynamic_variables__using_kernel_hole_row()
+
+                    updated_kernel_values.append(updated_kernel_values__row)
+                    kernel_row+=1
+                    if(kernel_row >= self.height):
+                        break
+                
+                    
+
+                self.vertical_hole_frequency = self.c_k_parameters.get__vertical_hole_frequency(v = self.dynamic_variables_values)
+            
+            self.vertical_hole_frequency -= 1 
+            #creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width>
+
+            if(kernel_row >= self.height):
+                break
+            
+            kernel_column = 0
+
+            updated_kernel_values__row = []
+
+            for non_hole_values_column in range(0, non_hole_values_columns_count):
+                
+                self.horizontal_hole_frequency -= 1 
+
+                #<creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width
+                if(self.horizontal_hole_frequency <= 0):
+                    
+                    
+                    
+                    for hole_values_column in range(0, self.hole_width):
+                        
+                        if(kernel_column >= self.width):
+                            break
+
+                        self.update__hole_content_value()
+                        updated_kernel_values__row.append(self.hole_content)
+                        self.update_dynamic_variables__using_kernel_hole_column()
+
+                        kernel_column += 1
+                    
+                    self.horizontal_hole_frequency = self.c_k_parameters.get__horizontal_hole_frequency(v = self.dynamic_variables_values)
+                #creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width>
+                
+                if(kernel_column >= self.width):
+                    break
+
+                updated_indexes_for__row_indexes_of__non_hole_values_in_values.append(kernel_row)
+                updated_indexes_for__column_indexes_of__non_hole_values_in_values.append(kernel_column)
+                updated_kernel_values__row.append(self.non_hole_values[non_hole_values_row][non_hole_values_column])
+
+                kernel_column += 1
+                if(kernel_column >= self.width):
+                    break
+            
+            updated_kernel_values.append(updated_kernel_values__row)
+            
+            kernel_row+=1 
+            if(kernel_row >= self.height):
+                break
+        
+        self.row_indexes_of__non_hole_values_in_values = updated_indexes_for__row_indexes_of__non_hole_values_in_values
+        self.column_indexes_of__non_hole_values_in_values = updated_indexes_for__column_indexes_of__non_hole_values_in_values
+        self.values = np.array(updated_kernel_values)
 
 
     def update__hole_content_value(self):
@@ -355,7 +448,7 @@ class Convolutional_kernel_for_rgb_channel:
                 kernel_row = self.row_indexes_of__non_hole_values_in_values[non_hole_values_row]
                 kernel_column = self.column_indexes_of__non_hole_values_in_values[non_hole_values_column]
                 
-                self.values[kernel_row, kernel_column] = self.non_hole_values[non_hole_values_row, non_hole_values_column]
+                self.values[kernel_row, kernel_column] = self.non_hole_values[non_hole_values_row][non_hole_values_column]
     
     #functions for updating convolutional kernel values and parameters>
 
@@ -508,23 +601,24 @@ class Convolutional_kernel_for_rgb_channel:
         # the padded image will be the same as the original one but it will also have `pad_y` pixels (each with value 0 when `mode` is `constant`) placed above and below the original image 
         # and it will also have `pad_x` pixels (each with value 0 when `mode` is `constant`) placed left and right from the original image
         padded_image = np.pad(channel_values, ((image_pad_y, image_pad_y), (image_pad_x, image_pad_x)), mode=image_pad_mode)
+        transformed_image = None
 
         while(self.convolutions_count > 0):
 
             if(self.process_image_fast == True):
-                padded_image = self.apply_convolution_to_color_channel_fast(padded_image=padded_image, dilated_kernel_height=dilated_kernel_height, dilated_kernel_width=dilated_kernel_width)
+                transformed_image = self.apply_convolution_to_color_channel_fast(padded_image=padded_image, original_image_height=img_height, original_image_width=img_width, dilated_kernel_height=dilated_kernel_height, dilated_kernel_width=dilated_kernel_width)
             else:
-                padded_image = self.apply_convolution_to_color_channel_slow(padded_image=padded_image, original_image_height=img_height, original_image_width=img_width, dilated_kernel_height=dilated_kernel_height, dilated_kernel_width=dilated_kernel_width)
+                transformed_image = self.apply_convolution_to_color_channel_slow(padded_image=padded_image, original_image_height=img_height, original_image_width=img_width, dilated_kernel_height=dilated_kernel_height, dilated_kernel_width=dilated_kernel_width)
 
             self.convolutions_count-=1
         
         self.convolutions_count = self.c_k_parameters.get__convolutions_count(v = self.dynamic_variables_values)
         self.update_dynamic_variables__after_processing_rgb_channel()
 
-        return padded_image
+        return transformed_image
 
 
-    def apply_convolution_to_color_channel_fast(self, padded_image: np.ndarray, dilated_kernel_height:int, dilated_kernel_width:int) -> np.ndarray:
+    def apply_convolution_to_color_channel_fast(self, padded_image:np.ndarray, original_image_height:int, original_image_width:int, dilated_kernel_height:int, dilated_kernel_width:int) -> np.ndarray:
 
         #takes every possible image area from the padded image where the width and height of the area is equal to the width and height of the dilated kernel
         image_areas = np.lib.stride_tricks.sliding_window_view(
@@ -598,14 +692,18 @@ class Convolutional_kernel_for_rgb_channel:
         frequency__update_image_y = max(1, self.frequency__update_image_y)
         frequency__update_image_x = max(1, self.frequency__update_image_x)
         
-        output_height, output_width = output.shape[0], output.shape[1]
+        output_height = min(output.shape[0], original_image_height)
+        output_width = min(output.shape[1], original_image_width)
         padded_image[:output_height:frequency__update_image_y, :output_width:frequency__update_image_x] = output[:output_height:frequency__update_image_y, :output_width:frequency__update_image_x]
-        output[:output_height, :output_width] = padded_image[:output_height, :output_width]
-
+        """
+        output[:original_image_height, :original_image_width] = padded_image[:original_image_height, :original_image_width]
+        """
         self.recreate_kernel()
         self.update_dynamic_variables__while_processing_rgb_channel()
-
-        return output
+        """
+        return output[:original_image_height, :original_image_width]
+        """
+        return padded_image[:original_image_height, :original_image_width]
     
     def apply_convolution_to_color_channel_slow(self, padded_image: np.ndarray, original_image_height:int, original_image_width:int, dilated_kernel_height:int, dilated_kernel_width:int) -> np.ndarray:
 

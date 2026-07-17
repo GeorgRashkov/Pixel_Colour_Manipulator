@@ -8,9 +8,10 @@ from Enums import Enum__rgb_channels
 class Convolutional_kernel_for_image:
 
     #the convolutional filter parameters can be `None`; the convolutional filters must use the same dynamic variables
-    def __init__(self, id:int, 
-                 convolutional_kernel_r:Convolutional_kernel_for_rgb_channel, convolutional_kernel_g:Convolutional_kernel_for_rgb_channel, convolutional_kernel_b:Convolutional_kernel_for_rgb_channel,
-                  dynamic_variables:list[Dynamic_variable]):
+    def __init__(self, 
+                 id:int, dynamic_variables:list[Dynamic_variable],
+                 convolutional_kernel_r:Convolutional_kernel_for_rgb_channel=None, convolutional_kernel_g:Convolutional_kernel_for_rgb_channel=None, convolutional_kernel_b:Convolutional_kernel_for_rgb_channel=None
+                ):
         
         if(dynamic_variables is None):
             raise Exception("dynamic variables cannot be `None`")
@@ -32,7 +33,7 @@ class Convolutional_kernel_for_image:
     #this is the main function for applying convolution on an image
     #this function must be called from outside
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image(self, img:np.ndarray[np.uint8]):
+    def transform_image(self, img:np.ndarray[np.uint8]) -> np.ndarray:
         
         #this code might be need if the convolution changes the image size 
         """"
@@ -44,18 +45,19 @@ class Convolutional_kernel_for_image:
         #applies convolution to the red channel
         if(self.convolutional_kernel_r is not None):
             input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_r.input_rgb_channel)
-            img[:,:,0] = self.convolutional_kernel_r.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
+            img[:,:,0] = self.convolutional_kernel_r.apply_convolution_to_color_channel(channel_values=input_rgb_channel_values)
         
         #applies convolution to the gree channel
         if(self.convolutional_kernel_g is not None):
             input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_g.input_rgb_channel)
-            img[:,:,1] = self.convolutional_kernel_g.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
+            img[:,:,1] = self.convolutional_kernel_g.apply_convolution_to_color_channel(channel_values=input_rgb_channel_values)
 
         #applies convolution to the blue channel
         if(self.convolutional_kernel_b is not None):
             input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_b.input_rgb_channel)
-            img[:,:,2] = self.convolutional_kernel_b.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
+            img[:,:,2] = self.convolutional_kernel_b.apply_convolution_to_color_channel(channel_values=input_rgb_channel_values)
 
+        return img
 
 
         """"

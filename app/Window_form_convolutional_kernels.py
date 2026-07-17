@@ -26,17 +26,17 @@ class Window_form_convolutional_kernels(QWidget):
 
         self.label_order_cks_ids__start = QLabel("start")
         self.textBox_order_cks_ids__start = QLineEdit()
-        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__start.setMaximumWidth(50)
         self.textBox_order_cks_ids__start.setValidator(int_validator)
 
         self.label_order_cks_ids__end = QLabel("end")
         self.textBox_order_cks_ids__end = QLineEdit()
-        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__end.setMaximumWidth(50)
         self.textBox_order_cks_ids__end.setValidator(int_validator)
 
         self.label_order_cks_ids__step = QLabel("step")
         self.textBox_order_cks_ids__step = QLineEdit()
-        self.textBox_order_cks_ids__start.setMaximumWidth(10)
+        self.textBox_order_cks_ids__step.setMaximumWidth(50)
         self.textBox_order_cks_ids__step.setValidator(int_validator)
 
         self.radioButton_ascending = QRadioButton("ascending")
@@ -118,19 +118,19 @@ class Window_info_convolutional_kernels(QWidget):
         
         self.label_formula = QLabel("formula symbols:")
         self.textArea_formula = QTextEdit()
-        self.textArea_formula.setDisabled(True)
+        self.textArea_formula.setReadOnly(True)
 
         self.label_cks_for_rgb_channel = QLabel("convolutional kernels for rgb channels:")
         self.textArea_cks_for_rgb_channel = QTextEdit()
-        self.textArea_cks_for_rgb_channel.setDisabled(True)
+        self.textArea_cks_for_rgb_channel.setReadOnly(True)
 
         self.label_cks_for_image = QLabel("convolutional kernels for image:")
         self.textArea_cks_for_image = QTextEdit()
-        self.textArea_cks_for_image.setDisabled(True)
+        self.textArea_cks_for_image.setReadOnly(True)
 
         self.label_additional_value_formula = QLabel("additional value formula:")
         self.textBox_additional_value_formula = QLineEdit()
-        self.textBox_additional_value_formula.setDisabled(True)
+        self.textBox_additional_value_formula.setReadOnly(True)
 
         self.set_text()
 
@@ -176,28 +176,33 @@ class Window_info_convolutional_kernels(QWidget):
         convolutional_kernels_initializer = Convolutional_kernels_initializer()
         
         text_for__ck_formula = ""
-        text_for__ck_formula += f"all characters: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_chars}`\n\n"
-        text_for__ck_formula += f"special characters: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_special_chars}`\n\n"
-        text_for__ck_formula += f"collection variable characters: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_variable_collection_chars}`\n\n"
-        text_for__ck_formula += f"operator characters: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_operator_chars}`\n\n"
-        text_for__ck_formula += f"number characters: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_num_chars}`\n\n"
-        text_for__ck_formula += f"formula names: `{convolutional_kernel_lambda_parameters_validation_collections.allowed_special_formulas}`\n\n"
+        text_for__ck_formula += f"all characters: {self.get_line(strings = convolutional_kernel_lambda_parameters_validation_collections.allowed_chars)}"
+        text_for__ck_formula += f"special characters: {self.get_line(convolutional_kernel_lambda_parameters_validation_collections.allowed_special_chars)}"
+        text_for__ck_formula += f"collection variable characters: {self.get_line(convolutional_kernel_lambda_parameters_validation_collections.allowed_variable_collection_chars)}"
+        text_for__ck_formula += f"operator characters: {self.get_line(convolutional_kernel_lambda_parameters_validation_collections.allowed_operator_chars)}"
+        text_for__ck_formula += f"number characters: {self.get_line(convolutional_kernel_lambda_parameters_validation_collections.allowed_num_chars)}"
+        text_for__ck_formula += f"formula names: {self.get_line(convolutional_kernel_lambda_parameters_validation_collections.allowed_special_formulas)}"
         self.textArea_formula.setText(text_for__ck_formula)
 
         text_for__ck_for_rgb_channel = ""
-        text_for__ck_for_rgb_channel += f"all parameters: `{convolutional_kernels_initializer.ck_for_rgb_channel_valid_parameters}`\n\n"
-        text_for__ck_for_rgb_channel += f"required parameters: `{convolutional_kernels_initializer.ck_for_rgb_channel_required_parameters}`\n\n"
-        text_for__ck_for_rgb_channel += f"formula parameters: `{convolutional_kernels_initializer.ck_for_rgb_channel_lambda_parameters}`\n\n"
-        text_for__ck_for_rgb_channel += f"positive int parameters: `{convolutional_kernels_initializer.ck_for_rgb_channel_positive_int_parameters}`\n\n"
-        text_for__ck_for_rgb_channel += f"positive int parameters in range: `{convolutional_kernels_initializer.ck_for_rgb_channel_positive_int_in_range_parameters}`\n\n"
+        text_for__ck_for_rgb_channel += f"all parameters: {self.get_line(convolutional_kernels_initializer.ck_for_rgb_channel_valid_parameters)}"
+        text_for__ck_for_rgb_channel += f"required parameters: {self.get_line(convolutional_kernels_initializer.ck_for_rgb_channel_required_parameters)}"
+        text_for__ck_for_rgb_channel += f"formula parameters: {self.get_line(convolutional_kernels_initializer.ck_for_rgb_channel_lambda_parameters)}"
+        text_for__ck_for_rgb_channel += f"positive int parameters: {self.get_line(convolutional_kernels_initializer.ck_for_rgb_channel_positive_int_parameters)}"
+        text_for__ck_for_rgb_channel += f"positive int parameters in range: {self.get_line(convolutional_kernels_initializer.ck_for_rgb_channel_positive_int_in_range_parameters)}"
         self.textArea_cks_for_rgb_channel.setText(text_for__ck_for_rgb_channel)
 
         text_for__ck_for_image = ""
-        text_for__ck_for_image += f"all parameters: `{convolutional_kernels_initializer.ck_for_image_valid_parameters}`\n\n"
-        text_for__ck_for_image += f"required parameters: `{convolutional_kernels_initializer.ck_for_image_required_parameters}`\n\n"
-        text_for__ck_for_image += f"positive int parameters: `{convolutional_kernels_initializer.ck_for_image_positive_int_parameters}`\n\n"
-        text_for__ck_for_image += f"formula colletion parameters: `{convolutional_kernels_initializer.ck_for_image_lambda_collection_parameters}`\n\n"
+        text_for__ck_for_image += f"all parameters: {self.get_line(convolutional_kernels_initializer.ck_for_image_valid_parameters)}"
+        text_for__ck_for_image += f"required parameters: {self.get_line(convolutional_kernels_initializer.ck_for_image_required_parameters)}"
+        text_for__ck_for_image += f"positive int parameters: {self.get_line(convolutional_kernels_initializer.ck_for_image_positive_int_parameters)}"
+        text_for__ck_for_image += f"formula colletion parameters: {self.get_line(convolutional_kernels_initializer.ck_for_image_lambda_collection_parameters)}"
         self.textArea_cks_for_image.setText(text_for__ck_for_image)
 
         text_for__additional_value_formula = "formula without parameters"
         self.textBox_additional_value_formula.setText(text_for__additional_value_formula)
+    
+    def get_line(self, strings:list[str]):
+        
+        str_line = f"[ {"; ".join(strings)} ]\n\n" 
+        return str_line

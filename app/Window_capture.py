@@ -13,6 +13,8 @@ from dxcam import DXCamera
 
 from Dynamic_variable import Dynamic_variable
 
+from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
+
 from DXCamera_Singleton import DXCamera_Singleton
 
 class Kernel():
@@ -40,7 +42,10 @@ class CaptureWindow(QtWidgets.QWidget):
         
 
         self.transformed_image = None
+        """
         self.rgb_kernels = None
+        """
+        self.convolutional_kernels_manipulator:Convolutional_kernels_manipulator = Convolutional_kernels_manipulator()
         self.screen_width = QApplication.primaryScreen().geometry().width()
         self.screen_height = QApplication.primaryScreen().geometry().height()
         
@@ -672,6 +677,7 @@ class CaptureWindow(QtWidgets.QWidget):
 
 
 #<Functions for performing convolution on the image
+    """
     def apply_convolution_to_image(self, img: np.ndarray):
         
         if (self.rgb_kernels == None):
@@ -683,28 +689,17 @@ class CaptureWindow(QtWidgets.QWidget):
         green_convolution = self.apply_convolution_to_color_channel(stride = rgb_kernels.g_kernel.stride, holes_count = rgb_kernels.g_kernel.holes_count, kernel_values = rgb_kernels.g_kernel.kernel_values, channel_values = img[:,:,1])
         blue_convolution = self.apply_convolution_to_color_channel(stride = rgb_kernels.b_kernel.stride, holes_count = rgb_kernels.b_kernel.holes_count, kernel_values = rgb_kernels.b_kernel.kernel_values, channel_values = img[:,:,2])
         
-        """
-        img_h = min(red_convolution.shape[0], green_convolution.shape[0], blue_convolution.shape[0])
-        img_w = min(red_convolution.shape[1], green_convolution.shape[1], blue_convolution.shape[1])
-        convolved_image = np.dstack((red_convolution[:img_h, :img_w], green_convolution[:img_h, :img_w], blue_convolution[:img_h, :img_w]))
         
-        """
+        #img_h = min(red_convolution.shape[0], green_convolution.shape[0], blue_convolution.shape[0])
+        #img_w = min(red_convolution.shape[1], green_convolution.shape[1], blue_convolution.shape[1])
+        #convolved_image = np.dstack((red_convolution[:img_h, :img_w], green_convolution[:img_h, :img_w], blue_convolution[:img_h, :img_w]))
+        
+       
         convolved_image = np.dstack((red_convolution, green_convolution, blue_convolution))
         return convolved_image
 
     def apply_convolution_to_color_channel(self, stride: int, holes_count: int, kernel_values: np.ndarray, channel_values: np.ndarray):
-        """
-        Applies a convolutional filter to a single color channel with zero-padding to keep output the same shape as input.
-
-        Parameters:
-            stride (int): Stride of the filter.
-            holes_count (int): Number of holes (dilation factor - 1).
-            kernel_values (list): a numpy array of float values representing the filter.
-            channel_values (np.ndarray): Input channel values, shape (H, W).
-
-        Returns:
-            np.ndarray: The resulting convolved channel, same shape as input.
-        """
+       
         if(kernel_values.shape[0]==0 or kernel_values.shape[1]==0):#if the kernel has 0 columns or 0 rows - return the input channel values unchanged
             return channel_values
 
@@ -755,7 +750,16 @@ class CaptureWindow(QtWidgets.QWidget):
 
     def remove_rgb_kernels(self):
         self.rgb_kernels = None
+    """
+    def apply_convolution_to_image(self, img: np.ndarray):
+        img = self.convolutional_kernels_manipulator.transform_image_0(img=img)
+        return img
 
+    def set_convolutional_kernels(self, cks_manipulator:Convolutional_kernels_manipulator):
+        self.convolutional_kernels_manipulator = cks_manipulator
+
+    def remove_convolutional_kernels(self):
+        self.convolutional_kernels_manipulator = Convolutional_kernels_manipulator()
 #Functions for performing convolution on the image>
 
 #Functions for changing the RGB values of the area under the window>

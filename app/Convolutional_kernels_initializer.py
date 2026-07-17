@@ -202,12 +202,19 @@ class Convolutional_kernels_initializer():
             is_additional_value_formula_valid = check_formula_format(formula=additional_value_formula_str, expression_name="additional value formula", square_brackets_biggest_value=999_999, 
                                                                     formula_validation_collections=self.convolutional_kernel_lambda_parameters__validation_collections)
             if(is_additional_value_formula_valid == True):
-                self.additional_value_formula_str = additional_value_formula_str
+                self.additional_value_formula_str = self.convolutional_kernel_lambda_parameters__validation_collections.update_format(formula=additional_value_formula_str)
             else:
                 print("warning: the additional value formula will not be used because it was in wrong format")
 
         cks_parameters_for_rgb_channel_str = cks_parameters_for_rgb_channel_str.replace(" ","").replace("\n","")
         cks_parameters_for_image_str = cks_parameters_for_image_str.replace(" ","").replace("\n","")
+
+        if(len(cks_parameters_for_rgb_channel_str) == 0):
+            print("error: the text area for convolutional kernels (for rgb channels) cannot be empty")
+            return None
+        elif(len(cks_parameters_for_image_str) == 0):
+            print("error: the text area for convolutional kernels (for image) cannot be empty")
+            return None
 
         are_ck_parameters_for_rgb_channel_valid = self.check_cks_parameters_for_rgb_channel(cks_parameters_for_rgb_channel_str = cks_parameters_for_rgb_channel_str)
         if(are_ck_parameters_for_rgb_channel_valid == False):
@@ -217,8 +224,8 @@ class Convolutional_kernels_initializer():
         if(are_ck_parameters_for_image_valid == False):
             return None
         
-        convolutional_kernels_for_image:dict[int, Convolutional_kernel_for_image] = self.create_cks_for_image__without_checking_format(cks_parameters_for_rgb_channel_str=cks_parameters_for_rgb_channel_str, dynamic_variables=dynamic_variables)
-        self.reset_dynamic_variables()
+        convolutional_kernels_for_image:dict[int, Convolutional_kernel_for_image] = self.create_cks_for_image__without_checking_format(cks_parameters_for_rgb_channel_str=cks_parameters_for_rgb_channel_str, ck_parameters_for_image_str=cks_parameters_for_image_str, dynamic_variables=dynamic_variables)
+        self.reset_dynamic_variables(dynamic_variables=dynamic_variables)
         return convolutional_kernels_for_image
     
 
@@ -235,14 +242,14 @@ class Convolutional_kernels_initializer():
             found_parameters = []
 
             convolutional_kernel_parameters_and_values__as_strings = convolutional_kernel_as_string.split(";")
-            if(len(convolutional_kernel_parameter_and_value__as_string == 0)):
+            if(len(convolutional_kernel_parameters_and_values__as_strings) == 0):
                     print(f"error: kernels without parameters are not allowed")
                     print(f"the previous error occured at the kernel expression (for rgb channel) on index {i1}")
                     return False
 
             for convolutional_kernel_parameter_and_value__as_string in convolutional_kernel_parameters_and_values__as_strings:
                 
-                if(len(convolutional_kernel_parameter_and_value__as_string == 0)):
+                if(len(convolutional_kernel_parameter_and_value__as_string) == 0):
                     print(f"error: the symbol `;` cannot be placed next to another `;`")
                     print(f"the previous error occured at the kernel expression (for rgb channel) on index {i1}")
                     return False
@@ -399,7 +406,7 @@ class Convolutional_kernels_initializer():
                 elif(ck_parameter_str == self.r or ck_parameter_str == self.g or ck_parameter_str == self.b):
                     cks_for_rgb_channels__non_hole_values[getattr(Enum__rgb_channels, ck_parameter_str)] = ck_value_str
                 elif(ck_parameter_str == self.r_id or ck_parameter_str == self.g_id or ck_parameter_str == self.b_id):
-                    ck_for_image__rgb_ids[getattr(Enum__rgb_channels,ck_parameter_str)] = ck_value_str
+                    ck_for_image__rgb_ids[getattr(Enum__rgb_channels,ck_parameter_str[0])] = ck_value_str
 
             for rgb_channel in ck_for_image__rgb_ids.keys():
                 rgb_id = ck_for_image__rgb_ids[rgb_channel]
@@ -425,6 +432,10 @@ class Convolutional_kernels_initializer():
             return None
         
         cks_for_rgb_channel:dict[Enum__rgb_channels, Convolutional_kernel_for_rgb_channel] = {}
+        cks_for_rgb_channel[Enum__rgb_channels.r] = None
+        cks_for_rgb_channel[Enum__rgb_channels.g] = None
+        cks_for_rgb_channel[Enum__rgb_channels.b] = None
+
         for rbg_channel in rbg_channels:
             ck_for_rgb_channel__non_hole_values = cks_for_rgb_channels__non_hole_values[rbg_channel]
             ck_for_rgb_channel__parameters = cks_for_rgb_channels__parameters[rbg_channel]
@@ -432,9 +443,9 @@ class Convolutional_kernels_initializer():
             ck_for_rgb_channel:Convolutional_kernel_for_rgb_channel = self.create_ck_for_rgb_channel__without_checking_format(ck_parameters_str=ck_for_rgb_channel__parameters, ck_non_hole_values_str=ck_for_rgb_channel__non_hole_values, dynamic_variables=dynamic_variables)
             cks_for_rgb_channel[rbg_channel] = ck_for_rgb_channel
         
-        convolutional_kernel_for_image = Convolutional_kernel_for_image(id=id, 
-                convolutional_kernel_r=cks_for_rgb_channel[Enum__rgb_channels.r], convolutional_kernel_g=cks_for_rgb_channel[Enum__rgb_channels.g], convolutional_kernel_b=cks_for_rgb_channel[Enum__rgb_channels.b],
-                dynamic_variables=dynamic_variables)
+        convolutional_kernel_for_image = Convolutional_kernel_for_image(id=id, dynamic_variables=dynamic_variables,
+                convolutional_kernel_r=cks_for_rgb_channel[Enum__rgb_channels.r], convolutional_kernel_g=cks_for_rgb_channel[Enum__rgb_channels.g], convolutional_kernel_b=cks_for_rgb_channel[Enum__rgb_channels.b]
+                )
 
         return convolutional_kernel_for_image
         
@@ -471,13 +482,13 @@ class Convolutional_kernels_initializer():
             ck_parameter__name = ck_parameter__name_and_value[0]
             ck_parameter__value = ck_parameter__name_and_value[1]
             
-            ck_parameters_dict[getattr(ck_enum, ck_parameter__name)] = ck_parameter__value
+            ck_parameters_dict[getattr(ck_enum, ck_parameter__name)] = self.convolutional_kernel_lambda_parameters__validation_collections.update_format(formula=ck_parameter__value)
         
-        ck_parameters_obj = self.create_ck_parameters_2(k = ck_parameters_dict)
+        ck_parameters_obj = self.create_ck_parameters_2(ck_parameters_dict = ck_parameters_dict)
         return ck_parameters_obj
 
 
-    def create_ck_parameters_2(sekf, ck_parameters_dict:dict[ck_enum, str]) -> Convolutional_kernel_parameters:
+    def create_ck_parameters_2(self, ck_parameters_dict:dict[ck_enum, str]) -> Convolutional_kernel_parameters:
 
         should_update_move_x:bool = True
         should_update_move_y:bool = True
@@ -669,7 +680,11 @@ class Convolutional_kernels_initializer():
             k[ck_enum.input_channel] = n0
         
 
-        convolutional_kernel_parameters_obj = Convolutional_kernel_parameters(id=k[ck_enum.id], 
+        convolutional_kernel_parameters_obj = Convolutional_kernel_parameters(id=int(k[ck_enum.id]), 
+              
+              min_height=int(k[ck_enum.min_h]), max_height=int(k[ck_enum.max_h]), min_width=int(k[ck_enum.min_w]), max_width=int(k[ck_enum.max_w]),
+              min_dilation_height=int(k[ck_enum.min_dilation_h]), max_dilation_height=int(k[ck_enum.max_dilation_h]), min_dilation_width=int(k[ck_enum.min_dilation_w]), max_dilation_width=int(k[ck_enum.max_dilation_w]),
+              min_stride_height=int(k[ck_enum.min_stride_h]), max_stride_height=int(k[ck_enum.max_stride_h]), min_stride_width=int(k[ck_enum.min_stride_w]), max_stride_width=int(k[ck_enum.max_stride_w]),
               
               height=k[ck_enum.h], width=k[ck_enum.w], dilation_height=k[ck_enum.dilation_h], dilation_width=k[ck_enum.dilation_w], stride_height=k[ck_enum.stride_h], stride_width=k[ck_enum.stride_w], 
               hole_height=k[ck_enum.hole_h], hole_width=k[ck_enum.hole_w], vertical_hole_frequency=k[ck_enum.freq_row_hole], horizontal_hole_frequency=k[ck_enum.freq_col_hole], hole_content=k[ck_enum.hole_v],
@@ -707,8 +722,13 @@ class Convolutional_kernels_initializer():
             ck_non_hole_values__current_row_columns = ck_non_hole_values__row.split(",")
             if(len(ck_non_hole_values__current_row_columns) > columns_per_row):
                 columns_per_row = len(ck_non_hole_values__current_row_columns)
+
+            updated_non_hole_values__current_row = []
+            for ck_non_hole_value_str in ck_non_hole_values__current_row_columns:
+                updated_non_hole_value = self.convolutional_kernel_lambda_parameters__validation_collections.update_format(formula=ck_non_hole_value_str)
+                updated_non_hole_values__current_row.append(updated_non_hole_value)
             
-            ck_non_hole_values__rows_columns.append(ck_non_hole_values__current_row_columns.copy())
+            ck_non_hole_values__rows_columns.append(updated_non_hole_values__current_row)
         
         for ck_non_hole_values__row in ck_non_hole_values__rows_columns:
             while( len(ck_non_hole_values__row) < columns_per_row ):
@@ -858,7 +878,7 @@ class Convolutional_kernels_initializer():
 
         for dynamic_variable in dynamic_variables:
             
-            dynamic_variable_value = dynamic_variable.get_value()
+            dynamic_variable_value = dynamic_variable.get_value(v=[0])
             dynamic_variables_values.append(dynamic_variable_value)
             dynamic_variable.update_frequency()
         

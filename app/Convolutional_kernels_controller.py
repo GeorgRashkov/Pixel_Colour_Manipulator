@@ -47,7 +47,7 @@ class Convolutional_kernels_controller():
     def remove_dynamic_variables(self):
         self.dynamic_variables = []
 
-    def apply_convolutional_kernels(self) -> Convolutional_kernels_manipulator:
+    def get_convolutional_kernels_manipulator(self) -> Convolutional_kernels_manipulator:
 
         cks_parameters_for_image_str = self.window_form_convolutional_kernels.textArea_cks_for_image.toPlainText()
         cks_parameters_for_rgb_channel_str = self.window_form_convolutional_kernels.textArea_cks_for_rgb_channel.toPlainText()
@@ -55,7 +55,8 @@ class Convolutional_kernels_controller():
 
         convolutional_kernels_initializer = Convolutional_kernels_initializer()
         convolutional_kernels = convolutional_kernels_initializer.create_convolutional_kernels(cks_parameters_for_image_str=cks_parameters_for_image_str, cks_parameters_for_rgb_channel_str=cks_parameters_for_rgb_channel_str, dynamic_variables=self.dynamic_variables, additional_value_formula_str=additional_value_formula_str)
-        self.convolutional_kernels_manipulator.set_kernels(convolutional_kernels=convolutional_kernels)
+        if(convolutional_kernels is not None):
+            self.convolutional_kernels_manipulator.set_kernels(convolutional_kernels=convolutional_kernels)
         
         return self.convolutional_kernels_manipulator
     

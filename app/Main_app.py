@@ -12,6 +12,8 @@ from Z_RGB_formulas_mask import RGB_formulas_mask
 
 from Draw_formula_controller import Draw_formula_controller
 
+from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
+from Convolutional_kernels_controller import Convolutional_kernels_controller
 
 from DXCamera_Singleton import DXCamera_Singleton
 
@@ -45,8 +47,10 @@ class MainApp:
         self.capture_window.button_open_settings.clicked.connect(self.open_window_settings)
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
-       
+        """
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
+        """
+        self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_convolutional_kernels)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
         self.capture_window.button_open_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
@@ -56,10 +60,14 @@ class MainApp:
         self.settings_window.button_apply_changes.clicked.connect(self.apply_settings)
 
         #convolutional filter window
+        """
         self.convolutional_filter_window = Window_form_convolutionalMask.FormWindow_ConvolutionalFilter()
         self.convolutional_filter_window.button_apply_filters.clicked.connect(self.apply_convolutional_filters)
         self.convolutional_filter_window.button_remove_filters.clicked.connect(self.remove_convolutional_filters)
-        
+        """
+        self.convolutional_kernels_controller = Convolutional_kernels_controller()
+        self.convolutional_kernels_controller.window_form_convolutional_kernels.button_apply_cks.clicked.connect(self.apply_convolutional_kernels)
+        self.convolutional_kernels_controller.window_form_convolutional_kernels.button_remove_cks.clicked.connect(self.remove_convolutional_kernels)
 
         self.window_dynamic_variables = Window_dynamic_variables()
         self.window_dynamic_variables.button_apply_dynamic_variables.clicked.connect(self.apply_dynamic_variables)
@@ -101,7 +109,7 @@ class MainApp:
         self.capture_window.remove_rgb_mask()
 
 
-    
+    """
     def apply_convolutional_filters(self):
         
         rgb_kernels_values, rgb_kernels_strides, rgb_kernels_holes_count = self.convolutional_filter_window.get_filters_values()       
@@ -112,11 +120,18 @@ class MainApp:
 
         if(rgb_kernels_values != None and rgb_kernels_strides != None and rgb_kernels_holes_count != None):
             self.capture_window.create_rgb_kernels(rgb_kernels_values = rgb_kernels_values, rgb_kernels_strides = rgb_kernels_strides, rgb_kernels_holes_count = rgb_kernels_holes_count)
-        
+
     def remove_convolutional_filters(self):
 
         self.capture_window.remove_rgb_kernels()
-    
+    """
+    def apply_convolutional_kernels(self):
+        cks_manipulator: Convolutional_kernels_manipulator = self.convolutional_kernels_controller.get_convolutional_kernels_manipulator()
+        self.capture_window.set_convolutional_kernels(cks_manipulator=cks_manipulator)
+
+    def remove_convolutional_kernels(self):
+        self.convolutional_kernels_controller.remove_convolutional_kernels()
+        self.capture_window.remove_convolutional_kernels()
 
     def apply_dynamic_variables(self):
         dynamic_variables = self.window_dynamic_variables.get_dynamic_variables()
@@ -145,9 +160,12 @@ class MainApp:
     def open_window_capture_mask(self):
         open_or_minimize_window(self.capture_mask_controller.form_window_capture_mask)
 
-    
+    """
     def open_window_covolutional_filter(self):
         open_or_minimize_window(self.convolutional_filter_window)
+    """
+    def open_window_convolutional_kernels(self):
+        self.convolutional_kernels_controller.open_window_form_convolutional_kernels()
     
     def open_windows_swop_pixel_areas(self):
         windows = [self.swap_pixel_values_controller.form_window_pixel_areas, self.swap_pixel_values_controller.canvas_window]

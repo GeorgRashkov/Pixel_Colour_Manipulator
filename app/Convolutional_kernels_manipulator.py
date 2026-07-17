@@ -35,16 +35,18 @@ class Convolutional_kernels_manipulator:
         
         #make sure the order is not reversed when the step is negative
         if(step<0):
-	        cks_ids[start:end:step] = cks_ids[start:end:step][::-1]
+            cks_ids[start:end:step] = cks_ids[start:end:step][::-1]
 
         self.cks_ids = list[cks_ids]
     
-    def transform_image_0(self, img:np.ndarray[np.uint8]):
+    def transform_image_0(self, img:np.ndarray[np.uint8]) -> np.ndarray:
         
         for ck_id in self.cks_ids:
-            self.convolutional_kernels[ck_id].transform_image(img=img)
+            img = self.convolutional_kernels[ck_id].transform_image(img=img)
+        
+        return img
 
-    def transform_image_1(self, img:np.ndarray[np.uint8], cks_count_to_process:int=1):
+    def transform_image_1(self, img:np.ndarray[np.uint8], cks_count_to_process:int=1) -> np.ndarray:
         
         for ck_id in self.cks_ids:
             
@@ -52,12 +54,16 @@ class Convolutional_kernels_manipulator:
             cks_count_to_process -= 1
             if(cks_count_to_process <= 0):
                 break
+        
+        return img
 
-    def transform_image_2(self, img:np.ndarray[np.uint8], cks_ids:list[int]):
+    def transform_image_2(self, img:np.ndarray[np.uint8], cks_ids:list[int]) -> np.ndarray:
 
         for ck_id in cks_ids:
             
             if(ck_id in self.convolutional_kernels.keys()):
                 self.convolutional_kernels[ck_id].transform_image(img=img)
+            
+        return img
                 
         

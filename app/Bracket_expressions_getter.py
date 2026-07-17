@@ -31,7 +31,7 @@ def get_expressions_in_brackets(bracket_type:Enum__brackets, expressions_str:str
     closing_bracket_index = 0
     non_closed_brackets_count = 0
     
-    while(expressions_count > 0 and infinite_number_of_expressions == False):
+    while(expressions_count > 0 or infinite_number_of_expressions == True):
 
         openning_bracket_index = expressions_str.find(openning_bracket, closing_bracket_index) 
         if(openning_bracket_index == -1):
@@ -140,17 +140,17 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
     while(parameter_start_index<len(txt)):
         
         #<check whether the current parameter is valid
-        parameter_end_index = -1
+        separator_start_index = -1
         found_parameter = None
         for valid_parameter in valid_parameters:
-            
-            if( parameter_start_index+len(valid_parameter) < len(txt) ):
-                if( txt[parameter_start_index:parameter_start_index+len(valid_parameter)] == valid_parameter ):
-                    parameter_end_index = parameter_start_index+len(valid_parameter)-1
+            separator_start_index = parameter_start_index+len(valid_parameter)
+            if( separator_start_index < len(txt) ):
+                if( txt[parameter_start_index:separator_start_index] == valid_parameter and txt[separator_start_index:separator_start_index+len(parameter_value_separator)] == parameter_value_separator):
+                    #separator_start_index = separator_start_index-1
                     found_parameter = valid_parameter
                     break
         
-        if(parameter_end_index == -1):
+        if(separator_start_index == -1):
             print("error: invalid parameter")
             return None
         
@@ -161,7 +161,7 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
 
 
         #<check whether the parameter-value separator is valid
-        separator_start_index = parameter_end_index + 1
+        #separator_start_index = separator_start_index + 1
         separator_end_index = separator_start_index + len(parameter_value_separator) - 1
         if (separator_end_index >= len(txt)):
             print(f"error: the parameter `{found_parameter}` had invalid separator")
@@ -190,7 +190,7 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
         parameters[found_parameter] = expression_in_brackets
 
         value_closing_bracket_index = value_openning_bracket_index + len(expression_in_brackets) + 1
-        parameter_start_index = value_closing_bracket_index + 1
+        parameter_start_index = value_closing_bracket_index + len(parameter_value_separator) + 1
     
     for required_parameter in required_parameters:
         if(required_parameter not in parameters.keys()):
