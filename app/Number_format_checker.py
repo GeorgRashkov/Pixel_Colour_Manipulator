@@ -232,14 +232,7 @@ def check_lists_of_numbers_from_string(txt_value:str, outer_separator:str, inner
 
 
 
-
-
-
-
-
-
-
-#`text`` must be a string which is supposed to contain lists of lists of ints (for example - `[ [1], [0, 79] [150, 150], [1], [3, 2, 7, 8], [2, 3] ],  [ [2], [40, 40] [150, 100], [7],[1, 3, 5], [1, 2] ],  [ [1], [0, 0] [1, 1], [10], [2], [1, 3] ]`)
+#`text` must be a string which is supposed to contain lists of lists of ints (for example - `[ [1], [0, 79] [150, 150], [1], [3, 2, 7, 8], [2, 3] ],  [ [2], [40, 40] [150, 100], [7],[1, 3, 5], [1, 2] ],  [ [1], [0, 0] [1, 1], [10], [2], [1, 3] ]`)
 #`inner_lists_elements_count` must be a list which contains int values; each int value must define the required number of elements of the inner list with index equal to the index of the int value; the length of `inner_lists_elements_count` determines the number of inner lists
 def check_str_format_for_lists_of_lists_of_ints(text: str, inner_lists_elements_count:list):   
 
@@ -272,7 +265,7 @@ def check_str_format_for_lists_of_lists_of_ints(text: str, inner_lists_elements_
     return ""#executes when no errors are found
 
 
-#`text`` must be a string which is supposed to contain lists (for example - `[1], [0, 79] [150, 150], [1], [3, 2, 7, 8], [2, 3]`)
+#`text` must be a string which is supposed to contain lists (for example - `[1], [0, 79] [150, 150], [1], [3, 2, 7, 8], [2, 3]`)
 #`elements_count` must be a list which contains int values; each int value must define the required number of elements of the list with index equal to the index of the int value; the length of `elements_count` determines the number of lists
 def check_str_format_for_lists_of_ints(text: str, elements_counts:list):    
     

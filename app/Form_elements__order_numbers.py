@@ -1,7 +1,5 @@
-import numpy as np
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QPushButton, QRadioButton, QButtonGroup, QHBoxLayout, QVBoxLayout
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtCore import Qt
 
 from Number_format_checker import check_for_int_format
 from Enums import Enum_order

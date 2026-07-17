@@ -255,85 +255,6 @@ class Convolutional_kernel_for_rgb_channel:
         self.frequency__update_dynamic_variables__after_processing_rgb_channel = self.c_k_parameters.get__frequency__update_dynamic_variables__after_processing_rgb_channel(v = self.dynamic_variables_values)
         """
 
-
-    """
-    def update_convolutional_kernel_hole_values_v1(self):
-
-        non_hole_values_rows_count = len(self.non_hole_values)
-        non_hole_values_columns_count = len(self.non_hole_values[0])
-
-        kernel_row = 0
-        kernel_column = 0
-
-        updated_indexes_for__row_indexes_of__non_hole_values_in_values:list[int] = []
-        updated_indexes_for__column_indexes_of__non_hole_values_in_values:list[int] = []
-        
-        for non_hole_values_row in range(0, non_hole_values_rows_count):
-
-            #<creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width
-            if(self.vertical_hole_frequency <= 0):
-                
-                for vertical_hole_row in range(0, self.hole_height):
-                    
-                    if(kernel_row >= self.height):
-                        break
-
-                    for values_col in range(0, self.width):
-
-                        self.update__hole_content_value()
-                        self.values[kernel_row, values_col] = self.hole_content                      
-                        self.update_dynamic_variables__using_kernel_hole_row()
-
-                    kernel_row+=1
-                
-                self.vertical_hole_frequency = self.c_k_parameters.get__vertical_hole_frequency(v = self.dynamic_variables_values)
-            
-            self.vertical_hole_frequency -= 1 
-            #creates a vertical hole; the vertical hole has width and height; the vertical hole height is specified by the hole height while the vertical hole width is specified by the kernel values width>
-
-            if(kernel_row >= self.height):
-                break
-
-            kernel_column = 0
-
-            for non_hole_values_column in range(0, non_hole_values_columns_count):
-                
-                self.horizontal_hole_frequency -= 1 
-
-                #<creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width
-                if(self.horizontal_hole_frequency <= 0):
-
-                    for hole_values_column in range(0, self.hole_width):
-                        
-                        if(kernel_column > self.width):
-                            break
-
-                        self.update__hole_content_value()
-                        self.values[kernel_row, kernel_column] = self.hole_content
-                        self.update_dynamic_variables__using_kernel_hole_column()
-
-                        kernel_column += 1
-                    
-                    self.horizontal_hole_frequency = self.c_k_parameters.get__horizontal_hole_frequency(v = self.dynamic_variables_values)
-                #creates a horizontal hole; the horizontal hole has width; the horizontal hole width is specified by the hole width>
-
-                updated_indexes_for__row_indexes_of__non_hole_values_in_values.append(kernel_row)
-                updated_indexes_for__column_indexes_of__non_hole_values_in_values.append(kernel_column)
-                self.values[kernel_row, kernel_column] = self.non_hole_values[non_hole_values_row][non_hole_values_column]
-
-                kernel_column += 1
-                if(kernel_column >= self.width):
-                    break
-            
-            kernel_row+=1 
-            if(kernel_row >= self.height):
-                break
-        
-        self.row_indexes_of__non_hole_values_in_values = updated_indexes_for__row_indexes_of__non_hole_values_in_values
-        self.column_indexes_of__non_hole_values_in_values = updated_indexes_for__column_indexes_of__non_hole_values_in_values
-    
-    """
-
     def update_convolutional_kernel_hole_values(self):
 
         non_hole_values_rows_count = len(self.non_hole_values)
@@ -569,11 +490,6 @@ class Convolutional_kernel_for_rgb_channel:
     def set_dynamic_variables(self, dynamic_variables:list[Dynamic_variable]):
         self.dynamic_variables = dynamic_variables
     
-    """
-    #this function must be called from outside
-    def get_dynamic_variables(self):
-        return self.dynamic_variables
-    """
     
 
     #<functions for applying convolution to colour channel

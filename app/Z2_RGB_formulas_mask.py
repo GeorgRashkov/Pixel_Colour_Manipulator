@@ -109,41 +109,6 @@ class RGB_formulas_mask:
         self.mask_resized = self.mask_original.copy()
     
    
-    """
-
-    #`img` must be a "numpy.ndarray" in the shape of (Areas, Height, Width, 3) Where 3 is for the RGB color channels
-    #`rgb_formulas` must be a list which contains objects of type `RGB_formula`
-    #the first rgb formula will be applied to the first region, the second rgb formula will be applied to the second region and so on
-    def transform_image(self, img:np.ndarray[np.uint8], rgb_formulas:list[RGB_formula], rgb_formulas_dynamic_variables:np.ndarray[np.uint8], keep_ratio:bool) -> np.ndarray[np.uint8]:
-        
-        if(self.mask_original is None or self.mask_resized is None or
-           img.shape[2]<=0 or img.shape[1]<=0):
-            return img
-        
-        #if the user changes the shape of the window then the code in the if statement will be executed in order to make the size of the filters match the size of the resized image         
-        if(img.shape[2] !=self.mask_resized.shape[1] or img.shape[1]!=self.mask_resized.shape[0]):
-            self.resize_resizable_mask(new_width=img.shape[2],new_hight=img.shape[1], keep_ratio=keep_ratio)
-
-        img_r = img[:,:,:,0]
-        img_g = img[:,:,:,1]
-        img_b = img[:,:,:,2]
-        
-        areas_count = img.shape[0]
-
-        processed_regions_count = min(len(rgb_formulas), len(self.regions_ids))
-
-        for i in range(0, processed_regions_count):
-            
-            boolean_mask = self.mask_resized == self.regions_ids[i]
-
-            r = img_r[:,boolean_mask]
-            g = img_g[:,boolean_mask]
-            b = img_b[:,boolean_mask]
-            
-            img[:,boolean_mask] = rgb_formulas[i].rgb_function(r=r, g=g, b=b, areas_count=areas_count, v=rgb_formulas_dynamic_variables)
-
-        return img
-    """
 
     #`img` must be a "numpy.ndarray" in the shape of (Areas, Height, Width, 3) Where 3 is for the RGB color channels
     #`rgb_formulas` must be a list which contains objects of type `RGB_formula`
@@ -211,7 +176,7 @@ class RGB_formulas_mask:
             
             boolean_mask = self.mask_resized[:region_height, :region_width] == self.regions_ids[region_index]
             
-            img[:, :region_height, :region_width, :][:,boolean_mask] = region_image[:region_height, :region_width, :][boolean_mask]#img[:,boolean_mask] = region_image[boolean_mask]
+            img[:, :region_height, :region_width, :][:,boolean_mask] = region_image[:region_height, :region_width, :][boolean_mask]
 
             region_images_index+=1
             if(region_images_index >= region_images_count):

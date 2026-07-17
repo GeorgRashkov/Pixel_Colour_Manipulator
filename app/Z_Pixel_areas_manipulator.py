@@ -47,32 +47,13 @@ class Pixel_areas_manipulator:
 
         self.masks:dict[int,Mask] = {}
 
-    """
-    #This function must be called from outside
-    #The function returns a dictionary which has the ids of the main areas for keys and the rectangles corresponding to the main areas for values 
-    def get_all_main_areas_as_rectangles(self) -> dict[int, Rectangle]:
-        
-        rectangles_with_ids = {}
-
-        for pixel_area in self.pixel_areas_dict.values():
-
-            rectangles = self.get_rectangles_used_by_area(pixel_area_input=pixel_area)
-
-            #if the top left corner of the input pixel area is outside the image execute this code
-            if(rectangles is None or len(rectangles) == 0):
-                continue
-
-            rectangles_with_ids[pixel_area.id] = rectangles[0]
-            
-        return rectangles_with_ids
-    """
+    
     def order_pixel_areas_ids(self, order_obj: Order_obj):
         self.pixel_areas_ids = order_numbers(nums=self.pixel_areas_ids, order_type=order_obj.order_type, start=order_obj.start, end=order_obj.end, step=order_obj.step)
 
     def get_pixel_areas_ids(self) -> list[int]:
         return self.pixel_areas_ids.copy()
 
-    #<in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     #This function must be called from outside
     #The function returns a dictionary which has the ids of the main areas for keys and the rectangles corresponding to the main areas for values 
@@ -111,8 +92,7 @@ class Pixel_areas_manipulator:
 
         return rectangles
     
-    #in testing state !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
-
+    
     #<Those functions must be called from the outside
 
     def apply_pixel_areas(self, pixel_areas_dict: dict[int,Pixel_area]):
@@ -256,7 +236,6 @@ class Pixel_areas_manipulator:
                 continue
             
             image_version_input = image_versions[pixel_area.img_in_v]
-            #rgb_formula_dynamic_variables = np.array(pixel_area.current_f_vars, dtype=np.uint8) if( len(pixel_area.current_f_vars) > 0 ) else np.array([0], dtype=np.uint8)
             rgb_formula_dynamic_variables = np.array(np.concatenate([pixel_area.current_f_vars, v]), dtype=np.uint8)
             rgb_formulas_for_masks:list = [self.rgb_formulas_dict[f_id] for f_id in pixel_area.mask_f_ids if f_id in self.rgb_formulas_dict]
             
@@ -840,12 +819,7 @@ class Pixel_areas_manipulator:
         if(image_height == 0 or image_width==0):
             return img
 
-        """
-        if(block_height>image_height or block_width>image_width):
-            block_height=image_height
-            block_width=image_width
-        """
-
+       
         if(block_height>image_height):
             block_height=image_height
         if(block_width>image_width):
@@ -872,19 +846,12 @@ class Pixel_areas_manipulator:
 
         block_height = image_height//blocks_count_per_column
         block_width = image_width//blocks_count_per_row
-        """
-        if(block_height>image_height or block_width>image_width):
-            block_height=image_height
-            block_width=image_width
-        """
+       
         if(block_height>image_height):
             block_height=image_height
         if(block_width>image_width):
             block_width=image_width
-        """
-        height_crop = image_height % block_height
-        width_crop = image_width % block_width
-        """
+        
         height_crop = image_height % blocks_count_per_column
         width_crop = image_width % blocks_count_per_row
 

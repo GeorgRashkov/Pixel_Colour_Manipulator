@@ -4,7 +4,7 @@ import numpy as np
 
 from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
 
-import Window_capture, Window_settings, Window_form_convolutionalMask, Z_Swap_pixel_values_controller
+import Window_capture, Window_settings, Z_Swap_pixel_values_controller
 from Window_dynamic_variables import Window_dynamic_variables
 from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
@@ -47,9 +47,7 @@ class MainApp:
         self.capture_window.button_open_settings.clicked.connect(self.open_window_settings)
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
-        """
-        self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_covolutional_filter)
-        """
+        
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_convolutional_kernels)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
@@ -59,12 +57,7 @@ class MainApp:
         self.settings_window = Window_settings.FormWindow_Settings()
         self.settings_window.button_apply_changes.clicked.connect(self.apply_settings)
 
-        #convolutional filter window
-        """
-        self.convolutional_filter_window = Window_form_convolutionalMask.FormWindow_ConvolutionalFilter()
-        self.convolutional_filter_window.button_apply_filters.clicked.connect(self.apply_convolutional_filters)
-        self.convolutional_filter_window.button_remove_filters.clicked.connect(self.remove_convolutional_filters)
-        """
+        #convolutional kernel window
         self.convolutional_kernels_controller = Convolutional_kernels_controller()
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_apply_cks.clicked.connect(self.apply_convolutional_kernels)
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_remove_cks.clicked.connect(self.remove_convolutional_kernels)
@@ -109,22 +102,7 @@ class MainApp:
         self.capture_window.remove_rgb_mask()
 
 
-    """
-    def apply_convolutional_filters(self):
-        
-        rgb_kernels_values, rgb_kernels_strides, rgb_kernels_holes_count = self.convolutional_filter_window.get_filters_values()       
-        
-        print("rgb_kernels_values", rgb_kernels_values)
-        print("rgb_kernels_strides", rgb_kernels_strides)
-        print("rgb_kernels_holes_count", rgb_kernels_holes_count)
-
-        if(rgb_kernels_values != None and rgb_kernels_strides != None and rgb_kernels_holes_count != None):
-            self.capture_window.create_rgb_kernels(rgb_kernels_values = rgb_kernels_values, rgb_kernels_strides = rgb_kernels_strides, rgb_kernels_holes_count = rgb_kernels_holes_count)
-
-    def remove_convolutional_filters(self):
-
-        self.capture_window.remove_rgb_kernels()
-    """
+    
     def apply_convolutional_kernels(self):
         cks_manipulator: Convolutional_kernels_manipulator = self.convolutional_kernels_controller.get_convolutional_kernels_manipulator()
         self.capture_window.set_convolutional_kernels(cks_manipulator=cks_manipulator)
@@ -160,10 +138,7 @@ class MainApp:
     def open_window_capture_mask(self):
         open_or_minimize_window(self.capture_mask_controller.form_window_capture_mask)
 
-    """
-    def open_window_covolutional_filter(self):
-        open_or_minimize_window(self.convolutional_filter_window)
-    """
+    
     def open_window_convolutional_kernels(self):
         self.convolutional_kernels_controller.open_window_form_convolutional_kernels()
     

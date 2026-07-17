@@ -7,7 +7,6 @@ from Convolutional_kernel_for_image import Convolutional_kernel_for_image
 from Convolutional_kernel_parameters import Convolutional_kernel_parameters
 
 from Bracket_expressions_getter import get_expressions_in_brackets, get_subjects_represented_as__parameters_and_values_from_bracket_expressions
-from Dynamic_variable_initializer import Dynamic_variable_initializer
 from Dynamic_variable import Dynamic_variable
 
 from Enums import Enum__brackets, Enum__range, Enum__rgb_channels

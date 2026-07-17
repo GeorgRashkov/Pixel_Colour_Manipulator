@@ -60,54 +60,6 @@ class Convolutional_kernel_for_image:
         return img
 
 
-        """"
-        dynamic_variables:list[Dynamic_variable] = []
-
-        #applies convolution to the red channel
-        if(self.convolutional_kernel_r is not None):
-            
-            if(self.convolutional_kernel_b is not None):
-                dynamic_variables = self.convolutional_kernel_b.get_dynamic_variables()
-                self.convolutional_kernel_r.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            elif(self.convolutional_kernel_g is not None):
-                dynamic_variables = self.convolutional_kernel_g.get_dynamic_variables()
-                self.convolutional_kernel_r.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_r.input_rgb_channel)
-            img[:,:,0] = self.convolutional_kernel_r.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
-
-
-        #applies convolution to the green channel
-        if(self.convolutional_kernel_g is not None):
-
-            if(self.convolutional_kernel_r is not None):
-                dynamic_variables = self.convolutional_kernel_r.get_dynamic_variables()
-                self.convolutional_kernel_g.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            elif(self.convolutional_kernel_b is not None):
-                dynamic_variables = self.convolutional_kernel_b.get_dynamic_variables()
-                self.convolutional_kernel_g.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_g.input_rgb_channel)
-            img[:,:,1] = self.convolutional_kernel_g.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
-
-
-        #applies convolution to the blue channel
-        if(self.convolutional_kernel_b is not None):
-            
-            if(self.convolutional_kernel_g is not None):
-                dynamic_variables = self.convolutional_kernel_g.get_dynamic_variables()
-                self.convolutional_kernel_b.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            elif(self.convolutional_kernel_r is not None):
-                dynamic_variables = self.convolutional_kernel_r.get_dynamic_variables()
-                self.convolutional_kernel_b.set_dynamic_variables(dynamic_variables=dynamic_variables)
-            
-            input_rgb_channel_values = self.get_rgb_channel_values(img=img, rgb_channel=self.convolutional_kernel_b.input_rgb_channel)
-            img[:,:,2] = self.convolutional_kernel_b.apply_convolution_to_color_channel(rgb_channel_values=input_rgb_channel_values)
-        """
-
 
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     #The ouput is a "numpy.ndarray" with shape of (Height, Width, 1)

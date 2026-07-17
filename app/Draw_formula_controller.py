@@ -16,7 +16,6 @@ class Draw_formula_controller:
 
         self.form_window_draw_formula.button_add_draw_formula.clicked.connect(self.add_draw_formula)
         self.form_window_draw_formula.button_remove_draw_formula.clicked.connect(self.remove_draw_formula)
-        #self.form_window_draw_formula.button_show_drawing.clicked.connect(self.show_drawing)
         self.form_window_draw_formula.radioButtonGroup_draw_type.buttonToggled.connect(self.enable_only_elements_of_specific_draw_type)
         self.form_window_draw_formula.radioButtonGroup_resize_type.buttonToggled.connect(self.alter_resize_type)
         

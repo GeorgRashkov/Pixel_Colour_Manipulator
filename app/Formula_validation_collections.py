@@ -31,9 +31,7 @@ class Formula_validation_collections:
     def update_format(self, formula:str) -> str:
         
         formula = self.update_format_of_operators(formula=formula)
-        """
-        formula = self.update_format_of_special_formulas(formula=formula, model_to_add_to_special_formula=model_to_add_to_special_formula)
-        """
+        
         formula = self.update_format_of_special_formulas(formula=formula)
         formula = self.add_default_indexes_for__variable_collection_chars(formula=formula)
         formula = self.update_indexes_in_square_brackets(formula=formula)
@@ -47,28 +45,7 @@ class Formula_validation_collections:
         return formula
 
 
-    """
-    def update_format_of_special_formulas(self, formula:str, model_to_add_to_special_formula:str="np.") -> str:
-            
-            
-            special_formulas = self.allowed_special_formulas
-            letters = self.letters
-
-            i = 0
-            while(i < len(formula)-1):
-                
-                if(formula[i] in letters and formula[i+1] in letters):
-                    
-                    for special_formula in special_formulas:
-                        if(formula[i:i+len(special_formula)] == special_formula):
-                            formula = formula[:i] + model_to_add_to_special_formula + formula[i:]
-                            i+=len(special_formula)
-                            break
-                
-                i+=1
-            
-            return formula
-    """
+    
     def update_format_of_special_formulas(self, formula:str) -> str:
 
             for special_formula in self.allowed_special_formulas:

@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QPainter, QPen, QMouseEvent, QColor, QImage, QCursor, QPixmap
+from PyQt5.QtGui import QPainter, QPen, QMouseEvent, QColor, QCursor, QPixmap
 from PyQt5.QtCore import Qt, QPointF
-
-#import math
 
 
 class Window_Canvas_draw_mask(QWidget):
@@ -20,7 +18,6 @@ class Window_Canvas_draw_mask(QWidget):
         self.brush_max_size = 200
         self.brush_delta = 10 #the value which will be use to increase or decrease the brush size
 
-        #self.setCursor(Qt.CrossCursor)
         self.set_cursor()
 
     def get_window_title(self):
@@ -65,7 +62,8 @@ class Window_Canvas_draw_mask(QWidget):
             self.drawing = False
 
     def wheelEvent(self, event):
-        """Scroll up/down to change brush size."""
+
+        #Scroll up/down to change brush size.
         delta = self.brush_delta if(event.angleDelta().y()> 0) else - self.brush_delta #"event.angleDelta().y()" get's the y deriction of the scroll movement
         self.brush_size = max(self.brush_min_size, min(self.brush_max_size, self.brush_size + int(delta)))
         self.setWindowTitle(self.get_window_title())
@@ -98,7 +96,8 @@ class Window_Canvas_draw_mask(QWidget):
 
 
     def _normalize_point(self, point):
-        """Convert pixel point → normalized (0–1) coordinates."""
+        
+        #Convert pixel point → normalized (0–1) coordinates.
         return QPointF(point.x() / self.width(), point.y() / self.height())
     
     
