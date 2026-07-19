@@ -1,0 +1,26 @@
+{id:1; x:0; y:0; w:378; h:378; mask_id:1; mask_f_ids:[1]; 
+f_id:1; img_in_v:0; img_out_v:1; img_out_stack:100}
+
+{id:2; x:15; y:12; w:351; h:351; 
+f_id:1; img_in_v:1; img_out_v:2; img_out_stack:100}
+
+{id:3; x:40; y:37; w:301; h:301; 
+f_id:1; img_in_v:2; img_out_v:3; img_out_stack:100}
+
+{id:4; x:65; y:62; w:251; h:251; 
+f_id:1; img_in_v:3; img_out_v:4; img_out_stack:100}
+
+{id:5; x:90; y:87; w:201; h:201; 
+f_id:1; img_in_v:4; img_out_v:5; img_out_stack:100}
+
+{id:6; x:115; y:112; w:151; h:151; 
+f_id:1; img_in_v:5; img_out_v:6; img_out_stack:100}
+
+{id:7; x:140; y:137; w:101; h:101; 
+f_id:1; img_in_v:6; img_out_v:7; img_out_stack:100}
+
+{id:8; x:165; y:162; w:51; h:51; 
+f_id:1; img_in_v:7; img_out_v:8; img_out_stack:100}
+
+
+{ |1|  r->[ r-25 ]  g->[ r-30 ]  b->[ b+15 ] }

@@ -54,23 +54,61 @@ class FormWindow_SwapPixelValues(QWidget):
 
         #<settings for output image versions        
         
+        """
         self.label_image_version_start_index = QLabel("image version start index")
+        """
+        self.label_image_version = QLabel("image versions: |")
+
+        self.label_image_version_start_index = QLabel("start| ")
         self.textBox_image_version_start_index = QLineEdit()
         self.textBox_image_version_start_index.setValidator(int_validator)
         self.textBox_image_version_start_index.setMaxLength(3)
+        self.textBox_image_version_start_index.setMaximumWidth(30)
+        """
         self.label_image_version_start_index.setBuddy(self.textBox_image_version_start_index)
+        """
 
+        self.label_image_version_end_index = QLabel("end| ")
+        self.textBox_image_version_end_index = QLineEdit()
+        self.textBox_image_version_end_index.setValidator(int_validator)
+        self.textBox_image_version_end_index.setMaxLength(3)
+        self.textBox_image_version_end_index.setMaximumWidth(30)
+
+        self.label_image_version_increment = QLabel("step| ")
+        """
         self.label_image_version_increment = QLabel("image version increment")
+        """
         self.textBox_image_version_increment = QLineEdit()
+        """
         self.textBox_image_version_increment.setValidator(int_validator)
+        """
+        self.textBox_image_version_increment.setValidator(positive_int_validator)
         self.textBox_image_version_increment.setMaxLength(3)
+        self.textBox_image_version_increment.setMaximumWidth(30)
+        """
         self.label_image_version_increment.setBuddy(self.textBox_image_version_increment)
+        """
 
+        """
         self.label_image_version_swap_frequency = QLabel("image version swap frequency")
+        """
+        self.label_image_version_swap_frequency = QLabel("swap frequency| ")
         self.textBox_image_version_swap_frequency = QLineEdit()
         self.textBox_image_version_swap_frequency.setValidator(positive_int_validator)
         self.textBox_image_version_swap_frequency.setMaxLength(3)
+        self.textBox_image_version_swap_frequency.setMaximumWidth(30)
+        """
         self.label_image_version_swap_frequency.setBuddy(self.textBox_image_version_swap_frequency)
+        """
+
+        self.label_image_version_count = QLabel("count| ")
+        self.textBox_image_version_count = QLineEdit()
+        self.textBox_image_version_count.setValidator(positive_int_validator)
+        self.textBox_image_version_count.setMaxLength(3)
+        self.textBox_image_version_count.setMaximumWidth(30)
+
+        self.checkBox_use_special_image_version = QCheckBox("use special")
+        self.checkBox_use_special_image_version.setChecked(True)
         
         #settings for output image versions>
 
@@ -199,6 +237,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.checkBox_use_copy_for_replicas)
         v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.setAlignment(Qt.AlignLeft)
         h_layout.addWidget(self.label_image_version_start_index)
@@ -208,7 +247,31 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.label_image_version_swap_frequency)
         h_layout.addWidget(self.textBox_image_version_swap_frequency)
         v_layout.addLayout(h_layout)
+        """
        
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.label_image_version)
+
+        h_layout.addWidget(self.textBox_image_version_start_index)
+        h_layout.addWidget(self.label_image_version_start_index)
+
+        h_layout.addWidget(self.textBox_image_version_end_index)
+        h_layout.addWidget(self.label_image_version_end_index)
+        
+        h_layout.addWidget(self.textBox_image_version_increment)
+        h_layout.addWidget(self.label_image_version_increment)
+        
+        h_layout.addWidget(self.textBox_image_version_swap_frequency)
+        h_layout.addWidget(self.label_image_version_swap_frequency)
+        
+        h_layout.addWidget(self.textBox_image_version_count)
+        h_layout.addWidget(self.label_image_version_count)
+        
+        h_layout.addWidget(self.checkBox_use_special_image_version)
+
+        h_layout.addStretch()
+        v_layout.addLayout(h_layout)
+
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.lable_for__text_area_swap_pixel_areas)

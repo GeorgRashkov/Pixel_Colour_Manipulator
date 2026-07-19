@@ -7,28 +7,28 @@ from Order_obj import Order_obj
 
 
 class Form_elements__order_numbers(QWidget):
-    def __init__(self, text_boxes_max_lenght: int = 3):
+    def __init__(self, text_boxes_max_lenght: int = 3, text_boxes_max_width: int = 30):
         super().__init__()
 
         int_validator = QIntValidator()
         
         self.button_order_nums = QPushButton("order ids: ")
 
-        self.label_order_nums__start = QLabel("start")
+        self.label_order_nums__start = QLabel("start| ")
         self.textBox_order_nums__start = QLineEdit()
-        self.textBox_order_nums__start.setMaximumWidth(50)
+        self.textBox_order_nums__start.setMaximumWidth(text_boxes_max_width)
         self.textBox_order_nums__start.setMaxLength(text_boxes_max_lenght)
         self.textBox_order_nums__start.setValidator(int_validator)
 
-        self.label_order_nums__end = QLabel("end")
+        self.label_order_nums__end = QLabel("end| ")
         self.textBox_order_nums__end = QLineEdit()
-        self.textBox_order_nums__end.setMaximumWidth(50)
+        self.textBox_order_nums__end.setMaximumWidth(text_boxes_max_width)
         self.textBox_order_nums__end.setMaxLength(text_boxes_max_lenght)
         self.textBox_order_nums__end.setValidator(int_validator)
 
-        self.label_order_nums__step = QLabel("step")
+        self.label_order_nums__step = QLabel("step| ")
         self.textBox_order_nums__step = QLineEdit()
-        self.textBox_order_nums__step.setMaximumWidth(50)
+        self.textBox_order_nums__step.setMaximumWidth(text_boxes_max_width)
         self.textBox_order_nums__step.setMaxLength(text_boxes_max_lenght)
         self.textBox_order_nums__step.setValidator(int_validator)
 

@@ -438,7 +438,7 @@ class Swap_pixel_values_controller:
         if(len(pixel_areas_animations_formatted_text) > 0):
             pixel_areas_animations = pixel_area_animations_initializer.create_animations_for_pixel_areas(text=pixel_areas_animations_formatted_text)
             if(pixel_areas_animations is None or len(pixel_areas_animations)==0):            
-                return None 
+                return 
             
             for pixel_area_animation in pixel_areas_animations:
                 pixel_areas_animations_dict[pixel_area_animation.id] = pixel_area_animation
@@ -452,7 +452,7 @@ class Swap_pixel_values_controller:
         if(len(pixel_areas_animations_groups_formatted_text) > 0):
             pixel_areas_animations_groups = pixel_area_animations_groups_initializer.create_animation_groups_for_pixel_areas(text=pixel_areas_animations_groups_formatted_text)
             if(pixel_areas_animations_groups is None or len(pixel_areas_animations_groups)==0):            
-                return None 
+                return 
         
             for pixel_area_animation_group in pixel_areas_animations_groups:
                 pixel_areas_animations_groups_dict[pixel_area_animation_group.id] = pixel_area_animation_group
@@ -493,11 +493,22 @@ class Swap_pixel_values_controller:
         
         if(self.should_create_image_version_contoller()==True):
             
+            """
             image_version_start_index = 0 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
             image_version_increment = 1 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
             image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
             
             self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
+            """
+            
+            image_version_start_index = -1 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
+            image_version_end_index = -1 if self.form_window_pixel_areas.textBox_image_version_end_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_end_index.text())
+            image_version_increment = 0 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
+            image_version_swap_frequency = 0 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
+            image_versions_count = 1 if self.form_window_pixel_areas.textBox_image_version_count.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_count.text())
+            use_special_image_version = self.form_window_pixel_areas.checkBox_use_special_image_version.isChecked()
+
+            self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_end_index=image_version_end_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count=image_versions_count,  use_special_image_version=use_special_image_version)
 
 #functions for applying elements to the pixel area manipulator>
 
@@ -569,6 +580,7 @@ class Swap_pixel_values_controller:
 
     def should_create_image_version_contoller(self):
 
+        """
         if(self.form_window_pixel_areas.textBox_image_version_start_index.text()=="" and self.form_window_pixel_areas.textBox_image_version_increment.text()=="" and self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()==""):
             return False
 
@@ -579,6 +591,18 @@ class Swap_pixel_values_controller:
             error_message += "the field with the image version increment was in wrong format (only int values whether positive or negative are allowed); "
         if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()) == False):
             error_message += "the field with the image version frequency was in wrong format (only positive int values are allowed); "
+        """
+        error_message = ""
+        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_start_index.text()) == False):
+            error_message += "the field with the image version start index was in wrong format (only int values whether positive or negative are allowed); "
+        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_end_index.text()) == False):
+            error_message += "the field with the image version end index was in wrong format (only int values whether positive or negative are allowed); "
+        if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_increment.text()) == False):
+            error_message += "the field with the image version step was in wrong format (only positive int values are allowed); "
+        if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()) == False):
+            error_message += "the field with the image version swap frequency was in wrong format (only positive int values are allowed); "
+        if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_count.text(), is_zero_allowed=False) == False):
+            error_message += "the field with the image version count was in wrong format (only positive int values above 0 are allowed); "
         
         if(error_message != ""):
             error_message = "warning: the program will not apply your image version settings due to the following error/s: " + error_message
