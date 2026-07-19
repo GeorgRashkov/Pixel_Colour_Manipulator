@@ -2,9 +2,12 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QLineEdit, QPushButton, QButtonGroup, QRadioButton
 )
 from PyQt5.QtGui import QIntValidator
+from PyQt5.QtCore import Qt
 
 from Convolutional_kernels_initializer import Convolutional_kernels_initializer
 from Formula_validation_collections import Convolutional_kernel_lambda_parameters_validation_collections
+
+from Form_elements__order_numbers import Form_elements__order_numbers
 
 class Window_form_convolutional_kernels(QWidget):
     def __init__(self):
@@ -13,7 +16,9 @@ class Window_form_convolutional_kernels(QWidget):
         self.setWindowTitle("Convolutional kernels")
         self.setMinimumSize(200, 30)
 
+        """
         int_validator = QIntValidator()
+        """
 
 
         self.button_apply_cks = QPushButton("Apply")
@@ -22,6 +27,7 @@ class Window_form_convolutional_kernels(QWidget):
         self.button_show_info = QPushButton("Info")
 
 
+        """
         self.button_order_cks_ids = QPushButton("order ids: ")
 
         self.label_order_cks_ids__start = QLabel("start")
@@ -47,6 +53,10 @@ class Window_form_convolutional_kernels(QWidget):
         self.radioButtons_group_order.addButton(self.radioButton_descending)
         self.radioButtons_group_order.addButton(self.radioButton_random)
         self.radioButton_ascending.setChecked(True)
+        """
+        #<pixel areas elements to order ids
+        self.form_elements__order_ids = Form_elements__order_numbers()
+        #pixel areas elements to order ids>
 
         
         self.label_cks_for_rgb_channel = QLabel("convolutional kernels for rgb channels:")
@@ -70,6 +80,7 @@ class Window_form_convolutional_kernels(QWidget):
         h_layout.addWidget(self.button_show_info)
         v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_order_cks_ids)
         h_layout.addWidget(self.label_order_cks_ids__start)
@@ -82,6 +93,11 @@ class Window_form_convolutional_kernels(QWidget):
         h_layout.addWidget(self.radioButton_descending)
         h_layout.addWidget(self.radioButton_random)
         v_layout.addLayout(h_layout)
+        """
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.form_elements__order_ids, alignment=Qt.AlignLeft)
+        v_layout.addLayout(h_layout)
+
 
 
         h_layout = QHBoxLayout()

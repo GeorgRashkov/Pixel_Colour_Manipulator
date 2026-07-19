@@ -9,6 +9,7 @@ from PyQt5_Window_functions import open_or_minimize_window
 from Number_format_checker import check_for_int_format
 
 from Enums import Enum_order
+from Order_obj import Order_obj
 
 class Convolutional_kernels_controller():
     def __init__(self):
@@ -16,7 +17,10 @@ class Convolutional_kernels_controller():
         self.window_form_convolutional_kernels = Window_form_convolutional_kernels()
         self.window_form_convolutional_kernels.button_show_info.clicked.connect(self.open_window_info_convolutional_kernels)
         self.window_form_convolutional_kernels.button_show_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
+        """
         self.window_form_convolutional_kernels.button_order_cks_ids.clicked.connect(self.order_cks_ids)
+        """
+        self.window_form_convolutional_kernels.form_elements__order_ids.button_order_nums.clicked.connect(self.order_cks_ids)
 
         self.window_info_convolutional_kernels = Window_info_convolutional_kernels()
         
@@ -63,6 +67,7 @@ class Convolutional_kernels_controller():
     def remove_convolutional_kernels(self):
         self.convolutional_kernels_manipulator = Convolutional_kernels_manipulator()
     
+    """
     def order_cks_ids(self):
 
         start_txt = self.window_form_convolutional_kernels.textBox_order_cks_ids__start.text()
@@ -95,5 +100,13 @@ class Convolutional_kernels_controller():
             self.convolutional_kernels_manipulator.order_kernels(order_type=order_type, start=start, end=end, step=step)
 
             print(f"the order of the ids of the kernels is: {self.convolutional_kernels_manipulator.get_copy_of_kernel_ids()}")
+    """
     
 
+    def order_cks_ids(self):
+        order_obj: Order_obj = self.window_form_convolutional_kernels.form_elements__order_ids.get__order_obj()
+        if(order_obj is not None):
+            self.convolutional_kernels_manipulator.order_kernels(order_obj=order_obj)
+            pixel_areas_ids = self.convolutional_kernels_manipulator.get_copy_of_kernel_ids()
+            print(f"the order of the ids of the kernels is: {pixel_areas_ids}")
+    

@@ -4,6 +4,9 @@ from Convolutional_kernel_for_image import Convolutional_kernel_for_image
 from Enums import Enum_order
 import random
 
+from Order_obj import Order_obj
+
+from Number_operatios import order_numbers
 
 class Convolutional_kernels_manipulator:
     
@@ -18,6 +21,7 @@ class Convolutional_kernels_manipulator:
     def get_copy_of_kernel_ids(self):
         return self.cks_ids.copy()
 
+    """
     #`step` should not be `None`, however its default value is `None` for consistency with the default values of the other "get range parameters"
     def order_kernels(self, order_type: Enum_order = Enum_order.ascending, start:int=None, end:int=None, step:int=None):
         
@@ -38,6 +42,10 @@ class Convolutional_kernels_manipulator:
             cks_ids[start:end:step] = cks_ids[start:end:step][::-1]
 
         self.cks_ids = list[cks_ids]
+    """
+    def order_kernels(self, order_obj: Order_obj):
+        self.cks_ids = order_numbers(nums=self.cks_ids, order_type=order_obj.order_type, start=order_obj.start, end=order_obj.end, step=order_obj.step)
+        
     
     def transform_image_0(self, img:np.ndarray[np.uint8]) -> np.ndarray:
         
@@ -49,11 +57,12 @@ class Convolutional_kernels_manipulator:
     def transform_image_1(self, img:np.ndarray[np.uint8], cks_count_to_process:int=1) -> np.ndarray:
         
         for ck_id in self.cks_ids:
+
+            if(cks_count_to_process <= 0):
+                break
             
             self.convolutional_kernels[ck_id].transform_image(img=img)
             cks_count_to_process -= 1
-            if(cks_count_to_process <= 0):
-                break
         
         return img
 
