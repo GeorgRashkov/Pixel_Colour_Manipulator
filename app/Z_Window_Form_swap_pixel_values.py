@@ -204,6 +204,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
         self.button_open_window__swap_areas_animations = QPushButton("Show animations")
         self.button_open_window__swap_areas_masks = QPushButton("Show masks")
+        self.button_open_window__swap_areas_convolutional_kernels = QPushButton("Show convolutions")
         self.button_clear_canvas = QPushButton("Clear canvas") 
 
         self.button_apply_elements_to_pixel_areas_manipulator = QPushButton("Apply")
@@ -213,6 +214,7 @@ class FormWindow_SwapPixelValues(QWidget):
         self.check_box_rgb_formulas = QCheckBox("rgb formulas")
         self.check_box_animations = QCheckBox("animations")
         self.check_box_masks = QCheckBox("masks")
+        self.check_box_convolutional_kernels = QCheckBox("convolutions")
         self.check_box_image_versions = QCheckBox("image versions")
 
 
@@ -323,6 +325,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_open_window__swap_areas_animations)
         h_layout.addWidget(self.button_open_window__swap_areas_masks)
+        h_layout.addWidget(self.button_open_window__swap_areas_convolutional_kernels )
         h_layout.addWidget(self.button_clear_canvas)
         v_layout.addLayout(h_layout)
 
@@ -334,6 +337,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.check_box_animations)
         h_layout.addWidget(self.check_box_masks)
         h_layout.addWidget(self.check_box_image_versions)
+        h_layout.addWidget(self.check_box_convolutional_kernels)
         v_layout.addLayout(h_layout)
 
 

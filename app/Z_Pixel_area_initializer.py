@@ -11,13 +11,15 @@ class Pixel_area_initializer:
                                     "p_ids", "p_x", "p_y", 
                                     "img_in_v", "img_out_v", "img_out_stack",
                                     "mask_id", "mask_f_ids", "mask_id_p", "mask_p_ids",
+                                    "ck_count", "ck_ids",
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
-                                    "f_ids_rep", "rotations_rep", "mask_ids_rep"]
+                                    "f_ids_rep", "rotations_rep", "mask_ids_rep", "ck_count_rep", "ck_ids_rep"]
         
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h",
                                                "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim",
                                                "f_id",
+                                               "ck_count",
                                                "img_in_v", "img_out_v", "img_out_stack",
                                                "mask_id", "mask_id_p"]
         
@@ -29,10 +31,11 @@ class Pixel_area_initializer:
                                     "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency",
                                     "p_ids", "p_x", "p_y",
                                     "mask_f_ids", "mask_p_ids",
+                                    "ck_ids",
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2"]
         
-        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep", "mask_ids_rep"]
+        self.area_properties_with_list_of_list_of_ints_value = ["f_ids_rep", "rotations_rep", "mask_ids_rep", "ck_count_rep", "ck_ids_rep"]
     
         self.id = "id"
 
@@ -45,9 +48,10 @@ class Pixel_area_initializer:
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
     # mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
+    #ck_count:2; ck_ids:[5,8,19]
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
-    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]
+    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; ck_count_rep:[(1,3),(2,7,9)]; ck_ids_rep:[(1,3),(2,7,9)]
     #}
     def create_pixel_areas(self, text:str) -> list[Pixel_area]:#returns a list  of objects of type `Pixel_area`
 
@@ -65,7 +69,7 @@ class Pixel_area_initializer:
         return pixel_areas
 
 
-     #the text input must contain rows of pixel area notations
+    #the text input must contain rows of pixel area notations
     #a pixel area notation (pixel area row) looks like this:
     #{
     # id:1; x:0; y:0; w:5; h:5; a_ids:[3,5,2]; ag_ids:[25,30];
@@ -74,9 +78,10 @@ class Pixel_area_initializer:
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
     # mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
+    #ck_count:2; ck_ids:[5,8,19]
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
-    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]
+    # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; ck_count_rep:[(1,3),(2,7,9)]; ck_ids_rep:[(1,3),(2,7,9)]
     #}
     def check_pixel_areas_str(self, text:str):
 
@@ -277,6 +282,7 @@ class Pixel_area_initializer:
         f_id = int(area_properties_dict["f_id"]) if area_properties_dict["f_id"] is not None else 0
         mask_id = int(area_properties_dict["mask_id"]) if area_properties_dict["mask_id"] is not None else 0
         mask_id_p = int(area_properties_dict["mask_id_p"]) if area_properties_dict["mask_id_p"] is not None else 0
+        ck_count = int(area_properties_dict["ck_count"]) if area_properties_dict["ck_count"] is not None else 0
 
         tr_h = int(area_properties_dict["tr_h"]) if area_properties_dict["tr_h"] is not None else 0
         tr_w = int(area_properties_dict["tr_w"]) if area_properties_dict["tr_w"] is not None else 0
@@ -302,6 +308,7 @@ class Pixel_area_initializer:
         ag_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["ag_ids"])
         mask_f_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["mask_f_ids"])
         mask_p_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["mask_p_ids"])
+        ck_ids = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["ck_ids"])
         f_vars_start = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_start"])
         f_vars_end = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_end"])
         f_vars_step = self.get__area_property_with_list_of_ints_value(str_value = area_properties_dict["f_vars_step"])
@@ -337,6 +344,8 @@ class Pixel_area_initializer:
         f_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["f_ids_rep"], first_element=[])
         rotations_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["rotations_rep"], first_element=[])
         mask_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["mask_ids_rep"], first_element=[])
+        ck_count_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["ck_count_rep"], first_element=[])
+        ck_ids_rep = self.get__area_property_with_list_of_lists_of_ints_value(str_value = area_properties_dict["ck_ids_rep"], first_element=[])
 
 
         pixel_area = Pixel_area(id = id, 
@@ -346,10 +355,11 @@ class Pixel_area_initializer:
         f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
         p_ids = p_ids, p_x = p_x, p_y = p_y,
         mask_id = mask_id, mask_f_ids = mask_f_ids, mask_id_p=mask_id_p, mask_p_ids=mask_p_ids,
+        ck_count = ck_count, ck_ids=ck_ids,
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
         x_rep_start_p1=x_rep_start_p1, y_rep_start_p1=y_rep_start_p1, x_rep_end_p1=x_rep_end_p1, y_rep_end_p1=y_rep_end_p1, x_rep_step_p1=x_rep_step_p1, y_rep_step_p1=y_rep_step_p1, x_rep_count_p1=x_rep_count_p1, y_rep_count_p1=y_rep_count_p1, w_rep_p1=w_rep_p1, h_rep_p1=h_rep_p1,
         x_rep_start_p2=x_rep_start_p2, y_rep_start_p2=y_rep_start_p2, x_rep_end_p2=x_rep_end_p2, y_rep_end_p2=y_rep_end_p2, x_rep_step_p2=x_rep_step_p2, y_rep_step_p2=y_rep_step_p2, x_rep_count_p2=x_rep_count_p2, y_rep_count_p2=y_rep_count_p2, w_rep_p2=w_rep_p2, h_rep_p2=h_rep_p2,
-        f_ids_rep=f_ids_rep, rotations_rep=rotations_rep, mask_ids_rep=mask_ids_rep)
+        f_ids_rep=f_ids_rep, rotations_rep=rotations_rep, mask_ids_rep=mask_ids_rep, ck_count_rep=ck_count_rep, ck_ids_rep=ck_ids_rep)
 
        
         

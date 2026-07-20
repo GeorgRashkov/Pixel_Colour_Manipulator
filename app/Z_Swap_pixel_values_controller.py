@@ -8,6 +8,7 @@ from Number_format_checker import check_for_positive_int_format, check_for_int_f
 from Z_Pixel_area import Pixel_area, Rectangle
 from Z_Pixel_area_initializer import Pixel_area_initializer
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
+from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 from Z_Window_Form_pixel_areas_animations import FormWindow_PixelAreasAnimations
 
@@ -15,6 +16,7 @@ from Z_Pixel_area_animations_initializer import Pixel_area_animations_initialize
 from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
+from Convolutional_kernels_controller import Convolutional_kernels_controller
 
 from RGB_formula_initializer import RGB_formula_initializer
 
@@ -27,11 +29,15 @@ class Swap_pixel_values_controller:
     def __init__(self):
 
         self.pixel_areas_masks_controller = Pixel_areas_masks_controller()
+        self.convolutional_kernels_controller = Convolutional_kernels_controller()
         
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
         self.form_window_pixel_areas = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
         self.form_window_pixel_areas_animations = FormWindow_PixelAreasAnimations()
+
+        self.convolutional_kernels_controller.window_form_convolutional_kernels.button_apply_cks.clicked.connect(self.apply_convolutions_to__pixel_areas_manipulator)
+        self.convolutional_kernels_controller.window_form_convolutional_kernels.button_remove_cks.clicked.connect(self.remove_convolutional_kernels)
         
         self.form_window_pixel_areas.form_elements__order_ids.button_order_nums.clicked.connect(self.order_pixel_areas_ids)
 
@@ -44,6 +50,7 @@ class Swap_pixel_values_controller:
 
         self.form_window_pixel_areas.button_open_window__swap_areas_animations.clicked.connect(self.show_animations_form_window)
         self.form_window_pixel_areas.button_open_window__swap_areas_masks.clicked.connect(self.show_window_pixel_areas_mask)
+        self.form_window_pixel_areas.button_open_window__swap_areas_convolutional_kernels.clicked.connect(self.show_window_convolutional_kernels)
 
         self.canvas_window.canvas.mousePressed.connect(self.canvas_clicked)  
         self.canvas_window.canvas.mouseMoved.connect(self.update_dynamic_pixel_area)
@@ -65,7 +72,9 @@ class Swap_pixel_values_controller:
     def show_window_pixel_areas_mask(self):
         windows = [self.pixel_areas_masks_controller.form_window_draw_mask, self.pixel_areas_masks_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
-        
+
+    def show_window_convolutional_kernels(self):
+        self.convolutional_kernels_controller.open_window_form_convolutional_kernels()
     #code for showing windows>
 
 
@@ -366,6 +375,9 @@ class Swap_pixel_values_controller:
             if(img_for_colour_ranges_of_masks.shape[0] > 0 and img_for_colour_ranges_of_masks.shape[1] > 0):
                 self.apply_masks(img_for_colour_ranges=img_for_colour_ranges_of_masks)
         
+        if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
+            self.apply_convolutions_to__pixel_areas_manipulator()
+        
         if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
             self.apply_image_version_controller()
         
@@ -383,6 +395,9 @@ class Swap_pixel_values_controller:
         
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
             self.remove_masks()
+        
+        if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
+            self.remove_convolutional_kernels()
         
         if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
             self.remove_image_version_controller()
@@ -488,6 +503,10 @@ class Swap_pixel_values_controller:
 
         self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
     
+    def apply_convolutions_to__pixel_areas_manipulator(self):
+
+        cks_manipulator: Convolutional_kernels_manipulator = self.convolutional_kernels_controller.get_convolutional_kernels_manipulator()
+        self.pixel_areas_manipulator.apply_convolutional_kernels(cks_manipulator=cks_manipulator)
 
     def apply_image_version_controller(self):
         
@@ -527,6 +546,10 @@ class Swap_pixel_values_controller:
     
     def remove_masks(self):
         self.pixel_areas_manipulator.remove_masks()
+    
+    def remove_convolutional_kernels(self):
+        self.convolutional_kernels_controller.remove_convolutional_kernels()
+        self.pixel_areas_manipulator.remove_convolutional_kernels()
     
     def remove_image_version_controller(self):
         self.pixel_areas_manipulator.remove_image_version_controller()

@@ -7,6 +7,7 @@ from Z_Image_version_controller import Image_version_controller
 from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resizing_main_window
 
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
+from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
 from Z_Mask import Mask
 
 from Order_obj import Order_obj
@@ -49,6 +50,7 @@ class Pixel_areas_manipulator:
         self.use_special_image_version:bool = True
 
         self.animations_manipulator:Pixel_area_animation_manipulator = None
+        self.convolutional_kernels_manipulator:Convolutional_kernels_manipulator = None
 
         self.masks:dict[int,Mask] = {}
 
@@ -119,6 +121,10 @@ class Pixel_areas_manipulator:
         for mask in masks:
             self.masks[mask.id] = mask
     
+    def apply_convolutional_kernels(self, cks_manipulator:Convolutional_kernels_manipulator):
+        self.convolutional_kernels_manipulator = cks_manipulator
+
+
     #this method must be called always when the desired output image version from the manipulator is different from the last version
     """
     def apply_image_version_controller(self, image_version_start_index:int = 0, image_version_increment:int = 1, image_version_swap_frequency:int = 1):
@@ -149,6 +155,9 @@ class Pixel_areas_manipulator:
 
     def remove_masks(self):
         self.masks = {}
+    
+    def remove_convolutional_kernels(self):
+        self.convolutional_kernels_manipulator = None
     
     def remove_image_version_controller(self):
         self.image_versions_controller = None
@@ -298,6 +307,12 @@ class Pixel_areas_manipulator:
             rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0], v = rgb_formula_dynamic_variables)
             rgb_formula_result = self.transpose_image(img=rgb_formula_result, pixel_area=pixel_area)
             pixel_area.update_dynamic_variables_for_rgb_function()
+
+            if(self.convolutional_kernels_manipulator is not None):
+                if(pixel_area.ck_count > 0):
+                    rgb_formula_result = self.convolutional_kernels_manipulator.transform_image_1(img = rgb_formula_result, cks_count_to_process = pixel_area.ck_count)
+                if(len(pixel_area.ck_ids) > 0):
+                    rgb_formula_result = self.convolutional_kernels_manipulator.transform_image_2(img = rgb_formula_result, cks_ids=pixel_area.ck_ids)
 
             
             #<apply the values of the transformed pixel area to the image versions which the area is supposed to update
@@ -656,6 +671,21 @@ class Pixel_areas_manipulator:
                             mask = self.masks[mask_id]
                             rep_area = mask.transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
                 #apply mask>
+
+                #<apply convolution
+                if(self.convolutional_kernels_manipulator is not None):
+                    if(len(main_area.ck_count_rep) > rec_index): #make sure the current used area (rectangle) has a collection of counts of convolutional kernels
+                        if(len(main_area.ck_count_rep[rec_index]) > 0): #make sure the collection of counts of convolutional kernels for the current used area (rectangle) is not empty
+                            ck_index = rep_index % len(main_area.ck_count_rep[rec_index])
+                            ck_count = main_area.ck_count_rep[rec_index][ck_index]
+                            rep_area = self.convolutional_kernels_manipulator.transform_image_1(img=rep_area, cks_count_to_process=ck_count)
+
+                    if(len(main_area.ck_ids_rep) > rec_index): #make sure the current used area (rectangle) has a collection of ids of convolutional kernels
+                        if(len(main_area.ck_ids_rep[rec_index]) > 0): #make sure the collection of ids of convolutional kernels for the current used area (rectangle) is not empty
+                            ck_index = rep_index % len(main_area.ck_ids_rep[rec_index])
+                            ck_id = main_area.ck_ids_rep[rec_index][ck_index]
+                            rep_area = self.convolutional_kernels_manipulator.transform_image_2(img=rep_area, cks_ids=[ck_id])
+                #apply convolution>
 
                 #<apply rgb formula
                 if(len(main_area.f_ids_rep) > rec_index): #make sure the current used area (rectangle) has a collection of ids of RGB formulas
