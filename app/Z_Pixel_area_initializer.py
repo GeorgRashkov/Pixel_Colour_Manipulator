@@ -12,6 +12,7 @@ class Pixel_area_initializer:
                                     "img_in_v", "img_out_v", "img_out_stack",
                                     "mask_use_areas", "mask_id", "mask_f_ids", "mask_id_p", "mask_p_ids",
                                     "ck_count", "ck_ids",
+                                    "ua_w_resize", "ua_h_resize",
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
                                     "f_ids_rep", "rotations_rep", "mask_ids_rep", "ck_count_rep", "ck_ids_rep"]
@@ -22,6 +23,7 @@ class Pixel_area_initializer:
                                                "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim",
                                                "f_id",
                                                "ck_count",
+                                               "ua_w_resize", "ua_h_resize"
                                                "img_in_v", "img_out_v", "img_out_stack",
                                                "mask_id", "mask_id_p"]
         
@@ -50,7 +52,8 @@ class Pixel_area_initializer:
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
     # mask_use_areas:0; mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
-    #ck_count:2; ck_ids:[5,8,19]
+    #ck_count:2; ck_ids:[5,8,19];
+    #ua_w_resize:50; ua_h_resize:50;
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
     # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; ck_count_rep:[(1,3),(2,7,9)]; ck_ids_rep:[(1,3),(2,7,9)]
@@ -80,7 +83,8 @@ class Pixel_area_initializer:
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
     # mask_use_areas:0; mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
-    #ck_count:2; ck_ids:[5,8,19]
+    #ck_count:2; ck_ids:[5,8,19];
+    #ua_w_resize:50; ua_h_resize:50;
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
     # f_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; rotations_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; mask_ids_rep:[(1,2),(3,5,6),(7,2,6,4,3)]; ck_count_rep:[(1,3),(2,7,9)]; ck_ids_rep:[(1,3),(2,7,9)]
@@ -292,6 +296,8 @@ class Pixel_area_initializer:
         mask_id = int(area_properties_dict["mask_id"]) if area_properties_dict["mask_id"] is not None else 0
         mask_id_p = int(area_properties_dict["mask_id_p"]) if area_properties_dict["mask_id_p"] is not None else 0
         ck_count = int(area_properties_dict["ck_count"]) if area_properties_dict["ck_count"] is not None else 0
+        ua_w_resize = int(area_properties_dict["ua_w_resize"]) if area_properties_dict["ua_w_resize"] is not None else 0
+        ua_h_resize = int(area_properties_dict["ua_h_resize"]) if area_properties_dict["ua_h_resize"] is not None else 0
 
         tr_h = int(area_properties_dict["tr_h"]) if area_properties_dict["tr_h"] is not None else 0
         tr_w = int(area_properties_dict["tr_w"]) if area_properties_dict["tr_w"] is not None else 0
@@ -366,6 +372,7 @@ class Pixel_area_initializer:
         mask_use_areas=mask_use_areas, mask_id = mask_id, mask_f_ids = mask_f_ids, mask_id_p=mask_id_p, mask_p_ids=mask_p_ids,
         ck_count = ck_count, ck_ids=ck_ids,
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
+        ua_w_resize=ua_w_resize, ua_h_resize=ua_h_resize,
         x_rep_start_p1=x_rep_start_p1, y_rep_start_p1=y_rep_start_p1, x_rep_end_p1=x_rep_end_p1, y_rep_end_p1=y_rep_end_p1, x_rep_step_p1=x_rep_step_p1, y_rep_step_p1=y_rep_step_p1, x_rep_count_p1=x_rep_count_p1, y_rep_count_p1=y_rep_count_p1, w_rep_p1=w_rep_p1, h_rep_p1=h_rep_p1,
         x_rep_start_p2=x_rep_start_p2, y_rep_start_p2=y_rep_start_p2, x_rep_end_p2=x_rep_end_p2, y_rep_end_p2=y_rep_end_p2, x_rep_step_p2=x_rep_step_p2, y_rep_step_p2=y_rep_step_p2, x_rep_count_p2=x_rep_count_p2, y_rep_count_p2=y_rep_count_p2, w_rep_p2=w_rep_p2, h_rep_p2=h_rep_p2,
         f_ids_rep=f_ids_rep, rotations_rep=rotations_rep, mask_ids_rep=mask_ids_rep, ck_count_rep=ck_count_rep, ck_ids_rep=ck_ids_rep)

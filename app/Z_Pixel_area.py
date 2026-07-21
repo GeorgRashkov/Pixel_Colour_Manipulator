@@ -10,6 +10,7 @@ class Pixel_area:
                  img_in_v:int, img_out_v:int, img_out_stack:int,  
                  mask_use_areas:bool, mask_id:int, mask_f_ids:list, mask_id_p:int, mask_p_ids:list,
                  ck_count:int, ck_ids:list,
+                 ua_w_resize:int, ua_h_resize:int,
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
                  f_ids_rep:list, rotations_rep:list, mask_ids_rep:list, ck_count_rep:list, ck_ids_rep:list):
@@ -68,6 +69,9 @@ class Pixel_area:
 
 
         #<repeat areas arguments
+
+        self.ua_w_resize = ua_w_resize #if the value is not zero then the used area width will be resized in percentage based on the width of the main area
+        self.ua_h_resize = ua_h_resize #if the value is not zero then the used area height will be resized in percentage based on the height of the main area
        
         #determines the place in % in the main area from where the used areas will start being applied
         self.x_rep_start_p1 = x_rep_start_p1#the first value in the list corresponds to the main area
