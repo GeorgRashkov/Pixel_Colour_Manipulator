@@ -230,6 +230,7 @@ class Replica():
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list,
                  replica_width:list, replica_height:list):
         
+        #main area parameters
         self.x_rep_start_p1 = x_rep_start_p1
         self.y_rep_start_p1 = y_rep_start_p1
         self.x_rep_end_p1 = x_rep_end_p1
@@ -239,6 +240,7 @@ class Replica():
         self.x_rep_count_p1 = x_rep_count_p1
         self.y_rep_count_p1 = y_rep_count_p1
         
+        #used area parameters
         self.x_rep_start_p2 = x_rep_start_p2
         self.y_rep_start_p2 = y_rep_start_p2
         self.x_rep_end_p2 = x_rep_end_p2
@@ -247,6 +249,7 @@ class Replica():
         self.y_rep_step_p2 = y_rep_step_p2
         self.x_rep_count_p2 = x_rep_count_p2
         self.y_rep_count_p2 = y_rep_count_p2
-       
+
+        #replica size
         self.replica_width = replica_width
         self.replica_height = replica_height
