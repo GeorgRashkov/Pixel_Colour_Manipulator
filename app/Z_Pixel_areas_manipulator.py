@@ -297,16 +297,21 @@ class Pixel_areas_manipulator:
                             region_images.append(image_version_input[rectangle.y:rectangle.y+rectangle.h, rectangle.x:rectangle.x+rectangle.w,:])
                         pixel_areas_as_parameters_for_rgb_formula = mask.transform_image_using_other_images(img = pixel_areas_as_parameters_for_rgb_formula, region_images=region_images)
 
-
-            if(pixel_area.mask_id in self.masks.keys() and len(rgb_formulas_for_masks)>0):
-                mask = self.masks[pixel_area.mask_id]
-                pixel_areas_as_parameters_for_rgb_formula = mask.transform_image(img = pixel_areas_as_parameters_for_rgb_formula, rgb_formulas=rgb_formulas_for_masks, rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
+            if(pixel_area.mask_use_areas == True):
+                if(pixel_area.mask_id in self.masks.keys() and len(rgb_formulas_for_masks)>0):
+                    mask = self.masks[pixel_area.mask_id]
+                    pixel_areas_as_parameters_for_rgb_formula = mask.transform_image(img = pixel_areas_as_parameters_for_rgb_formula, rgb_formulas=rgb_formulas_for_masks, rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
             
             #the rgb formula is this `eval(f"lambda r,g,b,areas_count,v=[0]: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
             rgb_formula = self.rgb_formulas_dict[pixel_area.f_id].rgb_function
             rgb_formula_result = rgb_formula(r = pixel_areas_as_parameters_for_rgb_formula[:,:,:,0], g = pixel_areas_as_parameters_for_rgb_formula[:,:,:,1], b = pixel_areas_as_parameters_for_rgb_formula[:,:,:,2], areas_count = pixel_areas_as_parameters_for_rgb_formula.shape[0], v = rgb_formula_dynamic_variables)
             rgb_formula_result = self.transpose_image(img=rgb_formula_result, pixel_area=pixel_area)
             pixel_area.update_dynamic_variables_for_rgb_function()
+
+            if(pixel_area.mask_use_areas == False):
+                if(pixel_area.mask_id in self.masks.keys() and len(rgb_formulas_for_masks)>0):
+                    mask = self.masks[pixel_area.mask_id]
+                    rgb_formula_result = mask.transform_image(img = rgb_formula_result, rgb_formulas=rgb_formulas_for_masks, rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
 
             if(self.convolutional_kernels_manipulator is not None):
                 if(pixel_area.ck_count > 0):
@@ -647,7 +652,7 @@ class Pixel_areas_manipulator:
                 main_area_from_img[inner_area_y_p1: inner_area_y_p1 + inner_area_height_helper, inner_area_x_p1:inner_area_x_p1 + inner_area_width_helper, :] = used_area_from_img[inner_area_y_p2 : inner_area_y_p2 + inner_area_height_helper, inner_area_x_p2: inner_area_x_p2 + inner_area_width_helper, :]
                 
             
-            #<apply rgb formulas, rotations and masks to the replica
+            #<apply rgb formulas, rotations, masks and convolutions to the replica
                                        
                 rep_area:np = used_area_from_img[inner_area_y_p2 : inner_area_y_p2 + inner_area_height_helper, inner_area_x_p2: inner_area_x_p2 + inner_area_width_helper, :]
                 if(self.use_copy_for_replicas == True):
@@ -667,7 +672,9 @@ class Pixel_areas_manipulator:
                         mask_index = rep_index % len(main_area.mask_ids_rep[rec_index])
                         mask_id = main_area.mask_ids_rep[rec_index][mask_index]
                         if(mask_id in self.masks.keys()):
+                            """
                             rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
+                            """
                             mask = self.masks[mask_id]
                             rep_area = mask.transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
                 #apply mask>
@@ -700,7 +707,7 @@ class Pixel_areas_manipulator:
 
                 main_area_from_img[inner_area_y_p1: inner_area_y_p1 + inner_area_height_helper, inner_area_x_p1:inner_area_x_p1 + inner_area_width_helper, :] = rep_area
             
-            #apply rgb formulas, rotations and masks to the replica>           
+            #apply rgb formulas, rotations, masks and convolutions to the replica>           
                 
                 #increase the index of the replicas
                 rep_index+=1

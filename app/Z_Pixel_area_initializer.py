@@ -10,12 +10,14 @@ class Pixel_area_initializer:
                                     "f_id",  "f_vars_start", "f_vars_end", "f_vars_step", "f_vars_frequency",
                                     "p_ids", "p_x", "p_y", 
                                     "img_in_v", "img_out_v", "img_out_stack",
-                                    "mask_id", "mask_f_ids", "mask_id_p", "mask_p_ids",
+                                    "mask_use_areas", "mask_id", "mask_f_ids", "mask_id_p", "mask_p_ids",
                                     "ck_count", "ck_ids",
                                     "x_rep_start_p1", "y_rep_start_p1", "x_rep_end_p1", "y_rep_end_p1", "x_rep_step_p1","y_rep_step_p1", "x_rep_count_p1", "y_rep_count_p1", "w_rep_p1", "h_rep_p1",
                                     "x_rep_start_p2", "y_rep_start_p2", "x_rep_end_p2", "y_rep_end_p2", "x_rep_step_p2","y_rep_step_p2", "x_rep_count_p2", "y_rep_count_p2", "w_rep_p2", "h_rep_p2",
                                     "f_ids_rep", "rotations_rep", "mask_ids_rep", "ck_count_rep", "ck_ids_rep"]
         
+        self.area_properties_with_bool_value = ["mask_use_areas"]
+
         self.area_properties_with_int_value = ["id", "x", "y", "w", "h",
                                                "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim",
                                                "f_id",
@@ -47,7 +49,7 @@ class Pixel_area_initializer:
     # f_id:1; f_vars_start:10; f_vars_end:30; f_vars_step:2; f_vars_frequency:1;
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
-    # mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
+    # mask_use_areas:0; mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
     #ck_count:2; ck_ids:[5,8,19]
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
@@ -77,7 +79,7 @@ class Pixel_area_initializer:
     # f_id:1; f_vars_start:10; f_vars_end:30; f_vars_step:2; f_vars_frequency:1;
     # p_ids:[1,2,3]; p_x:[10,20,30]; p_y:[20,30,50];
     # img_in_v:0; img_out_v:6; img_out_stack:2;
-    # mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
+    # mask_use_areas:0; mask_id:3; mask_f_ids:[1,3,7,8]; mask_id_p:1; mask_p_ids:[1,3,9];
     #ck_count:2; ck_ids:[5,8,19]
     # x_rep_start_p1:[10,10,10]; y_rep_start_p1:[10,10,10]; x_rep_end_p1:[10,10,10]; y_rep_end_p1:[10,10,10]; x_rep_step_p1:[10,10,10]; y_rep_step_p1:[10,10,10]; x_rep_count_p1:[5,1,4]; y_rep_count_p1:[3,1]; w_rep_p1:[5,1,4]; h_rep_p1:[3,1];
     # x_rep_start_p2:[10,10,10]; y_rep_start_p2:[10,10,10]; x_rep_end_p2:[10,10,10]; y_rep_end_p2:[10,10,10]; x_rep_step_p2:[10,10,10]; y_rep_step_p2:[10,10,10]; x_rep_count_p2:[5,1,4]; y_rep_count_p2:[3,1]; w_rep_p2:[5,1,4]; h_rep_p2:[3,1];
@@ -228,7 +230,11 @@ class Pixel_area_initializer:
             if(len(area_property_value)==0):
                 return f"the property `{area_property_name}` has no value; if you don't want to use the property - delete it"
 
-            if(area_property_name in self.area_properties_with_int_value):
+            if(area_property_name in self.area_properties_with_bool_value):
+                if(area_property_value != "0" and area_property_value != "1"):
+                    return f"the value of the area property `{area_property_name}` is in wrong format (only the values `0` and `1` are allowed)"
+                
+            elif(area_property_name in self.area_properties_with_int_value):
                                 
                 if(area_property_name in self.area_properties_with_non_zero_int_value):
                     is_format_valid = check_for_positive_int_format(txt_value=area_property_value, is_zero_allowed=False)
@@ -273,6 +279,9 @@ class Pixel_area_initializer:
             area_property_value = area_key_value[1]
             area_properties_dict[area_property_name] = area_property_value
         
+        #makes the string values into booleans
+        mask_use_areas = bool(int(area_properties_dict["mask_use_areas"])) if area_properties_dict["mask_use_areas"] is not None else False
+
         #makes the string values into ints
         id = int(area_properties_dict["id"]) if area_properties_dict["id"] is not None else 0
         x = int(area_properties_dict["x"]) if area_properties_dict["x"] is not None else 0
@@ -354,7 +363,7 @@ class Pixel_area_initializer:
         a_ids = a_ids, ag_ids = ag_ids, 
         f_id = f_id, f_vars_start = f_vars_start, f_vars_end = f_vars_end, f_vars_step = f_vars_step, f_vars_frequency = f_vars_frequency,
         p_ids = p_ids, p_x = p_x, p_y = p_y,
-        mask_id = mask_id, mask_f_ids = mask_f_ids, mask_id_p=mask_id_p, mask_p_ids=mask_p_ids,
+        mask_use_areas=mask_use_areas, mask_id = mask_id, mask_f_ids = mask_f_ids, mask_id_p=mask_id_p, mask_p_ids=mask_p_ids,
         ck_count = ck_count, ck_ids=ck_ids,
         img_in_v = img_in_v, img_out_v = img_out_v, img_out_stack = img_out_stack,
         x_rep_start_p1=x_rep_start_p1, y_rep_start_p1=y_rep_start_p1, x_rep_end_p1=x_rep_end_p1, y_rep_end_p1=y_rep_end_p1, x_rep_step_p1=x_rep_step_p1, y_rep_step_p1=y_rep_step_p1, x_rep_count_p1=x_rep_count_p1, y_rep_count_p1=y_rep_count_p1, w_rep_p1=w_rep_p1, h_rep_p1=h_rep_p1,

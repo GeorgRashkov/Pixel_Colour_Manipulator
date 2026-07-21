@@ -8,7 +8,7 @@ class Pixel_area:
                  f_id:int, f_vars_start:list, f_vars_end:list, f_vars_step:list, f_vars_frequency:list,
                  p_ids:list, p_x:list, p_y:list, 
                  img_in_v:int, img_out_v:int, img_out_stack:int,  
-                 mask_id:int, mask_f_ids:list, mask_id_p:int, mask_p_ids:list,
+                 mask_use_areas:bool, mask_id:int, mask_f_ids:list, mask_id_p:int, mask_p_ids:list,
                  ck_count:int, ck_ids:list,
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
@@ -50,6 +50,7 @@ class Pixel_area:
         self.img_out_stack = img_out_stack #determines the count of image versions to which the changed pixel values will be applied; the first version is `img_out_v`, the next version is `img_out_v + 1` and so on 
 
         
+        self.mask_use_areas = mask_use_areas
         self.mask_id = mask_id
         self.mask_f_ids = mask_f_ids
         self.mask_id_p = mask_id_p

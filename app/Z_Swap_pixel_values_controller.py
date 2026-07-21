@@ -439,6 +439,9 @@ class Swap_pixel_values_controller:
         rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
         rgb_formula_initializer = RGB_formula_initializer()
         rgb_formulas_dict = rgb_formula_initializer.create_rgb_formulas_with_pixel_areas(rgb_formulas=rgb_formulas_str)
+
+        if(rgb_formulas_dict is None):
+            rgb_formulas_dict = {}
         self.pixel_areas_manipulator.apply_rgb_formulas(rgb_formulas_dict=rgb_formulas_dict)
 
     def apply_animations_to__pixel_areas_manipulator(self):

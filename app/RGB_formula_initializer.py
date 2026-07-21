@@ -58,7 +58,7 @@ class RGB_formula_initializer():
 
         #check whether the format of the rgb formula is correct
         if(RGB_formula_checker.check_rgb_formulas_format_for_pixel_areas(rgb_formulas_for_pixel_areas=rgb_formulas) == False):
-            return
+            return None
         
         #the dictionary has rgb formula id (type int) as a key and a dictinary for value; the inner dictionaries have an rgb channels (values `r`,`g`,`b`) for keys and rgb formulas (represented as strings) for values
         rgb_formulas_dict_str = self.get_dictionary_of_rgb_formulas(rgb_formulas_for_pixel_areas = rgb_formulas)
