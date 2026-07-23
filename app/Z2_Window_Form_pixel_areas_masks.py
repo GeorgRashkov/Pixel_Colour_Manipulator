@@ -28,7 +28,7 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.button_alter_pixel_area_id = QPushButton("alter pixel area")
         self.button_alter_pixel_area_id.setMaximumWidth(150)
         self.label_pixel_area_id = QLabel("id")
-        self.textBox_pixel_area_id = QLineEdit("1")
+        self.textBox_pixel_area_id = QLineEdit("0")
         self.textBox_pixel_area_id.setMaxLength(3)
         self.textBox_pixel_area_id.setMaximumWidth(30)
         self.textBox_pixel_area_id.setValidator(int_validator)
@@ -86,11 +86,15 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.button_clear_canvas.setMaximumWidth(80)
         self.set_colour_of_drawing_button()
 
+        self.checkBox_keep_ratio = QCheckBox("keep ratio")
+        self.checkBox_keep_ratio.setChecked(True)
         self.checkBox_auto_remove_previous_masks_when_applying_new_masks = QCheckBox("auto remove previous masks when applying new masks")
         self.checkBox_auto_remove_previous_masks_when_applying_new_masks.setChecked(True)
 
-        self.checkBox_keep_ratio = QCheckBox("keep ratio")
-        self.checkBox_keep_ratio.setChecked(True)
+        self.checkBox_apply_already_applied_masks = QCheckBox("apply already applied masks")
+        self.checkBox_apply_already_applied_masks.setChecked(True)
+        self.checkBox_auto_update_images_when_applying_masks = QCheckBox("auto update images when applying masks")
+        self.checkBox_auto_update_images_when_applying_masks.setChecked(False)
 
 
 
@@ -186,11 +190,13 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
+        h_layout.addWidget(self.checkBox_keep_ratio)
         h_layout.addWidget(self.checkBox_auto_remove_previous_masks_when_applying_new_masks)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
-        h_layout.addWidget(self.checkBox_keep_ratio)
+        h_layout.addWidget(self.checkBox_apply_already_applied_masks)
+        h_layout.addWidget(self.checkBox_auto_update_images_when_applying_masks)
         v_layout.addLayout(h_layout)
 
 
@@ -199,6 +205,42 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.text_area)
         h_main_layout.addLayout(h_layout)
+
+
+
+
+        
+        self.button_update_images = QPushButton("Update")
+        self.checkBox_update_image_for_colour_masks = QCheckBox("image for colour masks")
+        self.checkBox_update_image_for_colour_masks.setChecked(True)
+        self.checkBox_update_image_for_colour_range_masks = QCheckBox("image for colour range masks")
+        self.checkBox_update_image_for_colour_range_masks.setChecked(True)
+
+        self.button_apply_selected_masks = QPushButton("Apply masks")
+        self.button_remove_selected_masks = QPushButton("Remove masks")
+        self.textBox_apply_masks = QLineEdit()
+        self.label_apply_masks = QLabel("ids")
+
+        self.button_apply_all_masks = QPushButton("Apply all masks")
+        self.button_remove_all_masks = QPushButton("Remove all masks")
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_update_images)
+        h_layout.addWidget(self.checkBox_update_image_for_colour_masks)
+        h_layout.addWidget(self.checkBox_update_image_for_colour_range_masks)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_apply_selected_masks)
+        h_layout.addWidget(self.button_remove_selected_masks)
+        h_layout.addWidget(self.textBox_apply_masks)
+        h_layout.addWidget(self.label_apply_masks)
+        v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_apply_all_masks)
+        h_layout.addWidget(self.button_remove_all_masks)
+        v_layout.addLayout(h_layout)
 
         self.setLayout(h_main_layout)
 

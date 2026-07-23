@@ -27,7 +27,7 @@ class Pixel_area_initializer:
                                                "img_in_v", "img_out_v", "img_out_stack",
                                                "mask_id", "mask_id_p"]
         
-        self.area_properties_with_non_zero_int_value = ["w", "h",
+        self.area_properties_with_non_zero_int_value = ["id", "w", "h",
                                                         "tr_h", "tr_w", "tr_dim", "tr_count_row", "tr_count_col", "tr_count_dim",
                                                         "img_out_v"]
         

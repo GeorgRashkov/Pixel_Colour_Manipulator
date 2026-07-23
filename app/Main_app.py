@@ -34,7 +34,13 @@ class MainApp:
 
         self.swap_pixel_values_controller = Z_Swap_pixel_values_controller.Swap_pixel_values_controller()       
         self.swap_pixel_values_controller.form_window_pixel_areas.button_apply_elements_to_pixel_areas_manipulator.clicked.connect(self.apply_elements_to_pixel_areas_manipulator)
-        self.swap_pixel_values_controller.form_window_pixel_areas.button_remove_elements_from_pixel_areas_manipulator.clicked.connect(self.remove_elements_from_pixel_areas_manipulator)        
+        self.swap_pixel_values_controller.form_window_pixel_areas.button_remove_elements_from_pixel_areas_manipulator.clicked.connect(self.remove_elements_from_pixel_areas_manipulator)
+        
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_update_images.clicked.connect(self.update_images_for_masks_for_pixel_areas_manipulator)
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_apply_all_masks.clicked.connect(self.apply_all_masks_to_pixel_areas_manipulator)
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_apply_selected_masks.clicked.connect(self.apply_selected_masks_to_pixel_areas_manipulator)
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_remove_all_masks.clicked.connect(self.remove_all_masks_from_pixel_areas_manipulator)
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.button_remove_selected_masks.clicked.connect(self.remove_selected_masks_from_pixel_areas_manipulator)
         
 
         self.draw_formula_controller = Draw_formula_controller()
@@ -73,11 +79,19 @@ class MainApp:
     def run(self):
         sys.exit(self.app.exec_())
         
+        
 
     def apply_elements_to_pixel_areas_manipulator(self):
 
+        """
         img_for_colour_ranges_of_masks = self.get_rgb_pixel_values_from_capture_window()
         self.swap_pixel_values_controller.apply_elements_to_pixel_areas_manipulator(img_for_colour_ranges_of_masks=img_for_colour_ranges_of_masks)
+        """
+        if(self.swap_pixel_values_controller.form_window_pixel_areas.check_box_masks.isChecked() == True and 
+           self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.checkBox_auto_update_images_when_applying_masks.isChecked() == True):
+            self.update_images_for_masks_for_pixel_areas_manipulator()
+
+        self.swap_pixel_values_controller.apply_elements_to_pixel_areas_manipulator()
         pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
         self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
     
@@ -88,6 +102,27 @@ class MainApp:
         pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
         self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
     
+
+    def update_images_for_masks_for_pixel_areas_manipulator(self):
+        img_for_colour_range_masks = self.get_rgb_pixel_values_from_capture_window()
+        self.swap_pixel_values_controller.pixel_areas_masks_controller.update_images_for_masks(img_for_colour_range_masks=img_for_colour_range_masks)
+
+    def apply_selected_masks_to_pixel_areas_manipulator(self):
+        img_for_colour_range_masks = self.get_rgb_pixel_values_from_capture_window()
+        self.swap_pixel_values_controller.apply_selected_masks(img_for_colour_range_masks=img_for_colour_range_masks)
+
+    def apply_all_masks_to_pixel_areas_manipulator(self):
+        img_for_colour_range_masks = self.get_rgb_pixel_values_from_capture_window()
+        self.swap_pixel_values_controller.apply_all_masks(img_for_colour_range_masks=img_for_colour_range_masks)
+
+    def remove_selected_masks_from_pixel_areas_manipulator(self):
+        self.swap_pixel_values_controller.remove_selected_masks()
+
+    def remove_all_masks_from_pixel_areas_manipulator(self):
+        self.swap_pixel_values_controller.remove_all_masks()
+
+
+
     
     def apply_rgb_mask_from_draw_window(self):
         rgb_formula_mask = self.draw_mask_controller.get_colour_mask()

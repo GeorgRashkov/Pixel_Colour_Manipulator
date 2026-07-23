@@ -257,6 +257,7 @@ class Swap_pixel_values_controller:
         
         return -1 #this code should never be reached unless the user defines over 999_999 valid numbers
     
+    """
     def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str): 
         text = "{"
         if(id is not None):
@@ -276,6 +277,11 @@ class Swap_pixel_values_controller:
         
         text = text[0:-2] + "}" 
 
+        self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
+    """
+
+    def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str): 
+        text = f"{{ id:{id}; x:{x}; y:{y}; w:{w}; h:{h}; f_id:0 }}"
         self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
 
     #code for working with the text inside the text area containing the information for the pixel swap areas>
@@ -359,8 +365,7 @@ class Swap_pixel_values_controller:
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
         return self.pixel_areas_manipulator
 
-    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def apply_elements_to_pixel_areas_manipulator(self, img_for_colour_ranges_of_masks:np.ndarray[np.uint8]) -> Pixel_areas_manipulator:
+    def apply_elements_to_pixel_areas_manipulator(self):
 
         if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
             self.apply_pixel_areas_to__pixel_areas_manipulator()
@@ -371,9 +376,13 @@ class Swap_pixel_values_controller:
         if(self.form_window_pixel_areas.check_box_animations.isChecked() == True):
             self.apply_animations_to__pixel_areas_manipulator()
         
+        """
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
             if(img_for_colour_ranges_of_masks.shape[0] > 0 and img_for_colour_ranges_of_masks.shape[1] > 0):
                 self.apply_masks(img_for_colour_ranges=img_for_colour_ranges_of_masks)
+        """
+        if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
+            self.apply_all_masks()
         
         if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
             self.apply_convolutions_to__pixel_areas_manipulator()
@@ -382,7 +391,7 @@ class Swap_pixel_values_controller:
             self.apply_image_version_controller()
         
 
-    def remove_elements_from_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
+    def remove_elements_from_pixel_areas_manipulator(self):
 
         if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
             self.remove_pixel_areas_from__pixel_areas_manipulator()
@@ -394,7 +403,10 @@ class Swap_pixel_values_controller:
             self.remove_animations_from__pixel_areas_manipulator()
         
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
+            self.remove_all_masks()
+            """
             self.remove_masks()
+            """
         
         if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
             self.remove_convolutional_kernels()
@@ -488,6 +500,7 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator.apply_animations(animations_manipulator=pixel_area_animation_manipulator)
     
 
+    """
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
 
@@ -505,6 +518,35 @@ class Swap_pixel_values_controller:
                 masks_copies.append(mask.copy())
 
         self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
+    """
+    
+
+
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def apply_selected_masks(self, img_for_colour_range_masks:np.ndarray[np.uint8] = None):
+        
+        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_all_main_areas_as_rectangles()
+        
+        masks = self.pixel_areas_masks_controller.apply_selected_masks(rectangles_with_ids=rectangles_with_ids, img_for_colour_range_masks=img_for_colour_range_masks)
+        if(masks is not None):
+            self.pixel_areas_manipulator.apply_masks(masks=masks)
+
+    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+    def apply_all_masks(self, img_for_colour_range_masks:np.ndarray[np.uint8] = None):
+
+        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_all_main_areas_as_rectangles()
+        
+        masks = self.pixel_areas_masks_controller.apply_all_masks(rectangles_with_ids=rectangles_with_ids, img_for_colour_range_masks=img_for_colour_range_masks)
+        if(masks is not None):
+            self.pixel_areas_manipulator.apply_masks(masks=masks)
+
+    def remove_selected_masks(self):
+        
+        masks = self.pixel_areas_masks_controller.remove_selected_applied_masks()
+        if(masks is not None):
+            self.pixel_areas_manipulator.apply_masks(masks=masks)
+
+
     
     def apply_convolutions_to__pixel_areas_manipulator(self):
 
@@ -547,7 +589,12 @@ class Swap_pixel_values_controller:
     def remove_animations_from__pixel_areas_manipulator(self):
         self.pixel_areas_manipulator.remove_animations()
     
+    """
     def remove_masks(self):
+        self.pixel_areas_manipulator.remove_masks()
+    """
+    def remove_all_masks(self):
+        self.pixel_areas_masks_controller.remove_all_applied_masks()
         self.pixel_areas_manipulator.remove_masks()
     
     def remove_convolutional_kernels(self):

@@ -53,7 +53,7 @@ class Pixel_areas_manipulator:
         self.animations_manipulator:Pixel_area_animation_manipulator = None
         self.convolutional_kernels_manipulator:Convolutional_kernels_manipulator = None
 
-        self.masks:dict[int,Mask] = {}
+        self.masks:dict[int, Mask] = {}
 
     
     def order_pixel_areas_ids(self, order_obj: Order_obj):
@@ -116,12 +116,18 @@ class Pixel_areas_manipulator:
     def apply_animations(self, animations_manipulator:Pixel_area_animation_manipulator):
         self.animations_manipulator = animations_manipulator
 
+    """
     def apply_masks(self, masks:list[Mask]):
         self.masks = {}
 
         for mask in masks:
             self.masks[mask.id] = mask
+    """
     
+    #the input parameter must be a dictionary which has the masks' ids for keys and the masks for values
+    def apply_masks(self, masks:dict[int, Mask]): 
+        self.masks = masks
+
     def apply_convolutional_kernels(self, cks_manipulator:Convolutional_kernels_manipulator):
         self.convolutional_kernels_manipulator = cks_manipulator
 
