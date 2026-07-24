@@ -15,9 +15,6 @@ class Mask():
         self.colours:dict[np.uint8,Colour] = {}
         self.colour_ranges:dict[np.uint8,Colour_range] = {}
 
-        """
-        self.img_from_canvas:np.ndarray[np.uint8] = None
-        """
         self.remove_previous_mask_when_applying_mask = True
         self.keep_ratio = True
 
@@ -38,10 +35,6 @@ class Mask():
         elif(region_id in self.colour_ranges):
             del self.colour_ranges[region_id]
     
-    """
-    def update_img_from_canvas(self, new_img_from_canvas):
-        self.img_from_canvas = new_img_from_canvas
-    """
     
     def set_value_for__auto_remove_previous_masks_when_applying_new_masks(self, new_value:bool):
         self.remove_previous_mask_when_applying_mask = new_value
@@ -49,16 +42,6 @@ class Mask():
     def set_value_for__keep_ratio(self, new_value:bool):
         self.keep_ratio = new_value
 
-    """
-    def apply_regions(self, img_for_colour_ranges:np.ndarray[np.uint8]):
-        
-        if(self.img_from_canvas is not None):
-            self.rgb_formulas_mask.create_colour_regions(img_for_creating_a_mask=self.img_from_canvas, colours=self.colours, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
-            if(img_for_colour_ranges.shape[0] > 0 and img_for_colour_ranges.shape[1] > 0):
-                self.rgb_formulas_mask.create_colour_range_regions(img_for_creating_a_mask=img_for_colour_ranges, colour_ranges=self.colour_ranges, remove_previous_mask=False)
-        elif(img_for_colour_ranges.shape[0] > 0 and img_for_colour_ranges.shape[1] > 0):
-            self.rgb_formulas_mask.create_colour_range_regions(img_for_creating_a_mask=img_for_colour_ranges, colour_ranges=self.colour_ranges, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
-    """
 
     def apply_regions(self, img_for_colour_regions:np.ndarray[np.uint8], img_for_colour_range_regions:np.ndarray[np.uint8]):
             
@@ -104,10 +87,6 @@ class Mask():
             colour_ranges[colour_range_id] = self.colour_ranges[colour_range_id].copy()
         self_copy.colour_ranges = colour_ranges
 
-        """
-        if(self.img_from_canvas is not None):
-            self_copy.img_from_canvas = self.img_from_canvas.copy()
-        """ 
             
         self_copy.remove_previous_mask_when_applying_mask = self.remove_previous_mask_when_applying_mask
         self_copy.keep_ratio = self.keep_ratio

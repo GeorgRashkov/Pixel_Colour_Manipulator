@@ -31,11 +31,6 @@ class Pixel_areas_manipulator:
         
         self.image_versions_count:int = 1  #this is the number of image versions defined by the user (when the image is processed there will be 1 or 2 additional image versions)   
         
-        """
-        self.max_image_versions:int = 99
-        """
-
-        
         self.areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window = Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio
 
         
@@ -106,9 +101,6 @@ class Pixel_areas_manipulator:
     def apply_pixel_areas(self, pixel_areas_dict: dict[int,Pixel_area]):
         self.pixel_areas_ids = list(pixel_areas_dict.keys())
         self.pixel_areas_dict = pixel_areas_dict
-        """
-        self.set_image_versions()
-        """
 
     def apply_rgb_formulas(self, rgb_formulas_dict: dict[int,RGB_formula]):
         self.rgb_formulas_dict = rgb_formulas_dict
@@ -116,13 +108,6 @@ class Pixel_areas_manipulator:
     def apply_animations(self, animations_manipulator:Pixel_area_animation_manipulator):
         self.animations_manipulator = animations_manipulator
 
-    """
-    def apply_masks(self, masks:list[Mask]):
-        self.masks = {}
-
-        for mask in masks:
-            self.masks[mask.id] = mask
-    """
     
     #the input parameter must be a dictionary which has the masks' ids for keys and the masks for values
     def apply_masks(self, masks:dict[int, Mask]): 
@@ -133,11 +118,6 @@ class Pixel_areas_manipulator:
 
 
     #this method must be called always when the desired output image version from the manipulator is different from the last version
-    """
-    def apply_image_version_controller(self, image_version_start_index:int = 0, image_version_increment:int = 1, image_version_swap_frequency:int = 1):
-        self.image_versions_controller = Image_version_controller(image_version_start_index = image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count = self.image_versions_count+2)
-    """
-
     def apply_image_version_controller(self,  image_version_start_index:int = -1, image_version_end_index:int = -1, image_version_increment:int = 0, image_version_swap_frequency:int = 0, image_versions_count:int = 1,  use_special_image_version:bool = True):
         
         image_versions_count = max(1, image_versions_count)
@@ -200,38 +180,6 @@ class Pixel_areas_manipulator:
 
 
     #< functions for setting the image versions
-    """
-    #set's proper value for `self.image_versions_count` and for each pixel area set's proper values for `img_in_v`, `img_out_v` and `img_out_stack`
-    def set_image_versions(self):
-
-        self.set_image_versions_count()
-
-        for pixel_area in self.pixel_areas_dict.values():
-                        
-            if(pixel_area.img_in_v > self.image_versions_count+1):#the values inside `img_in_v` start from `0`
-                pixel_area.img_in_v = self.image_versions_count+1 #set's `img_in_v` to be the last image version (the special one)
-                        
-            if(pixel_area.img_out_v > self.image_versions_count+1):#the values inside `img_out_v` start from `1`
-                pixel_area.img_out_v = self.image_versions_count+1 #set's `img_out_v` to be the last image version (the special one)
-                           
-            #the value of `img_out_stack` will be combined with `img_out_v` in order to determine 
-            #the number of image versions which will be affected after applying the rgb formula           
-            if(pixel_area.img_out_stack == 0): #if `img_out_stack` is `0` then every image version (starting from `img_out_v`) will be affected by the rgb formula result
-                pixel_area.img_out_stack = self.image_versions_count                
-
-        
-    def set_image_versions_count(self):
-        image_versions_count = 0
-        
-        for pixel_area in self.pixel_areas_dict.values():            
-            image_versions_count = max(image_versions_count, pixel_area.img_in_v, pixel_area.img_out_v)
-        
-        if(image_versions_count > self.max_image_versions):
-            image_versions_count = self.max_image_versions
-            print(f"warning: the maximum number of image versions is {self.max_image_versions};\n if the value of `img_in_v` is equal or above the max value than the special last image version will be used;\n if the value of `img_out_v` is equal or above the max value than the special last image version will be used")
-
-        self.image_versions_count = image_versions_count
-    """
     #functions for setting the image versions>
 
 
@@ -243,12 +191,6 @@ class Pixel_areas_manipulator:
 
         if(len(self.pixel_areas_dict) == 0 or len(self.rgb_formulas_dict) == 0):
             return img       
-
-        """
-        image_versions : list[np.ndarray] = []
-        for i in range(self.image_versions_count + 2):#adding 2 additional image versions (the first image version will always have pixel values of the original image; the last image version will be the output from the transform image function)
-            image_versions.append(img.copy())
-        """
         
         #adding 1 or 2 additional image versions (the first image version will always have the pixel values of the original image; if a special image version is used then the last image version will be the special one which is always updated)
         image_versions_count = self.image_versions_count + 1 + self.use_special_image_version
@@ -336,10 +278,6 @@ class Pixel_areas_manipulator:
             for i in range(starting_image_version, ending_image_version):
                 if(i > self.image_versions_count):
                     break
-                
-                """
-                rectangle = self.rectangles_per_area[pixel_area.id][0]#the first rectangle used by the area is the rectangle of the area itself
-                """
 
                 if(self.get_inner_areas_fast == True):
                     image_versions[i][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
@@ -349,15 +287,6 @@ class Pixel_areas_manipulator:
                     
             #apply the values of the transformed pixel area to the image versions which the area is supposed to update>
             
-
-            """
-            #make sure the last image version (the special one) is always updated
-            if(self.get_inner_areas_fast == True):
-                image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result
-            else:
-                area_shape = image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ].shape
-                image_versions[-1][ rectangle.y : rectangle.y + pixel_areas_as_parameters_for_rgb_formula.shape[1], rectangle.x : rectangle.x + pixel_areas_as_parameters_for_rgb_formula.shape[2], : ] = rgb_formula_result[0:area_shape[0], 0:area_shape[1], :]
-            """
             
             #make sure the last image version (the special one) is always updated when the special image version is used
             if(self.use_special_image_version == True):

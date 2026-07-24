@@ -257,28 +257,6 @@ class Swap_pixel_values_controller:
         
         return -1 #this code should never be reached unless the user defines over 999_999 valid numbers
     
-    """
-    def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str): 
-        text = "{"
-        if(id is not None):
-            text = f"{text}id:{id}; "
-
-        if(x is not None):
-            text = f"{text}x:{x}; "
-
-        if(y is not None):
-            text = f"{text}y:{y}; "
-
-        if(w is not None):
-            text = f"{text}w:{w}; "
-
-        if(h is not None):
-            text = f"{text}h:{h}; "
-        
-        text = text[0:-2] + "}" 
-
-        self.form_window_pixel_areas.text_area_swap_pixel_areas.append(text)
-    """
 
     def insertTextIn_formWindow_textArea_swapPixelAreas(self, id:str, x:str, y:str, w:str, h:str): 
         text = f"{{ id:{id}; x:{x}; y:{y}; w:{w}; h:{h}; f_id:0 }}"
@@ -376,11 +354,6 @@ class Swap_pixel_values_controller:
         if(self.form_window_pixel_areas.check_box_animations.isChecked() == True):
             self.apply_animations_to__pixel_areas_manipulator()
         
-        """
-        if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
-            if(img_for_colour_ranges_of_masks.shape[0] > 0 and img_for_colour_ranges_of_masks.shape[1] > 0):
-                self.apply_masks(img_for_colour_ranges=img_for_colour_ranges_of_masks)
-        """
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
             self.apply_all_masks()
         
@@ -404,9 +377,6 @@ class Swap_pixel_values_controller:
         
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
             self.remove_all_masks()
-            """
-            self.remove_masks()
-            """
         
         if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
             self.remove_convolutional_kernels()
@@ -500,27 +470,6 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator.apply_animations(animations_manipulator=pixel_area_animation_manipulator)
     
 
-    """
-    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def apply_masks(self, img_for_colour_ranges:np.ndarray[np.uint8]):
-
-        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_all_main_areas_as_rectangles()
-            
-        masks = self.pixel_areas_masks_controller.get_masks()
-        masks_copies = []
-
-        for mask in masks:
-                
-            if(mask.pixel_area_id in rectangles_with_ids.keys()):
-                rec = rectangles_with_ids[mask.pixel_area_id]
-                img_for_colour_ranges_for_current_mask =  img_for_colour_ranges[rec.x : rec.x+rec.w , rec.y : rec.y+rec.h , :]
-                mask.apply_regions(img_for_colour_ranges=img_for_colour_ranges_for_current_mask)
-                masks_copies.append(mask.copy())
-
-        self.pixel_areas_manipulator.apply_masks(masks=masks_copies)
-    """
-    
-
 
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_selected_masks(self, img_for_colour_range_masks:np.ndarray[np.uint8] = None):
@@ -557,14 +506,6 @@ class Swap_pixel_values_controller:
         
         if(self.should_create_image_version_contoller()==True):
             
-            """
-            image_version_start_index = 0 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
-            image_version_increment = 1 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
-            image_version_swap_frequency = 1 if self.form_window_pixel_areas.textBox_image_version_swap_frequency.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_swap_frequency.text())
-            
-            self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency)
-            """
-            
             image_version_start_index = -1 if self.form_window_pixel_areas.textBox_image_version_start_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_start_index.text())
             image_version_end_index = -1 if self.form_window_pixel_areas.textBox_image_version_end_index.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_end_index.text())
             image_version_increment = 0 if self.form_window_pixel_areas.textBox_image_version_increment.text() == "" else int(self.form_window_pixel_areas.textBox_image_version_increment.text())
@@ -589,10 +530,6 @@ class Swap_pixel_values_controller:
     def remove_animations_from__pixel_areas_manipulator(self):
         self.pixel_areas_manipulator.remove_animations()
     
-    """
-    def remove_masks(self):
-        self.pixel_areas_manipulator.remove_masks()
-    """
     def remove_all_masks(self):
         self.pixel_areas_masks_controller.remove_all_applied_masks()
         self.pixel_areas_manipulator.remove_masks()
@@ -653,18 +590,6 @@ class Swap_pixel_values_controller:
 
     def should_create_image_version_contoller(self):
 
-        """
-        if(self.form_window_pixel_areas.textBox_image_version_start_index.text()=="" and self.form_window_pixel_areas.textBox_image_version_increment.text()=="" and self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()==""):
-            return False
-
-        error_message = ""
-        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_start_index.text()) == False):
-            error_message += "the field with the image version start index was in wrong format (only int values whether positive or negative are allowed); "
-        if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_increment.text()) == False):
-            error_message += "the field with the image version increment was in wrong format (only int values whether positive or negative are allowed); "
-        if(check_for_positive_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_swap_frequency.text()) == False):
-            error_message += "the field with the image version frequency was in wrong format (only positive int values are allowed); "
-        """
         error_message = ""
         if(check_for_int_format(txt_value=self.form_window_pixel_areas.textBox_image_version_start_index.text()) == False):
             error_message += "the field with the image version start index was in wrong format (only int values whether positive or negative are allowed); "

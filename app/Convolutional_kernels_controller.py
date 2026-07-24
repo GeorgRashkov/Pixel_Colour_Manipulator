@@ -6,9 +6,7 @@ from Window_dynamic_variables import Window_dynamic_variables
 from Dynamic_variable import Dynamic_variable
 
 from PyQt5_Window_functions import open_or_minimize_window
-from Number_format_checker import check_for_int_format
 
-from Enums import Enum_order
 from Order_obj import Order_obj
 
 class Convolutional_kernels_controller():
@@ -17,9 +15,6 @@ class Convolutional_kernels_controller():
         self.window_form_convolutional_kernels = Window_form_convolutional_kernels()
         self.window_form_convolutional_kernels.button_show_info.clicked.connect(self.open_window_info_convolutional_kernels)
         self.window_form_convolutional_kernels.button_show_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
-        """
-        self.window_form_convolutional_kernels.button_order_cks_ids.clicked.connect(self.order_cks_ids)
-        """
         self.window_form_convolutional_kernels.form_elements__order_ids.button_order_nums.clicked.connect(self.order_cks_ids)
 
         self.window_info_convolutional_kernels = Window_info_convolutional_kernels()
@@ -66,41 +61,6 @@ class Convolutional_kernels_controller():
     
     def remove_convolutional_kernels(self):
         self.convolutional_kernels_manipulator = Convolutional_kernels_manipulator()
-    
-    """
-    def order_cks_ids(self):
-
-        start_txt = self.window_form_convolutional_kernels.textBox_order_cks_ids__start.text()
-        end_txt = self.window_form_convolutional_kernels.textBox_order_cks_ids__end.text()
-        step_txt = self.window_form_convolutional_kernels.textBox_order_cks_ids__step.text()
-
-        is_start_txt_valid = check_for_int_format(txt_value=start_txt)
-        is_end_txt_valid = check_for_int_format(txt_value=end_txt)
-        is_step_txt_valid = check_for_int_format(txt_value=step_txt)
-
-        if(is_start_txt_valid == False):
-            print("error: the start index was in wrong format, only integers are allowed")
-        if(is_end_txt_valid == False):
-            print("error: the end index was in wrong format, only integers are allowed")
-        if(is_step_txt_valid == False):
-            print("error: the step index was in wrong format, only integers are allowed")
-        
-        if(is_start_txt_valid == True and is_end_txt_valid == True and is_step_txt_valid==True):
-            
-            start = int(start_txt) if start_txt!="" else None
-            end = int(end_txt) if end_txt!="" else None
-            step = int(step_txt) if step_txt!="" else None
-
-            order_type = Enum_order.ascending
-            if(self.window_form_convolutional_kernels.radioButton_descending.isChecked() == True):
-                order_type = Enum_order.descending
-            elif(self.window_form_convolutional_kernels.radioButton_random.isChecked() == True):
-                order_type = Enum_order.random
-
-            self.convolutional_kernels_manipulator.order_kernels(order_type=order_type, start=start, end=end, step=step)
-
-            print(f"the order of the ids of the kernels is: {self.convolutional_kernels_manipulator.get_copy_of_kernel_ids()}")
-    """
     
 
     def order_cks_ids(self):

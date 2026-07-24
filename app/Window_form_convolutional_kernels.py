@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QLineEdit, QPushButton, QButtonGroup, QRadioButton
+    QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QLineEdit, QPushButton
 )
-from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt
 
 from Convolutional_kernels_initializer import Convolutional_kernels_initializer
@@ -16,10 +15,6 @@ class Window_form_convolutional_kernels(QWidget):
         self.setWindowTitle("Convolutional kernels")
         self.setMinimumSize(200, 30)
 
-        """
-        int_validator = QIntValidator()
-        """
-
 
         self.button_apply_cks = QPushButton("Apply")
         self.button_remove_cks = QPushButton("Remove")
@@ -27,33 +22,6 @@ class Window_form_convolutional_kernels(QWidget):
         self.button_show_info = QPushButton("Info")
 
 
-        """
-        self.button_order_cks_ids = QPushButton("order ids: ")
-
-        self.label_order_cks_ids__start = QLabel("start")
-        self.textBox_order_cks_ids__start = QLineEdit()
-        self.textBox_order_cks_ids__start.setMaximumWidth(50)
-        self.textBox_order_cks_ids__start.setValidator(int_validator)
-
-        self.label_order_cks_ids__end = QLabel("end")
-        self.textBox_order_cks_ids__end = QLineEdit()
-        self.textBox_order_cks_ids__end.setMaximumWidth(50)
-        self.textBox_order_cks_ids__end.setValidator(int_validator)
-
-        self.label_order_cks_ids__step = QLabel("step")
-        self.textBox_order_cks_ids__step = QLineEdit()
-        self.textBox_order_cks_ids__step.setMaximumWidth(50)
-        self.textBox_order_cks_ids__step.setValidator(int_validator)
-
-        self.radioButton_ascending = QRadioButton("ascending")
-        self.radioButton_descending = QRadioButton("descending")
-        self.radioButton_random = QRadioButton("random")
-        self.radioButtons_group_order = QButtonGroup()
-        self.radioButtons_group_order.addButton(self.radioButton_ascending)
-        self.radioButtons_group_order.addButton(self.radioButton_descending)
-        self.radioButtons_group_order.addButton(self.radioButton_random)
-        self.radioButton_ascending.setChecked(True)
-        """
         #<pixel areas elements to order ids
         self.form_elements__order_ids = Form_elements__order_numbers()
         #pixel areas elements to order ids>
@@ -80,20 +48,7 @@ class Window_form_convolutional_kernels(QWidget):
         h_layout.addWidget(self.button_show_info)
         v_layout.addLayout(h_layout)
 
-        """
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(self.button_order_cks_ids)
-        h_layout.addWidget(self.label_order_cks_ids__start)
-        h_layout.addWidget(self.textBox_order_cks_ids__start)
-        h_layout.addWidget(self.label_order_cks_ids__end)
-        h_layout.addWidget(self.textBox_order_cks_ids__end)
-        h_layout.addWidget(self.label_order_cks_ids__step)
-        h_layout.addWidget(self.textBox_order_cks_ids__step)
-        h_layout.addWidget(self.radioButton_ascending)
-        h_layout.addWidget(self.radioButton_descending)
-        h_layout.addWidget(self.radioButton_random)
-        v_layout.addLayout(h_layout)
-        """
+
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.form_elements__order_ids, alignment=Qt.AlignLeft)
         v_layout.addLayout(h_layout)

@@ -83,10 +83,6 @@ class MainApp:
 
     def apply_elements_to_pixel_areas_manipulator(self):
 
-        """
-        img_for_colour_ranges_of_masks = self.get_rgb_pixel_values_from_capture_window()
-        self.swap_pixel_values_controller.apply_elements_to_pixel_areas_manipulator(img_for_colour_ranges_of_masks=img_for_colour_ranges_of_masks)
-        """
         if(self.swap_pixel_values_controller.form_window_pixel_areas.check_box_masks.isChecked() == True and 
            self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.checkBox_auto_update_images_when_applying_masks.isChecked() == True):
             self.update_images_for_masks_for_pixel_areas_manipulator()

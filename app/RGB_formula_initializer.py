@@ -1,5 +1,3 @@
-
-
 import Z_RGB_formula_checker as RGB_formula_checker
 from Z_RGB_formula import RGB_formula
 from Formula_validation_collections import RGB_formula_validation_collections

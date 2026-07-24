@@ -263,9 +263,6 @@ class Pixel_areas_masks_controller:
             print(f"Warning: the region was not created because the mask with id {mask_id} already had an existing region with id {region_id}")
         else:
             mask.add_or_alter_colour(region_id=region_id, colour=colour)
-            """
-            self.update_mask_img_from_canvas(mask=mask)
-            """
             self.display_masks_as_text()
         
 
@@ -472,17 +469,6 @@ class Pixel_areas_masks_controller:
     
 #functions which are called when the user presses a check box>
 
-    """
-    def update_mask_img_from_canvas(self, mask:Mask):
-        img_from_canvas = get_rgb_pixel_values_from_window(window=self.canvas_window)
-        mask.update_img_from_canvas(new_img_from_canvas=img_from_canvas)
-
-        
-   
-    def get_masks(self) -> list[Mask]:
-        return list(self.masks.values())
-    
-    """
 
 #<functions for showing info about the masks
 
