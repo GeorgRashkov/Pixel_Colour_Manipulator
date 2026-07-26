@@ -24,3 +24,30 @@ def order_numbers(nums:list[int], order_type: Enum_order = Enum_order.ascending,
             ordered_nums[start:end:step] = ordered_nums[start:end:step][::-1]
     
     return ordered_nums.tolist()
+
+#returns a tuple whose elements are the positive representations of the two input indexes; the smaller index is the first element in the tuple
+def get_proper_positive_indexes(index1:int, index2:int, elements_count:int) -> tuple[int, int]:
+      
+    index1 = get_proper_positive_index(index=index1, elements_count=elements_count)
+    index2 = get_proper_positive_index(index=index2, elements_count=elements_count)
+
+    if(index1 > index2):
+        index1_copy = index1
+        index1 = index2
+        index2 = index1_copy
+
+    return (index1, index2)
+
+#returns the positive representation of the input index
+def get_proper_positive_index(index:int, elements_count:int) -> int:
+
+    if(elements_count <= 0):
+        raise Exception("`elements_count` must be a positive integer above zero")
+
+    if(index >= elements_count):
+        index = elements_count-1
+    elif(index < 0 and index < 0-elements_count):
+        index = 0-elements_count
+
+    index = index %elements_count
+    return index
