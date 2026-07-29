@@ -254,12 +254,12 @@ class Pixel_areas_manipulator:
             if(rgb_formula_id not in self.rgb_formulas_dict.keys()):#execute this code if the rgb formula id (of the current pixel area) does not exist
                 continue
             
-            image_version_input = None
+            image_input = None
             if(pixel_area.img_index is not None):
                 if(pixel_area.img_index in self.images.keys()):
-                    image_version_input = self.images[pixel_area.img_index]
-            if(image_version_input is None):
-                image_version_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
+                    image_input = self.images[pixel_area.img_index]
+            if(image_input is None):
+                image_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
             """
             image_version_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
             """
@@ -270,9 +270,9 @@ class Pixel_areas_manipulator:
             #this is a numpy array of shape (AREA, Height, Width, 3[RGB])
             pixel_areas_as_parameters_for_rgb_formula = None
             if(self.get_inner_areas_fast == True):
-                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula__fast(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles) 
+                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula__fast(pixel_area_input = pixel_area, img=image_input, must_create_new_rectangles=must_create_new_rectangles) 
             else:
-                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_version_input, must_create_new_rectangles=must_create_new_rectangles, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
+                pixel_areas_as_parameters_for_rgb_formula = self.get_image_areas_as_parameters_for_rgb_formula(pixel_area_input = pixel_area, img=image_input, must_create_new_rectangles=must_create_new_rectangles, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
             
             if(pixel_areas_as_parameters_for_rgb_formula.shape[0] == 0):#execute this code if no rectangles were extracted from the current pixel area (usually occurs when the top left corner of the current pixel area is outside the image)
                 continue
@@ -284,7 +284,7 @@ class Pixel_areas_manipulator:
                     if(len(rectangles) > 0):
                         region_images = []
                         for rectangle in rectangles:
-                            region_images.append(image_version_input[rectangle.y:rectangle.y+rectangle.h, rectangle.x:rectangle.x+rectangle.w,:])
+                            region_images.append(image_input[rectangle.y:rectangle.y+rectangle.h, rectangle.x:rectangle.x+rectangle.w,:])
                         pixel_areas_as_parameters_for_rgb_formula = mask.transform_image_using_other_images(img = pixel_areas_as_parameters_for_rgb_formula, region_images=region_images)
 
             if(pixel_area.mask_use_areas == True):
@@ -1013,13 +1013,13 @@ class Pixel_areas_manipulator:
         #<those are the used areas defined by `p_ids` of the main pixel area
         
         #cycle through the areas used by the main pixel area whose id was found in `p_ids`
-        for pixel_area_id in main_area.p_ids:
+        for used_area_id in main_area.p_ids:
 
             #check only those pixel areas which have an existing id
-            if(pixel_area_id in self.pixel_areas_dict.keys()):
-                pixel_area = self.pixel_areas_dict[pixel_area_id]
+            if(used_area_id in self.pixel_areas_dict.keys()):
+                pixel_area = self.pixel_areas_dict[used_area_id]
 
-                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h, id=pixel_area_id)
+                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h, id=used_area_id)
                 if(rectangle is not None):
                     rectangles.append(rectangle)
         #those are the used areas defined by `p_ids` of the main pixel area>  

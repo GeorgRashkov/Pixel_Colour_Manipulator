@@ -118,7 +118,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
 
         self.button_open_drawFormula = QPushButton('draw formula',  QtWidgets.QWidget(self))
-        self.button_open_dynamic_variables = QPushButton('DVs',  QtWidgets.QWidget(self))
+        self.button_open_dynamic_variables = QPushButton('dynamic variables',  QtWidgets.QWidget(self))
         self.button_open_images = QPushButton('images',  QtWidgets.QWidget(self))
 
         #<color sliders
