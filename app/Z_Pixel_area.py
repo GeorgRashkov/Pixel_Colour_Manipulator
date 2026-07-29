@@ -13,7 +13,8 @@ class Pixel_area:
                  ua_w_resize:int, ua_h_resize:int,
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
-                 f_ids_rep:list, rotations_rep:list, mask_ids_rep:list, ck_count_rep:list, ck_ids_rep:list):
+                 f_ids_rep:list, rotations_rep:list, mask_ids_rep:list, ck_count_rep:list, ck_ids_rep:list,
+                 img_index:int=None):
         
         #area id
         self.id = id
@@ -141,6 +142,11 @@ class Pixel_area:
         self.ck_ids_rep = ck_ids_rep
 
         #repeat areas arguments>
+
+        #<parameters which determine the usage of an image which is not the main image
+        self.img_index = img_index #this is the index of the image; if the value is `None` then the main image will be used
+        #parameters which determine the usage of an image which is not the main image>
+        
     
 
     def update_dynamic_variables_for_rgb_function(self):
@@ -220,12 +226,14 @@ class Pixel_area:
 
 
 class Rectangle():
-    def __init__(self, x, y, w, h):
+    def __init__(self, x:int, y:int, w:int, h:int, id:int=None):
         
         self.x = x
         self.y = y
         self.w = w
         self.h = h
+
+        self.id:int|None = id
     
 
 

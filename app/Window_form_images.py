@@ -24,6 +24,7 @@ class Window_form_images(QWidget):
         self.radioButton_add_draw_window_output = QRadioButton("drawn")
 
         self.checkBox_remove_last_image_before_creating_new_image = QCheckBox("remove last image")
+        self.checkBox_remove_last_image_before_creating_new_image.setChecked(True)
 
         self.buttonGroup_add_image = QButtonGroup()
         self.buttonGroup_add_image.addButton(self.radioButton_add_window_capture_input)

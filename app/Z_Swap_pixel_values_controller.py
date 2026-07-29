@@ -18,6 +18,8 @@ from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
 from Convolutional_kernels_controller import Convolutional_kernels_controller
 
+from Images_manipulator import Images_manipulator
+
 from RGB_formula_initializer import RGB_formula_initializer
 
 from Order_obj import Order_obj
@@ -57,6 +59,7 @@ class Swap_pixel_values_controller:
 
         self.form_window_pixel_areas.radioButtonGroup_resize_behaviour.buttonToggled.connect(self.set__areas_resize_behaviour_to__pixel_areas_manipulator)
         self.form_window_pixel_areas.checkBox_use_copy_for_replicas.clicked.connect(self.set__use_copy_for_replicas_to__pixel_areas_manipulator)
+        self.form_window_pixel_areas.checkBox_use_copy_for_images.clicked.connect(self.set__use_copy_for_images_to__pixel_areas_manipulator)
         
         self.pixel_areas_manipulator:Pixel_areas_manipulator = Pixel_areas_manipulator()
 
@@ -343,7 +346,7 @@ class Swap_pixel_values_controller:
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
         return self.pixel_areas_manipulator
 
-    def apply_elements_to_pixel_areas_manipulator(self):
+    def apply_elements_to_pixel_areas_manipulator(self, images_manipulator:Images_manipulator = None):
 
         if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
             self.apply_pixel_areas_to__pixel_areas_manipulator()
@@ -362,6 +365,9 @@ class Swap_pixel_values_controller:
         
         if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
             self.apply_image_version_controller()
+
+        if(self.form_window_pixel_areas.check_box_images.isChecked() == True and images_manipulator is not None):
+            self.apply_images_manipulator(images_manipulator=images_manipulator)
         
 
     def remove_elements_from_pixel_areas_manipulator(self):
@@ -383,6 +389,9 @@ class Swap_pixel_values_controller:
         
         if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
             self.remove_image_version_controller()
+
+        if(self.form_window_pixel_areas.check_box_images.isChecked() == True):
+            self.remove_images_manipulator()
 
     #those functions must be called from the outside>
 
@@ -515,6 +524,9 @@ class Swap_pixel_values_controller:
 
             self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_end_index=image_version_end_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count=image_versions_count,  use_special_image_version=use_special_image_version)
 
+    def apply_images_manipulator(self, images_manipulator:Images_manipulator):
+        self.pixel_areas_manipulator.apply_images_manipulator(images_manipulator=images_manipulator)
+
 #functions for applying elements to the pixel area manipulator>
 
 
@@ -540,6 +552,9 @@ class Swap_pixel_values_controller:
     
     def remove_image_version_controller(self):
         self.pixel_areas_manipulator.remove_image_version_controller()
+
+    def remove_images_manipulator(self):
+        self.pixel_areas_manipulator.remove_images_manipulator()
     
 #functions for removing elements for the pixel area manipulator>
 
@@ -556,6 +571,11 @@ class Swap_pixel_values_controller:
 
         use_copy_for_replicas = self.form_window_pixel_areas.checkBox_use_copy_for_replicas.isChecked()
         self.pixel_areas_manipulator.set__use_copy_for_replicas(use_copy_for_replicas=use_copy_for_replicas)
+
+    def set__use_copy_for_images_to__pixel_areas_manipulator(self):
+    
+        use_copy_for_images = self.form_window_pixel_areas.checkBox_use_copy_for_images.isChecked()
+        self.pixel_areas_manipulator.set__use_copy_for_images(use_copy_for_images=use_copy_for_images)
 
 #fuctions for setting the values of boolean and enum elements in the pixel area manipulator>
 

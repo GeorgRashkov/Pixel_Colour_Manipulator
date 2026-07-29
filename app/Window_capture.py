@@ -116,8 +116,10 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_captureMask = QPushButton('capture mask',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
+
         self.button_open_drawFormula = QPushButton('draw formula',  QtWidgets.QWidget(self))
         self.button_open_dynamic_variables = QPushButton('DVs',  QtWidgets.QWidget(self))
+        self.button_open_images = QPushButton('images',  QtWidgets.QWidget(self))
 
         #<color sliders
                
@@ -199,6 +201,10 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button3_showHide_widgets.clicked.connect(lambda: self.hide_widgets(3))
         self.button3_showHide_widgets.setMaximumSize(10,10)
 
+        self.button4_showHide_widgets = QPushButton('', QtWidgets.QWidget(self))
+        self.button4_showHide_widgets.clicked.connect(lambda: self.hide_widgets(4))
+        self.button4_showHide_widgets.setMaximumSize(10,10)
+
         self.button_showHide_all_widgets = QPushButton('', QtWidgets.QWidget(self))
         self.button_showHide_all_widgets.clicked.connect(self.show_or_hide_all_widgets)
         self.button_showHide_all_widgets.setMaximumSize(10,10)
@@ -228,13 +234,19 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_captureMask)
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swapAreas)
+        h_layout.setAlignment(Qt.AlignLeft)
+        self.v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button2_showHide_widgets)
         h_layout.addWidget(self.button_open_drawFormula)
         h_layout.addWidget(self.button_open_dynamic_variables)
+        h_layout.addWidget(self.button_open_images)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()        
-        h_layout.addWidget(self.button2_showHide_widgets)
+        h_layout.addWidget(self.button3_showHide_widgets)
         h_layout.addWidget(self.slider_red)
         h_layout.addWidget(self.slider_green)
         h_layout.addWidget(self.slider_blue)
@@ -243,7 +255,7 @@ class CaptureWindow(QtWidgets.QWidget):
         self.rgb_elements = RGB_formula_elements.RGB_formula_elements()
         h_layout = QHBoxLayout()
         
-        h_layout.addWidget(self.button3_showHide_widgets)
+        h_layout.addWidget(self.button4_showHide_widgets)
         for channel in self.rgb_elements.channels:
             button_apply_formula = QPushButton("OK")
             button_apply_formula.setMaximumWidth(30)
@@ -269,9 +281,28 @@ class CaptureWindow(QtWidgets.QWidget):
         if(self.checkBox_auto_capture.isChecked() == True):
             self.update_capture()
         
+    """
     def get_transformed_img(self) -> np:
         self.update_capture()
         return self.transformed_image
+    """
+    def get_transformed_img(self) -> np.ndarray[np.uint8]:
+
+        img = np.zeros(shape=[1,1,3], dtype=np.uint8)
+        if(self.transformed_image is not None):
+            img = self.transformed_image.copy()
+        return img
+        
+    def get_original_img(self) -> np.ndarray[np.uint8]:
+
+        img = np.zeros(shape=[1,1,3], dtype=np.uint8)
+        x, y, w, h = self.get_window_coordinates()
+        if(w > 0 and h > 0):
+            # Use dxcam to capture pixel values under the window
+            img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
+            img = np.ascontiguousarray(img) # copy DXCamera view into a contiguous NumPy array
+        return img
+   
 
     def slider_value_changed(self, slider_value, slider_id):
         self.SLIDERS_VALUES[slider_id] = round(slider_value*0.01,2)

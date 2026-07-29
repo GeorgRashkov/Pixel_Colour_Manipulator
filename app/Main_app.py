@@ -10,6 +10,9 @@ from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
 from Z_RGB_formulas_mask import RGB_formulas_mask
 
+from Images_controller import Images_controller
+from Images_manipulator import Images_manipulator
+
 from Draw_formula_controller import Draw_formula_controller
 
 from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
@@ -58,6 +61,7 @@ class MainApp:
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
         self.capture_window.button_open_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
+        self.capture_window.button_open_images.clicked.connect(self.open_window_images)
         
         #settings window
         self.settings_window = Window_settings.FormWindow_Settings()
@@ -68,9 +72,15 @@ class MainApp:
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_apply_cks.clicked.connect(self.apply_convolutional_kernels)
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_remove_cks.clicked.connect(self.remove_convolutional_kernels)
 
+        #dynamic variables window
         self.window_dynamic_variables = Window_dynamic_variables()
         self.window_dynamic_variables.button_apply_dynamic_variables.clicked.connect(self.apply_dynamic_variables)
         self.window_dynamic_variables.button_remove_dynamic_variables.clicked.connect(self.remove_dynamic_variables)
+
+        #images window
+        self.images_manipulator = Images_manipulator()
+        self.images_controller = Images_controller(get_original_img=self.capture_window.get_original_img, get_transformed_img=self.capture_window.get_transformed_img)
+        self.images_controller.window_form_images.button_apply_images_manipulator.clicked.connect(self.apply_images)
 
     
         self.capture_window.show()
@@ -87,7 +97,7 @@ class MainApp:
            self.swap_pixel_values_controller.pixel_areas_masks_controller.form_window_draw_mask.checkBox_auto_update_images_when_applying_masks.isChecked() == True):
             self.update_images_for_masks_for_pixel_areas_manipulator()
 
-        self.swap_pixel_values_controller.apply_elements_to_pixel_areas_manipulator()
+        self.swap_pixel_values_controller.apply_elements_to_pixel_areas_manipulator(images_manipulator=self.images_manipulator)
         pixel_areas_manipulator = self.swap_pixel_values_controller.get_pixel_areas_manipulator()
         self.capture_window.set_pixel_areas_manipulator(pixel_areas_manipulator=pixel_areas_manipulator)
     
@@ -150,6 +160,11 @@ class MainApp:
     def remove_dynamic_variables(self):
         self.capture_window.set_dynamic_variables(dynamic_variables=[])
 
+    def apply_images(self):
+        images_manipulator = self.images_controller.get_images_manipulator()
+        if(images_manipulator is not None):
+            self.images_manipulator = images_manipulator
+
 
     def show_draw_formula_drawing(self):
         
@@ -182,6 +197,9 @@ class MainApp:
        
     def open_window_dynamic_variables(self):
         open_or_minimize_window(self.window_dynamic_variables)
+
+    def open_window_images(self):
+        self.images_controller.open_window_images()
 
 
     def apply_settings(self):

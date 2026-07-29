@@ -52,6 +52,9 @@ class FormWindow_SwapPixelValues(QWidget):
         self.checkBox_use_copy_for_replicas = QCheckBox("use copy for replicas")
         self.checkBox_use_copy_for_replicas.setChecked(True)
 
+        self.checkBox_use_copy_for_images = QCheckBox("use copy for images")
+        self.checkBox_use_copy_for_images.setChecked(True)
+
         #<settings for output image versions        
         
         self.label_image_version = QLabel("image versions: |")
@@ -195,6 +198,7 @@ class FormWindow_SwapPixelValues(QWidget):
         self.check_box_masks = QCheckBox("masks")
         self.check_box_convolutional_kernels = QCheckBox("convolutions")
         self.check_box_image_versions = QCheckBox("image versions")
+        self.check_box_images = QCheckBox("images")
 
 
 
@@ -216,6 +220,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.checkBox_use_copy_for_replicas)
+        h_layout.addWidget(self.checkBox_use_copy_for_images)
         v_layout.addLayout(h_layout)
 
        
@@ -305,6 +310,7 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.check_box_animations)
         h_layout.addWidget(self.check_box_masks)
         h_layout.addWidget(self.check_box_image_versions)
+        h_layout.addWidget(self.check_box_images)
         h_layout.addWidget(self.check_box_convolutional_kernels)
         v_layout.addLayout(h_layout)
 

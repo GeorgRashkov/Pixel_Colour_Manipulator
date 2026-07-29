@@ -97,6 +97,37 @@ class Images_manipulator:
         
         return self.images[0]
     
+
+    def get_resized_images(self, indexes:list[int], new_width:int, new_height:int, get_copies:bool=False) -> dict[np.ndarray[np.uint8]]:
+
+        if(new_width <= 0 or new_height <= 0):
+            raise Exception("the new width and height of the resized image must be positive values above 0")
+
+        if(len(self.images) == 0 or len(indexes) == 0):
+            return {}
+
+        resized_images:dict[np.ndarray[np.uint8]] = {}
+
+        for i in range(0, len(indexes)):
+
+            index = get_proper_positive_index(index=indexes[i], elements_count=len(self.images))
+            if(index in resized_images.keys()): #ignore already added images
+                continue
+            
+            image = self.images[index] #get the image
+
+            #resize the image when necessary
+            if(new_width != self.images[index].shape[1] or new_height != self.images[index].shape[0]):
+                
+                image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_NEAREST)
+
+            resized_images[index] = image #add the image to the collection of images
+
+            if(get_copies == False):
+                self.images[index] = image
+
+        return resized_images
+    
     #functions for getting images from the collection of images>
 
 

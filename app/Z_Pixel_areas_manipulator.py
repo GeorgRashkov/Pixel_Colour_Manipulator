@@ -11,6 +11,8 @@ from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
 from Z_Mask import Mask
 
+from Images_manipulator import Images_manipulator
+
 from Order_obj import Order_obj
 from Number_operatios import order_numbers
 
@@ -42,13 +44,17 @@ class Pixel_areas_manipulator:
 
         self.get_inner_areas_fast:bool = False #this variable has to be removed from the program eventually !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.use_copy_for_replicas:bool = True
+        self.use_copy_for_images: bool = True
 
         self.use_special_image_version:bool = True
 
         self.animations_manipulator:Pixel_area_animation_manipulator = None
         self.convolutional_kernels_manipulator:Convolutional_kernels_manipulator = None
+        self.images_manipulator:Images_manipulator = None
 
         self.masks:dict[int, Mask] = {}
+
+        self.images:dict[int, np.ndarray[np.uint8]] = {} #the keys are the indexes of the images while the values are the pixel values of the images represented as a numpy array
 
     
     def order_pixel_areas_ids(self, order_obj: Order_obj):
@@ -129,6 +135,10 @@ class Pixel_areas_manipulator:
 
         self.use_special_image_version = use_special_image_version
     
+    def apply_images_manipulator(self, images_manipulator:Images_manipulator):
+        self.images_manipulator = images_manipulator
+
+    
     
     def remove_pixel_areas(self):
         self.pixel_areas_ids = []
@@ -149,6 +159,9 @@ class Pixel_areas_manipulator:
     def remove_image_version_controller(self):
         self.image_versions_controller = None
 
+    def remove_images_manipulator(self):
+        self.images_manipulator = None
+
 
 
     def set__areas_behaviour_when_resizing_main_window(self, areas_behiour_when_resizing_main_window:Areas_behaviour_when_resizing_main_window, aspect_ratio_width:int, aspect_ratio_height:int):
@@ -159,6 +172,9 @@ class Pixel_areas_manipulator:
     
     def set__use_copy_for_replicas(self, use_copy_for_replicas:bool):
         self.use_copy_for_replicas = use_copy_for_replicas
+
+    def set__use_copy_for_images(self, use_copy_for_images:bool):
+        self.use_copy_for_images = use_copy_for_images
     
     def set_pixel_area__size_location(self, id:int, pixel_area_rec:Rectangle, window_h:int, window_w:int):
         
@@ -181,6 +197,22 @@ class Pixel_areas_manipulator:
 
     #< functions for setting the image versions
     #functions for setting the image versions>
+
+    def set_images(self):
+
+        if(self.images_manipulator is None):
+            self.images = {}
+            return
+
+        images_indexes:list[int] = []
+
+        for pixel_area_id in  self.pixel_areas_ids:
+        
+            pixel_area = self.pixel_areas_dict[pixel_area_id] 
+            if(pixel_area.img_index is not None):
+                images_indexes.append(pixel_area.img_index)
+
+        self.images = self.images_manipulator.get_resized_images(indexes=images_indexes, new_width=self.img_width, new_height=self.img_height, get_copies=self.use_copy_for_images)
 
 
 
@@ -207,7 +239,7 @@ class Pixel_areas_manipulator:
             must_create_new_rectangles = True
             self.rectangles_per_area = {}
         
-        
+        self.set_images()
         
 
         for pixel_area_id in  self.pixel_areas_ids:
@@ -222,7 +254,16 @@ class Pixel_areas_manipulator:
             if(rgb_formula_id not in self.rgb_formulas_dict.keys()):#execute this code if the rgb formula id (of the current pixel area) does not exist
                 continue
             
+            image_version_input = None
+            if(pixel_area.img_index is not None):
+                if(pixel_area.img_index in self.images.keys()):
+                    image_version_input = self.images[pixel_area.img_index]
+            if(image_version_input is None):
+                image_version_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
+            """
             image_version_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
+            """
+            
             rgb_formula_dynamic_variables = np.array(np.concatenate([pixel_area.current_f_vars, v]), dtype=np.uint8)
             rgb_formulas_for_masks:list = [self.rgb_formulas_dict[f_id] for f_id in pixel_area.mask_f_ids if f_id in self.rgb_formulas_dict]
             
@@ -346,7 +387,16 @@ class Pixel_areas_manipulator:
         rec_index = 0
 
         for rec in rectangles:
+            """
             area_from_img = self.get_result_after_applying_used_area_on_main_area(main_area = pixel_area_input, main_area_rec=rectangles[0], used_area_rec=rec, img = img, rec_index=rec_index, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
+            """
+            img_for_used_area = img
+            img_index = self.pixel_areas_dict[rec.id].img_index
+            if(img_index is not None):
+                if(img_index in self.images.keys()):
+                    img_for_used_area = self.images[img_index]
+            
+            area_from_img = self.get_result_after_applying_used_area_on_main_area(main_area = pixel_area_input, main_area_rec=rectangles[0], used_area_rec=rec, img = img_for_used_area, rec_index=rec_index, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
 
             rec_index+=1
 
@@ -952,7 +1002,7 @@ class Pixel_areas_manipulator:
 
 
         #<this is the main pixel area
-        rectangle = self.get_proper_rectangle(x = main_area.x, y = main_area.y, width = main_area.w, height = main_area.h)
+        rectangle = self.get_proper_rectangle(x = main_area.x, y = main_area.y, width = main_area.w, height = main_area.h, id=main_area.id)
         if(rectangle is None):
             return None
         
@@ -969,7 +1019,7 @@ class Pixel_areas_manipulator:
             if(pixel_area_id in self.pixel_areas_dict.keys()):
                 pixel_area = self.pixel_areas_dict[pixel_area_id]
 
-                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h)
+                rectangle = self.get_proper_rectangle(x = pixel_area.x, y = pixel_area.y, width = pixel_area.w, height = pixel_area.h, id=pixel_area_id)
                 if(rectangle is not None):
                     rectangles.append(rectangle)
         #those are the used areas defined by `p_ids` of the main pixel area>  
@@ -989,7 +1039,7 @@ class Pixel_areas_manipulator:
             anonymous_area_width = min(main_area.w, self.initial_image_width-anonymous_area_x)
             anonymous_area_height = min(main_area.h, self.initial_image_height-anonymous_area_y)
                 
-            rectangle = self.get_proper_rectangle(x = anonymous_area_x, y = anonymous_area_y, width = anonymous_area_width, height = anonymous_area_height)
+            rectangle = self.get_proper_rectangle(x = anonymous_area_x, y = anonymous_area_y, width = anonymous_area_width, height = anonymous_area_height, id=main_area.id)
             if(rectangle is not None):
                 rectangles.append(rectangle)
         #those image areas are taken from the top left corners obtained from the values of `p_x` and `p_y` of the main pixel area>
@@ -1006,23 +1056,23 @@ class Pixel_areas_manipulator:
 
 
 
-    def get_proper_rectangle(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+    def get_proper_rectangle(self, x:int, y:int, width: int, height: int, id:int = None) -> "Rectangle":
         
         rectangle = None
 
         if(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Resize):
-            rectangle = self.get_rectangle_which_can_resize(x=x, y=y, width=width, height=height)
+            rectangle = self.get_rectangle_which_can_resize(x=x, y=y, width=width, height=height, id=id)
         
         elif(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Move):
-            rectangle = self.get_rectangle_which_can_move(x=x, y=y, width=width, height=height)
+            rectangle = self.get_rectangle_which_can_move(x=x, y=y, width=width, height=height, id=id)
         
         elif(self.areas_behiour_when_resizing_main_window == Areas_behaviour_when_resizing_main_window.Keep_aspect_ratio):
-           rectangle = self.get_rectangle_which_keeps_aspect_ratio(x=x, y=y, width=width, height=height)
+           rectangle = self.get_rectangle_which_keeps_aspect_ratio(x=x, y=y, width=width, height=height, id=id)
         
         return rectangle
         
     
-    def get_rectangle_which_can_resize(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+    def get_rectangle_which_can_resize(self, x:int, y:int, width: int, height: int, id:int = None) -> "Rectangle":
         
         #execute this code if the top left corner is outside the image
         if(self.img_width <= x or self.img_height <= y):
@@ -1032,10 +1082,10 @@ class Pixel_areas_manipulator:
         width = min(width, self.img_width-x)
         height = min(height, self.img_height-y)
 
-        return Rectangle(x=x, y=y, w=width, h=height)
+        return Rectangle(x=x, y=y, w=width, h=height, id=id)
 
     
-    def get_rectangle_which_can_move(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+    def get_rectangle_which_can_move(self, x:int, y:int, width: int, height: int, id:int = None) -> "Rectangle":
         
         #set the values of `x` and `y` before setting the width and height (executed only if the rectangles are able to move)
         right_corner_x = x + width
@@ -1050,10 +1100,10 @@ class Pixel_areas_manipulator:
         width = min(width, self.img_width-x)
         height = min(height, self.img_height-y)
 
-        return Rectangle(x=x, y=y, w=width, h=height)
+        return Rectangle(x=x, y=y, w=width, h=height, id=id)
 
     
-    def get_rectangle_which_keeps_aspect_ratio(self, x:int, y:int, width: int, height: int) -> "Rectangle":
+    def get_rectangle_which_keeps_aspect_ratio(self, x:int, y:int, width: int, height: int, id:int = None) -> "Rectangle":
         
         x_ratio = self.img_width/self.initial_image_width
         y_ratio = self.img_height/self.initial_image_height
@@ -1064,7 +1114,7 @@ class Pixel_areas_manipulator:
         y = round(y*y_ratio)
         height = round(height*y_ratio)
 
-        return Rectangle(x=x, y=y, w=width, h=height)
+        return Rectangle(x=x, y=y, w=width, h=height, id=id)
 
     #functions for creating rectangles used by pixel area>
 
