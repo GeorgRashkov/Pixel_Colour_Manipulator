@@ -1,10 +1,10 @@
-#this file should be deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 import cv2
 import numpy as np
 
-from Colour import Colour, Colour_range
 from Z_RGB_formula import RGB_formula
 
+from Z_Pixel_area import Rectangle
+from Colour_range_region import Colour_range_region
 
 class RGB_formulas_mask:
 
@@ -17,13 +17,13 @@ class RGB_formulas_mask:
         self.mask_resized:np.ndarray[np.uint8] = None
 
 
-    def update_original_mask(self, img_mask:np.ndarray[np.uint8], remove_previous_mask:bool):
+    
+    def update_original_mask(self, new_height:int, new_width:int, remove_previous_mask:bool):
         
         if(remove_previous_mask == True or self.mask_original is None):
-            self.mask_original = np.zeros(img_mask.shape[:-1],np.uint8)#the mask will contain the ids of the regions
-
-        elif(img_mask.shape[0] != self.mask_original.shape[0] or img_mask.shape[1]!= self.mask_original.shape[1]):
-                self.resize_original_mask(img_mask.shape[1],img_mask.shape[0])
+            self.mask_original = np.zeros([new_height, new_width],np.uint8)#the mask will contain the ids of the regions
+        else:
+            self.resize_original_mask(new_height=new_height, new_width=new_width)
 
     #<those functions must be called from outside (all parameters must be correct and match exactly the specified type)
     def get_min_not_used_region_id(self) -> int:
@@ -59,52 +59,40 @@ class RGB_formulas_mask:
             return True
         else:
             return False
-    
-    def does_region_exist(self, region_id:np.uint8) -> bool:
-        
-        if(region_id in self.regions_ids):
-            return True
-        else:
-            return False
         
 
     #those functions must be called from outside (all parameters must be correct and match exactly the specified type)>
 
-    
-    #`img_for_creating_a_mask` must be a numpy array with shape (Height, Width, 3[RGB]) 
-    #`colours` must be a dictionary which has for keys the ids of the colours while the values must be objects of type `Colour`
-    def create_colour_regions(self, img_for_creating_a_mask:np.ndarray[np.uint8], colours:dict[np.uint8, Colour], remove_previous_mask:bool = True) -> np:
-                        
-        self.update_original_mask(img_mask=img_for_creating_a_mask, remove_previous_mask=remove_previous_mask)
 
-       
-        for i in range(0, img_for_creating_a_mask.shape[0]):
-            for j in range(0, img_for_creating_a_mask.shape[1]):
+    # `images_for_creating_a_mask` must be a list of images where each emage is a numpy array with shape (Height, Width, 3[RGB])
+    # `colour_ranges` must be a dictionary which has for keys the ids of the colour ranges while the values must be tuples where:
+    # the first value is the index of the image while the second value is the id of the rectangle in the image used by the region;
+    # the third value must be an object of type `Colour_range`
+    def create_colour_range_regions(self, mask_height:int, mask_width:int, images_for_creating_a_mask:list[np.ndarray[np.uint8]], rectangles_with_ids:dict[int, Rectangle], colour_range_regions:dict[np.uint8, Colour_range_region], remove_previous_mask:bool = True) -> np.ndarray[np.uint8]:
 
-                for id in colours.keys():
+        if( mask_height < 1 or mask_width < 1):
+            raise Exception("the height and the width of the maks must be positive integers above 0")
+        
+        self.update_original_mask(new_height=mask_height, new_width=mask_width, remove_previous_mask=remove_previous_mask)
+        
+        for region_id in colour_range_regions.keys():
 
-                    if(img_for_creating_a_mask[i,j,0] == colours[id].r and img_for_creating_a_mask[i,j,1] == colours[id].g and img_for_creating_a_mask[i,j,2] == colours[id].b):
-                        self.mask_original[i,j] = id
+            region = colour_range_regions[region_id]
+            image_for_current_region = region.get_image_used_by_region(images=images_for_creating_a_mask, rectangles_with_ids=rectangles_with_ids)
+            if(image_for_current_region.shape[0] == 0 or image_for_current_region.shape[1] == 0):
+                continue
+
+            for i in range(0, image_for_current_region.shape[0]):
+                if(i >= mask_height):
+                    break
+                for j in range(0, image_for_current_region.shape[1]):
+                    if(j >= mask_width):
                         break
- 
-        self.mask_resized = self.mask_original.copy()
-    
 
-    #`img_for_creating_a_mask` must be a numpy array with shape (Height, Width, 3[RGB])
-    #`colour_ranges` must be a dictionary which has for keys the ids of the colour ranges while the values must be objects of type `Colour_range`
-    def create_colour_range_regions(self, img_for_creating_a_mask:np.ndarray[np.uint8], colour_ranges:dict[np.uint8, Colour_range], remove_previous_mask:bool = True) -> np.ndarray[np.uint8]:
-        
-        self.update_original_mask(img_mask=img_for_creating_a_mask, remove_previous_mask=remove_previous_mask)
-        
-        for i in range(0, img_for_creating_a_mask.shape[0]):
-            for j in range(0, img_for_creating_a_mask.shape[1]):
-
-                for id in colour_ranges.keys():
-
-                    if(img_for_creating_a_mask[i,j,0] >= colour_ranges[id].r_from and img_for_creating_a_mask[i,j,0] <= colour_ranges[id].r_to and
-                       img_for_creating_a_mask[i,j,1] >= colour_ranges[id].g_from and img_for_creating_a_mask[i,j,1] <= colour_ranges[id].g_to and
-                       img_for_creating_a_mask[i,j,2] >= colour_ranges[id].b_from and img_for_creating_a_mask[i,j,2] <= colour_ranges[id].b_to):
-                        self.mask_original[i,j] = id
+                    if(image_for_current_region[i,j,0] >= region.colour_range.r_from and image_for_current_region[i,j,0] <= region.colour_range.r_to and
+                    image_for_current_region[i,j,1] >= region.colour_range.g_from and image_for_current_region[i,j,1] <= region.colour_range.g_to and
+                    image_for_current_region[i,j,2] >= region.colour_range.b_from and image_for_current_region[i,j,2] <= region.colour_range.b_to):
+                        self.mask_original[i,j] = region_id
                         break
             
         self.mask_resized = self.mask_original.copy()
@@ -189,10 +177,7 @@ class RGB_formulas_mask:
            img.shape[2] == 0 or img.shape[1] == 0 or len(region_images) == 0):
             return img
         
-        #if the user changes the shape of the window then the code in the if statement will be executed in order to make the size of the filters match the size of the resized image         
-        if(img.shape[2] !=self.mask_resized.shape[1] or img.shape[1]!=self.mask_resized.shape[0]):
-            self.resize_resizable_mask(new_width=img.shape[2],new_hight=img.shape[1], keep_ratio=keep_ratio)
-
+        self.resize_resizable_mask(new_width=img.shape[2],new_hight=img.shape[1], keep_ratio=keep_ratio)
 
         region_images_index = 0
         region_images_count = len(region_images)
@@ -217,17 +202,20 @@ class RGB_formulas_mask:
 
     
     def resize_resizable_mask(self, new_width:int, new_hight:int, keep_ratio:bool):
+        #if the user changes the shape of the window then the code in the if statement will be executed in order to make the size of the filters match the size of the resized image
+        if(new_width != self.mask_resized.shape[1] or new_hight != self.mask_resized.shape[0]):
+            if(keep_ratio == True):
+                self.mask_resized = cv2.resize(self.mask_original, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
+            else:
+                self.mask_resized = self.mask_original[:new_hight,:new_width].copy()
 
-        if(keep_ratio == True):
-            self.mask_resized = cv2.resize(self.mask_original, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
-        else:
-            self.mask_resized = self.mask_original[:new_hight,:new_width].copy()
+                if(self.mask_resized.shape[0] != new_hight or self.mask_resized.shape[1] != new_width):
+                    self.mask_resized = cv2.resize(self.mask_resized, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
 
-            if(self.mask_resized.shape[0] != new_hight or self.mask_resized.shape[1] != new_width):
-                self.mask_resized = cv2.resize(self.mask_resized, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
     
-    def resize_original_mask(self, new_width:int, new_hight:int):
-        self.mask_original = cv2.resize(self.mask_original, (new_width, new_hight), interpolation=cv2.INTER_NEAREST)
+    def resize_original_mask(self, new_height:int, new_width:int):
+            if(new_height != self.mask_original.shape[0] or new_width != self.mask_original.shape[1]):
+                self.mask_original = cv2.resize(self.mask_original, (new_width, new_height), interpolation=cv2.INTER_NEAREST)
     
     def get_regions_ids(self) -> list[np.uint8]:
         return self.regions_ids
