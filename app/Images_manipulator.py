@@ -1,14 +1,28 @@
 import numpy as np
 import cv2
+from typing import Callable
 
 from Number_operatios import get_proper_positive_index, get_proper_positive_indexes
 
 class Images_manipulator:
 
+    """
     def __init__(self):
+    """
+    def __init__(self, func_get_image_under_capture_window:Callable[[],np.ndarray[np.uint8]], func_get_transformed_image_from_capture_window: Callable[[],np.ndarray[np.uint8]]):
 
         self.images:list[np.ndarray[np.uint8]] = []
 
+        self.func_get_image_under_capture_window = func_get_image_under_capture_window
+        self.func_get_transformed_image_from_capture_window = func_get_transformed_image_from_capture_window
+
+    def get_image_under_capture_window(self) -> np.ndarray[np.uint8]:
+        image = self.func_get_image_under_capture_window()
+        return image
+
+    def get_transformed_image_from_capture_window(self) -> np.ndarray[np.uint8]:
+        image = self.func_get_transformed_image_from_capture_window()
+        return image
 
     #<functions for altering the collection of images
 

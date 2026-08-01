@@ -75,12 +75,20 @@ class RGB_formulas_mask:
         
         self.update_original_mask(new_height=mask_height, new_width=mask_width, remove_previous_mask=remove_previous_mask)
         
+        regions_ids = list(colour_range_regions.keys())
+        regions_ids.sort()
+        """
         for region_id in colour_range_regions.keys():
+        """
+        for region_id in regions_ids:
 
             region = colour_range_regions[region_id]
             image_for_current_region = region.get_image_used_by_region(images=images_for_creating_a_mask, rectangles_with_ids=rectangles_with_ids)
             if(image_for_current_region.shape[0] == 0 or image_for_current_region.shape[1] == 0):
                 continue
+
+            if(region.resize_image_before_creation == True and (image_for_current_region.shape[0] != mask_height or image_for_current_region.shape[1] != mask_width)):
+                image_for_current_region = cv2.resize(image_for_current_region, (mask_width, mask_height), interpolation=cv2.INTER_NEAREST)
 
             for i in range(0, image_for_current_region.shape[0]):
                 if(i >= mask_height):
@@ -93,7 +101,6 @@ class RGB_formulas_mask:
                     image_for_current_region[i,j,1] >= region.colour_range.g_from and image_for_current_region[i,j,1] <= region.colour_range.g_to and
                     image_for_current_region[i,j,2] >= region.colour_range.b_from and image_for_current_region[i,j,2] <= region.colour_range.b_to):
                         self.mask_original[i,j] = region_id
-                        break
             
         self.mask_resized = self.mask_original.copy()
     

@@ -1,6 +1,9 @@
 import numpy as np
 
+"""
 from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, is_number_in_range
+"""
+from Number_format_checker import check_for_int_format, check_for_positive_int_format, check_numbers_from_string, is_number_in_range
 from Colour import Colour_range
 from Colour_range_region import Colour_range_region
 
@@ -61,6 +64,7 @@ class Pixel_areas_masks_controller:
         mask_height_txt = self.form_window_draw_mask.textBox_mask_height.text()
         mask_width_txt = self.form_window_draw_mask.textBox_mask_width.text()
 
+        """
         if(check_for_positive_int_format(txt_value=mask_height_txt, is_zero_allowed=False) == False or mask_height_txt == "" or
            check_for_positive_int_format(txt_value=mask_width_txt, is_zero_allowed=False) == False or mask_width_txt == ""):
             print("error: the height and width of the mask must be positive integers above 0")
@@ -68,6 +72,17 @@ class Pixel_areas_masks_controller:
         
         if(is_number_in_range(num_as_str=mask_height_txt, min=1, max=self.mask_max_size) == False or
            is_number_in_range(num_as_str=mask_width_txt, min=1, max=self.mask_max_size) == False):
+            print(f"error: the height and width of the mask must be equal to or lower than {self.mask_max_size}")
+            return (None, None)
+        """
+
+        if(check_for_positive_int_format(txt_value=mask_height_txt) == False or mask_height_txt == "" or
+            check_for_positive_int_format(txt_value=mask_width_txt) == False or mask_width_txt == ""):
+            print("error: the height and width of the mask must be positive integers")
+            return (None, None)
+                
+        if(is_number_in_range(num_as_str=mask_height_txt, min=0, max=self.mask_max_size) == False or
+           is_number_in_range(num_as_str=mask_width_txt, min=0, max=self.mask_max_size) == False):
             print(f"error: the height and width of the mask must be equal to or lower than {self.mask_max_size}")
             return (None, None)
 
@@ -118,7 +133,10 @@ class Pixel_areas_masks_controller:
     def get_image_index_from_user_input (self) -> int|None:
         image_index_txt = self.form_window_draw_mask.textBox_image_index.text()
 
+        """
         if(check_for_positive_int_format(txt_value=image_index_txt, is_zero_allowed=True) == False or image_index_txt == ""):
+        """
+        if(check_for_int_format(txt_value=image_index_txt) == False or image_index_txt == ""):
             print("error: the image index must be a positive integer")
             return None
         
@@ -141,12 +159,16 @@ class Pixel_areas_masks_controller:
         image_index = self.get_image_index_from_user_input()
         area_id = self.get_area_id_from_user_input()
         colour_range = self.get_colour_range_from_user_input()
+        resize_image_before_region_creation = self.form_window_draw_mask.checkBox_resize_image_before_region_creation.isChecked()
 
         if(region_id is None or image_index is None or area_id is None or colour_range is None):
             print("the region could not be created due to the previous error")
             return None
 
+        """
         colour_range_region = Colour_range_region(id=int(str(region_id)), image_index=image_index, rectangle_id=area_id, colour_range=colour_range)
+        """
+        colour_range_region = Colour_range_region(id=int(str(region_id)), image_index=image_index, rectangle_id=area_id, colour_range=colour_range, resize_image_before_creation=resize_image_before_region_creation)
         return colour_range_region
 
     def get_selected_masks_ids(self, matching_masks_ids:list[int] = None) -> list[int]|None:
@@ -377,7 +399,12 @@ class Pixel_areas_masks_controller:
                 print(f"warning: the mask with id {mask_id} could not be applied because it is already applied")
             else:
                 mask = self.masks[mask_id]
+                """
                 mask.apply_regions(rectangles_with_ids=rectangles_with_ids, images_for_creating_a_mask=images_for_masks)
+                """
+                if(self.form_window_draw_mask.checkBox_update_regions_when_applying_masks.isChecked() == True):
+                    mask.apply_regions(rectangles_with_ids=rectangles_with_ids, images_for_creating_a_mask=images_for_masks)
+                
                 self.applied_masks[mask_id] = mask.copy()
     
         return True

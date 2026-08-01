@@ -1,7 +1,12 @@
 import numpy as np
 from PyQt5.QtCore import Qt
 
+"""
 import Window_canvas, Z_Window_Canvas_swap_pixel_values, Z_Window_Form_swap_pixel_values
+"""
+from Window_canvas import CanvasWindow
+from Z_Window_Canvas_swap_pixel_values import DrawingWidget
+from Z_Window_Form_swap_pixel_values import FormWindow_SwapPixelValues
 
 from Number_format_checker import check_for_positive_int_format, check_for_int_format
 
@@ -15,7 +20,11 @@ from Z_Window_Form_pixel_areas_animations import FormWindow_PixelAreasAnimations
 from Z_Pixel_area_animations_initializer import Pixel_area_animations_initializer
 from Z_Pixel_area_animations_group_initializer import Pixel_area_animation_groups_initializer
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
+"""
 from Z2_Pixel_areas_masks_controller import Pixel_areas_masks_controller
+"""
+from Z_Pixel_areas_masks_controller import Pixel_areas_masks_controller
+
 from Convolutional_kernels_controller import Convolutional_kernels_controller
 
 from Images_manipulator import Images_manipulator
@@ -24,19 +33,35 @@ from RGB_formula_initializer import RGB_formula_initializer
 
 from Order_obj import Order_obj
 
+"""
 from PyQt5_Window_functions import open_or_minimize_window, open_or_minimize_windows
+"""
+from PyQt5_Window_functions import open_or_minimize_window
 
 class Swap_pixel_values_controller: 
     
+    """
     def __init__(self):
+    """
+    def __init__(self, images_manipulator:Images_manipulator):
 
         self.pixel_areas_masks_controller = Pixel_areas_masks_controller()
         self.convolutional_kernels_controller = Convolutional_kernels_controller()
         
+        """
         canvas_swap_pixel_values = Z_Window_Canvas_swap_pixel_values.DrawingWidget()
         self.canvas_window = Window_canvas.CanvasWindow(canvas = canvas_swap_pixel_values)
         self.form_window_pixel_areas = Z_Window_Form_swap_pixel_values.FormWindow_SwapPixelValues()
+        """
+        canvas_swap_pixel_values = DrawingWidget()
+        self.canvas_window = CanvasWindow(canvas = canvas_swap_pixel_values)
+        self.form_window_pixel_areas = FormWindow_SwapPixelValues()
         self.form_window_pixel_areas_animations = FormWindow_PixelAreasAnimations()
+
+        self.pixel_areas_masks_controller.form_window_draw_mask.button_apply_all_masks.clicked.connect(lambda _: self.apply_masks(all_masks=True))
+        self.pixel_areas_masks_controller.form_window_draw_mask.button_apply_selected_masks.clicked.connect(lambda _: self.apply_masks(all_masks=False))
+        self.pixel_areas_masks_controller.form_window_draw_mask.button_remove_all_masks.clicked.connect(self.remove_all_masks)
+        self.pixel_areas_masks_controller.form_window_draw_mask.button_remove_selected_masks.clicked.connect(self.remove_selected_masks)
 
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_apply_cks.clicked.connect(self.apply_convolutions_to__pixel_areas_manipulator)
         self.convolutional_kernels_controller.window_form_convolutional_kernels.button_remove_cks.clicked.connect(self.remove_convolutional_kernels)
@@ -65,6 +90,8 @@ class Swap_pixel_values_controller:
 
         self.dynamic_pixel_area_id:int = -1
 
+        self.images_manipulator = images_manipulator
+
 
 
     #<code for showing windows
@@ -73,8 +100,11 @@ class Swap_pixel_values_controller:
         open_or_minimize_window(self.form_window_pixel_areas_animations)
     
     def show_window_pixel_areas_mask(self):
+        """
         windows = [self.pixel_areas_masks_controller.form_window_draw_mask, self.pixel_areas_masks_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
+        """
+        open_or_minimize_window(self.pixel_areas_masks_controller.form_window_draw_mask)
 
     def show_window_convolutional_kernels(self):
         self.convolutional_kernels_controller.open_window_form_convolutional_kernels()
@@ -346,7 +376,10 @@ class Swap_pixel_values_controller:
     def get_pixel_areas_manipulator(self) -> Pixel_areas_manipulator:
         return self.pixel_areas_manipulator
 
+    """
     def apply_elements_to_pixel_areas_manipulator(self, images_manipulator:Images_manipulator = None):
+    """
+    def apply_elements_to_pixel_areas_manipulator(self):
 
         if(self.form_window_pixel_areas.check_box_pixel_areas.isChecked() == True):
             self.apply_pixel_areas_to__pixel_areas_manipulator()
@@ -358,7 +391,10 @@ class Swap_pixel_values_controller:
             self.apply_animations_to__pixel_areas_manipulator()
         
         if(self.form_window_pixel_areas.check_box_masks.isChecked() == True):
+            """
             self.apply_all_masks()
+            """
+            self.apply_masks(all_masks=True)
         
         if(self.form_window_pixel_areas.check_box_convolutional_kernels.isChecked() == True):
             self.apply_convolutions_to__pixel_areas_manipulator()
@@ -366,8 +402,12 @@ class Swap_pixel_values_controller:
         if(self.form_window_pixel_areas.check_box_image_versions.isChecked() == True):
             self.apply_image_version_controller()
 
+        """
         if(self.form_window_pixel_areas.check_box_images.isChecked() == True and images_manipulator is not None):
             self.apply_images_manipulator(images_manipulator=images_manipulator)
+        """
+        if(self.form_window_pixel_areas.check_box_images.isChecked() == True):
+            self.apply_images_manipulator()
         
 
     def remove_elements_from_pixel_areas_manipulator(self):
@@ -480,6 +520,7 @@ class Swap_pixel_values_controller:
     
 
 
+    """
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_selected_masks(self, img_for_colour_range_masks:np.ndarray[np.uint8] = None):
         
@@ -488,6 +529,8 @@ class Swap_pixel_values_controller:
         masks = self.pixel_areas_masks_controller.apply_selected_masks(rectangles_with_ids=rectangles_with_ids, img_for_colour_range_masks=img_for_colour_range_masks)
         if(masks is not None):
             self.pixel_areas_manipulator.apply_masks(masks=masks)
+    """
+    """
 
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def apply_all_masks(self, img_for_colour_range_masks:np.ndarray[np.uint8] = None):
@@ -497,12 +540,45 @@ class Swap_pixel_values_controller:
         masks = self.pixel_areas_masks_controller.apply_all_masks(rectangles_with_ids=rectangles_with_ids, img_for_colour_range_masks=img_for_colour_range_masks)
         if(masks is not None):
             self.pixel_areas_manipulator.apply_masks(masks=masks)
+    """
+    def apply_masks(self, all_masks:bool):
+
+        rectangles_with_ids:dict[int, Rectangle] = self.pixel_areas_manipulator.get_all_main_areas_as_rectangles()
+        images_for_masks:list[np.ndarray[np.uint8]] = self.images_manipulator.get_images_in_range(index1=0, index2=-1)
+
+        if(self.pixel_areas_masks_controller.form_window_draw_mask.checkBox_update_last_image_when_applying_masks.isChecked() == True):
+            additional_image = None
+            if(self.pixel_areas_masks_controller.form_window_draw_mask.radioButton_take_image_under_capture_window.isChecked() == True):
+                additional_image = self.images_manipulator.get_image_under_capture_window() 
+            else:
+                additional_image = self.images_manipulator.get_transformed_image_from_capture_window()
+            images_for_masks.append(additional_image)
+            """
+            print(additional_image.shape)#this line is used just to find out what causes the image to have less then 3 dimentions; it can be deleted after the bug is fixed; the bug appears to happen when the mask checkbox is checked and when the apply elements button is pressed many times in a row
+            """
+            
+        masks = None
+        if(all_masks == True):
+            masks = self.pixel_areas_masks_controller.apply_all_masks(rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks)
+        else:
+            masks = self.pixel_areas_masks_controller.apply_selected_masks(rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks)
+
+        if(masks is not None):
+            self.pixel_areas_manipulator.apply_masks(masks=masks)
+    """
 
     def remove_selected_masks(self):
         
         masks = self.pixel_areas_masks_controller.remove_selected_applied_masks()
         if(masks is not None):
             self.pixel_areas_manipulator.apply_masks(masks=masks)
+    
+    """
+    def remove_selected_masks(self):
+        
+        remaining_masks = self.pixel_areas_masks_controller.remove_selected_applied_masks()
+        if(remaining_masks is not None):
+            self.pixel_areas_manipulator.apply_masks(masks=remaining_masks)
 
 
     
@@ -524,8 +600,12 @@ class Swap_pixel_values_controller:
 
             self.pixel_areas_manipulator.apply_image_version_controller(image_version_start_index =image_version_start_index, image_version_end_index=image_version_end_index, image_version_increment = image_version_increment, image_version_swap_frequency = image_version_swap_frequency, image_versions_count=image_versions_count,  use_special_image_version=use_special_image_version)
 
+    """
     def apply_images_manipulator(self, images_manipulator:Images_manipulator):
         self.pixel_areas_manipulator.apply_images_manipulator(images_manipulator=images_manipulator)
+    """
+    def apply_images_manipulator(self):
+        self.pixel_areas_manipulator.apply_images_manipulator(images_manipulator=self.images_manipulator)
 
 #functions for applying elements to the pixel area manipulator>
 

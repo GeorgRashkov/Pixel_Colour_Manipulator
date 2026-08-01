@@ -293,6 +293,8 @@ class CaptureWindow(QtWidgets.QWidget):
             img = self.transformed_image.copy()
         return img
         
+    """
+    #this function is causing issues !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def get_original_img(self) -> np.ndarray[np.uint8]:
 
         img = np.zeros(shape=[1,1,3], dtype=np.uint8)
@@ -301,6 +303,30 @@ class CaptureWindow(QtWidgets.QWidget):
             # Use dxcam to capture pixel values under the window
             img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
             img = np.ascontiguousarray(img) # copy DXCamera view into a contiguous NumPy array
+        return img
+    """
+
+    def get_original_img(self) -> np.ndarray[np.uint8]:
+
+        img = np.zeros(shape=[1,1,3], dtype=np.uint8)
+        x, y, w, h = self.get_window_coordinates()
+        if(w > 0 and h > 0):
+
+            should_enable_auto_capture = False
+            if(self.checkBox_auto_capture.isChecked() == True): 
+                should_enable_auto_capture = True
+                self.checkBox_auto_capture.setChecked(False)
+            
+            img = np.array([1])
+            while(img is None or len(img.shape)!=3):
+
+                # Use dxcam to capture pixel values under the window
+                img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB]); warning: the result might sometimes be a "numpy.ndarray" with shape (1,) containing one `None` object (if the dxcam version get's updated the result might be `None`)
+                img = np.ascontiguousarray(img) # copy DXCamera view into a contiguous NumPy array
+                    
+            if(should_enable_auto_capture == True):
+                self.checkBox_auto_capture.setChecked(True)
+
         return img
    
 
