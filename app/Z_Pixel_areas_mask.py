@@ -22,18 +22,13 @@ class Mask():
         self.remove_previous_mask_when_applying_mask = True
         self.keep_ratio = True
 
+    def alter_id(self, new_id:int):
+        self.id = new_id
+
     def alter_height(self, new_height:int):
-        """
-        if(new_height>0):
-            self.height = new_height
-        """
         self.height = new_height
 
     def alter_width(self, new_width:int):
-        """
-        if(new_width>0):
-            self.width = new_width
-        """
         self.width = new_width
     
     def add_colour_range_region(self, colour_range_region:Colour_range_region) -> bool:
@@ -65,9 +60,6 @@ class Mask():
 
     def apply_regions(self, rectangles_with_ids:dict[int, Rectangle], images_for_creating_a_mask:list[np.ndarray[np.uint8]]):
 
-        """
-        self.rgb_formulas_mask.create_colour_range_regions(mask_height=self.height, mask_width=self.width, images_for_creating_a_mask=images_for_creating_a_mask, rectangles_with_ids=rectangles_with_ids, colour_range_regions=self.colour_range_regions, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
-        """
         if(len(images_for_creating_a_mask) > 0):
             mask_height = self.height if self.height>0 else images_for_creating_a_mask[-1].shape[0]
             mask_width = self.width if self.width>0 else images_for_creating_a_mask[-1].shape[1]
@@ -110,9 +102,6 @@ class Mask():
 
     def to_string(self):
         
-        """
-        txt = f"mask id: {self.id}; keep ratio: {self.keep_ratio}; remove previous mask when applying new mask: {self.remove_previous_mask_when_applying_mask};;"
-        """
         txt = f"mask -> id: {self.id}; height: {self.height};  width: {self.width}; keep ratio: {self.keep_ratio}; remove previous mask when applying new mask: {self.remove_previous_mask_when_applying_mask};;"
         regions_ids = self.rgb_formulas_mask.get_regions_ids()
 
@@ -125,9 +114,7 @@ class Mask():
                 r_range = f"{region.colour_range.r_from}-{region.colour_range.r_to}" if region.colour_range.r_from != region.colour_range.r_to else f"{region.colour_range.r_from}"
                 g_range = f"{region.colour_range.g_from}-{region.colour_range.g_to}" if region.colour_range.g_from != region.colour_range.g_to else f"{region.colour_range.g_from}"
                 b_range = f"{region.colour_range.b_from}-{region.colour_range.b_to}" if region.colour_range.b_from != region.colour_range.b_to else f"{region.colour_range.b_from}"
-                """
-                txt += f"{helper_str} -> colour range: [r:{r_range}, g:{g_range}, b:{b_range}]; image index:{region.image_index}; area id:{region.rectangle_id}"
-                """
+                
                 txt += f"{helper_str} -> colour range: [r:{r_range}, g:{g_range}, b:{b_range}]; image index:{region.image_index}; area id:{region.rectangle_id}; resize before creation:{region.resize_image_before_creation}"
             else:
                 txt+= helper_str

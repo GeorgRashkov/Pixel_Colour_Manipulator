@@ -557,11 +557,14 @@ class Swap_pixel_values_controller:
             print(additional_image.shape)#this line is used just to find out what causes the image to have less then 3 dimentions; it can be deleted after the bug is fixed; the bug appears to happen when the mask checkbox is checked and when the apply elements button is pressed many times in a row
             """
             
+        """
         masks = None
         if(all_masks == True):
             masks = self.pixel_areas_masks_controller.apply_all_masks(rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks)
         else:
             masks = self.pixel_areas_masks_controller.apply_selected_masks(rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks)
+        """
+        masks = self.pixel_areas_masks_controller.apply_masks(rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks, all_masks=all_masks)
 
         if(masks is not None):
             self.pixel_areas_manipulator.apply_masks(masks=masks)
@@ -576,7 +579,10 @@ class Swap_pixel_values_controller:
     """
     def remove_selected_masks(self):
         
+        """
         remaining_masks = self.pixel_areas_masks_controller.remove_selected_applied_masks()
+        """
+        remaining_masks = self.pixel_areas_masks_controller.remove_applied_masks(all_masks=False)
         if(remaining_masks is not None):
             self.pixel_areas_manipulator.apply_masks(masks=remaining_masks)
 
@@ -623,7 +629,10 @@ class Swap_pixel_values_controller:
         self.pixel_areas_manipulator.remove_animations()
     
     def remove_all_masks(self):
+        """
         self.pixel_areas_masks_controller.remove_all_applied_masks()
+        """
+        empty_dict = self.pixel_areas_masks_controller.remove_applied_masks(all_masks=True)
         self.pixel_areas_manipulator.remove_masks()
     
     def remove_convolutional_kernels(self):

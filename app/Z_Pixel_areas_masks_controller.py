@@ -1,12 +1,10 @@
 import numpy as np
 
-"""
-from Number_format_checker import check_for_positive_int_format, check_numbers_from_string, is_number_in_range
-"""
 from Number_format_checker import check_for_int_format, check_for_positive_int_format, check_numbers_from_string, is_number_in_range
 from Colour import Colour_range
 from Colour_range_region import Colour_range_region
 
+from Z_Pixel_areas_masks_manipulator import Pixel_areas_masks_manipulator
 from Z_Window_Form_pixel_areas_masks import Window_Form_pixel_areas_masks
 from Z_Pixel_areas_mask import Mask
 
@@ -28,8 +26,11 @@ class Pixel_areas_masks_controller:
         self.form_window_draw_mask.button_create_colour_range_region.clicked.connect(self.create_colour_range_region)
         self.form_window_draw_mask.button_delete_colour_range_region.clicked.connect(self.delete_colour_range_region)
 
+        """
         self.masks:dict[int,Mask] = {}
         self.applied_masks:dict[int,Mask] = {}
+        """
+        self.masks_manipulator = Pixel_areas_masks_manipulator()
 
 
 #<functions for getting user input
@@ -63,18 +64,6 @@ class Pixel_areas_masks_controller:
 
         mask_height_txt = self.form_window_draw_mask.textBox_mask_height.text()
         mask_width_txt = self.form_window_draw_mask.textBox_mask_width.text()
-
-        """
-        if(check_for_positive_int_format(txt_value=mask_height_txt, is_zero_allowed=False) == False or mask_height_txt == "" or
-           check_for_positive_int_format(txt_value=mask_width_txt, is_zero_allowed=False) == False or mask_width_txt == ""):
-            print("error: the height and width of the mask must be positive integers above 0")
-            return (None, None)
-        
-        if(is_number_in_range(num_as_str=mask_height_txt, min=1, max=self.mask_max_size) == False or
-           is_number_in_range(num_as_str=mask_width_txt, min=1, max=self.mask_max_size) == False):
-            print(f"error: the height and width of the mask must be equal to or lower than {self.mask_max_size}")
-            return (None, None)
-        """
 
         if(check_for_positive_int_format(txt_value=mask_height_txt) == False or mask_height_txt == "" or
             check_for_positive_int_format(txt_value=mask_width_txt) == False or mask_width_txt == ""):
@@ -133,9 +122,6 @@ class Pixel_areas_masks_controller:
     def get_image_index_from_user_input (self) -> int|None:
         image_index_txt = self.form_window_draw_mask.textBox_image_index.text()
 
-        """
-        if(check_for_positive_int_format(txt_value=image_index_txt, is_zero_allowed=True) == False or image_index_txt == ""):
-        """
         if(check_for_int_format(txt_value=image_index_txt) == False or image_index_txt == ""):
             print("error: the image index must be a positive integer")
             return None
@@ -165,12 +151,10 @@ class Pixel_areas_masks_controller:
             print("the region could not be created due to the previous error")
             return None
 
-        """
-        colour_range_region = Colour_range_region(id=int(str(region_id)), image_index=image_index, rectangle_id=area_id, colour_range=colour_range)
-        """
         colour_range_region = Colour_range_region(id=int(str(region_id)), image_index=image_index, rectangle_id=area_id, colour_range=colour_range, resize_image_before_creation=resize_image_before_region_creation)
         return colour_range_region
 
+    """
     def get_selected_masks_ids(self, matching_masks_ids:list[int] = None) -> list[int]|None:
     
         masks_ids_str = self.form_window_draw_mask.textBox_apply_masks.text().replace(" ", "").replace("\n", "")
@@ -190,6 +174,18 @@ class Pixel_areas_masks_controller:
                 found_masks_ids.append(mask_id)
     
         return found_masks_ids
+    """
+
+    def get_selected_masks_ids(self) -> list[int]|None:
+    
+        masks_ids_str = self.form_window_draw_mask.textBox_apply_masks.text().replace(" ", "").replace("\n", "")
+        is_masks_ids_str_valid = check_numbers_from_string(txt_value=masks_ids_str, separator=",", search_for_floats=False, search_for_positives_only=True)
+        if(is_masks_ids_str_valid == False):
+            print("error: the selected mask ids were in wrong format - make sure you use only positive integers separated by comma")
+            return None
+    
+        masks_ids:list[int] = list(map(int, masks_ids_str.split(",")))
+        return masks_ids
 
     
 #functions for getting user input>
@@ -205,8 +201,15 @@ class Pixel_areas_masks_controller:
 
         mask_id = self.get_mask_id_from_user_input()
         mask_height, mask_width = self.get_mask_height_and_width()
+        mask_keep_ratio = self.form_window_draw_mask.checkBox_keep_ratio.isChecked()
+        mask_remove_previous_mask_when_applying_mask = self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked()
+
         if(mask_id is None or mask_height is None or mask_width is None):
             return  
+
+        error_message = self.masks_manipulator.create_mask(id=mask_id, height=mask_height, width=mask_width, keep_ratio=mask_keep_ratio, remove_previous_mask_when_applying_mask=mask_remove_previous_mask_when_applying_mask)
+        self.print_error_message_or_display_masks(error_message=error_message)
+        """
 
         if(mask_id in self.masks.keys()):
             print("Warning: the mask was not created because the mask id is used by another mask")
@@ -216,6 +219,7 @@ class Pixel_areas_masks_controller:
             mask.set_value_for__auto_remove_previous_masks_when_applying_new_masks(self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked())
             self.masks[mask_id] = mask
             self.display_masks_as_text()
+        """
     
 
     def delete_mask(self):
@@ -225,21 +229,30 @@ class Pixel_areas_masks_controller:
         if(mask_id is None):
             return
 
+        error_message = self.masks_manipulator.delete_mask(id=mask_id)
+        self.print_error_message_or_display_masks(error_message=error_message)
+        """
         if(mask_id not in self.masks.keys()):
             print("Error: the mask could not be deleted because the id was not found")
         else:
             self.masks.pop(mask_id)
             self.display_masks_as_text()
+        """
 
 
     def alter_mask(self):
 
         mask_id = self.get_mask_id_from_user_input()
         mask_height, mask_width = self.get_mask_height_and_width()
+        mask_keep_ratio = self.form_window_draw_mask.checkBox_keep_ratio.isChecked()
+        mask_remove_previous_mask_when_applying_mask = self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked()
 
         if(mask_id is None or mask_height is None or mask_width is None):
             return
 
+        error_message = self.masks_manipulator.alter_mask(id=mask_id, height=mask_height, width=mask_width, keep_ratio=mask_keep_ratio, remove_previous_mask_when_applying_mask=mask_remove_previous_mask_when_applying_mask)
+        self.print_error_message_or_display_masks(error_message=error_message)
+        """
         if(mask_id not in self.masks.keys()):
             print("Error: the mask could not be altered because the id was not found")
         else:
@@ -249,6 +262,10 @@ class Pixel_areas_masks_controller:
             mask.set_value_for__keep_ratio(self.form_window_draw_mask.checkBox_keep_ratio.isChecked())
             mask.set_value_for__auto_remove_previous_masks_when_applying_new_masks(self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked())
             self.display_masks_as_text()
+        """
+
+    def order_masks(self):
+        pass
 
     #mask functions>
 
@@ -261,14 +278,19 @@ class Pixel_areas_masks_controller:
 
         if(mask_id is None):
             return
+        """
         elif(mask_id not in self.masks.keys()):
             print("Warning: the region cannot be created because the mask id was not found")
             return
+        """
 
         colour_range_region = self.get_colour_range_region_from_user_input()
         if(colour_range_region is None):
             return
         
+        error_message = self.masks_manipulator.create_colour_range_region(mask_id=mask_id, colour_range_region=colour_range_region)
+        self.print_error_message_or_display_masks(error_message=error_message)
+        """
         mask = self.masks[mask_id]
         was_region_added =  mask.add_colour_range_region(colour_range_region=colour_range_region)
 
@@ -276,6 +298,7 @@ class Pixel_areas_masks_controller:
             print(f"Warning: the region was not created because the mask with id {mask_id} already had an existing region with id {colour_range_region.id}")
         else:
             self.display_masks_as_text()
+        """
 
     
 
@@ -285,15 +308,20 @@ class Pixel_areas_masks_controller:
 
         if(mask_id is None):
             return
+        """
         if(mask_id not in self.masks.keys()):
             print("Warning: the region cannot be deleted because the mask id was not found")
             return
+        """
 
         region_id = self.get_region_id_from_user_input()
 
         if(region_id is None):
             return
 
+        error_message = self.masks_manipulator.delete_colour_range_region(mask_id=mask_id, region_id=region_id)
+        self.print_error_message_or_display_masks(error_message=error_message)
+        """
         mask = self.masks[mask_id]
         was_region_removed = mask.remove_colour_range_region(region_id=region_id)
 
@@ -301,8 +329,52 @@ class Pixel_areas_masks_controller:
             print(f"Warning: the region was not deleted because the mask with id {mask_id} does not have a region with id {region_id}")
         else:
             self.display_masks_as_text()
+        """
+
+    def order_regions(self):
+        pass
 
     #region functions>
+
+
+    #<applied masks functions
+
+    #the function: updates the masks; adds the masks to the applied masks; returns the applied masks
+    def apply_masks(self, rectangles_with_ids:dict[int, Rectangle], images_for_masks:list[np.ndarray[np.uint8]], all_masks:bool) -> dict[int,Mask]|None:
+
+        masks_ids = None 
+        if(all_masks == False):
+            masks_ids = self.get_selected_masks_ids()
+            if(masks_ids is None):
+                return None
+
+        apply_already_applied_masks = self.form_window_draw_mask.checkBox_apply_already_applied_masks.isChecked()
+        update_regions_when_applying_masks = self.form_window_draw_mask.checkBox_update_regions_when_applying_masks.isChecked()
+
+        error_message = self.masks_manipulator.update_applied_masks(masks_ids=masks_ids, rectangles_with_ids=rectangles_with_ids, images_for_masks=images_for_masks, apply_already_applied_masks=apply_already_applied_masks, update_regions_when_applying_masks=update_regions_when_applying_masks)
+        self.print_error_message_or_display_masks(error_message=error_message, always_display_masks=True)
+
+        applied_masks = self.masks_manipulator.get_applied_masks()
+        return applied_masks
+
+    #the function: removes the selected masks from the applied masks; returns the remaining elements from the applied masks
+    def remove_applied_masks(self, all_masks:bool) -> dict[int,Mask]|None:
+
+        masks_ids = None 
+        if(all_masks == False):
+            masks_ids = self.get_selected_masks_ids()
+            if(masks_ids is None):
+                return None
+
+        error_message = self.masks_manipulator.remove_applied_masks(masks_ids=masks_ids)
+        self.print_error_message_or_display_masks(error_message=error_message, always_display_masks=True)
+
+        remaining_applied_masks = self.masks_manipulator.get_applied_masks()
+        return remaining_applied_masks
+
+    #applied masks functions>
+
+    """
 
 
     #<functions for applying masks
@@ -360,6 +432,7 @@ class Pixel_areas_masks_controller:
         
     
     #functions for removing applied masks>
+    """
 
 #functions which are called when the user presses a button>
 
@@ -367,22 +440,37 @@ class Pixel_areas_masks_controller:
 
 #<functions for showing info about the masks
 
+    def print_error_message_or_display_masks(self, error_message:str, always_display_masks:bool=False):
+
+        if(error_message != ""):
+            print(error_message)
+
+        if(error_message == "" or always_display_masks == True):
+            self.display_masks_as_text()
+
+
     def display_masks_as_text(self):
 
         self.form_window_draw_mask.text_area.clear()
+        """
         txt = self.to_string()
+        """
+        txt = self.masks_manipulator.to_string()
         self.form_window_draw_mask.text_area.setPlainText(txt)
 
 
+    """
     def to_string(self):
 
         txt = "applied masks ids: {" + str.join(", ", list(map(str, self.applied_masks.keys()))) + "}\n\n"
         for mask_id in self.masks.keys():
             txt += "{ " + f"{self.masks[mask_id].to_string()}" + "\n}\n"
         return txt
+    """
 
 #functions for showing info about the masks>
 
+    """
 
 #<functions for updating applied masks
 
@@ -399,9 +487,6 @@ class Pixel_areas_masks_controller:
                 print(f"warning: the mask with id {mask_id} could not be applied because it is already applied")
             else:
                 mask = self.masks[mask_id]
-                """
-                mask.apply_regions(rectangles_with_ids=rectangles_with_ids, images_for_creating_a_mask=images_for_masks)
-                """
                 if(self.form_window_draw_mask.checkBox_update_regions_when_applying_masks.isChecked() == True):
                     mask.apply_regions(rectangles_with_ids=rectangles_with_ids, images_for_creating_a_mask=images_for_masks)
                 
@@ -410,3 +495,4 @@ class Pixel_areas_masks_controller:
         return True
 #functions for updating applied masks>
 
+    """
