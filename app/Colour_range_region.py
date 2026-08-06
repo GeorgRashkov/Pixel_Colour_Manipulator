@@ -29,6 +29,9 @@ class Colour_range_region:
 
         return image_for_current_region
 
+    def alter_id(self, new_id:int):
+        self.id = new_id
+
     def copy(self):
         """
         self_copy = Colour_range_region(id=self.id, image_index=self.image_index, rectangle_id=self.rectangle_id, colour_range=self.colour_range)

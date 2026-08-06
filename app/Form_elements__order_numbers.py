@@ -7,12 +7,12 @@ from Order_obj import Order_obj
 
 
 class Form_elements__order_numbers(QWidget):
-    def __init__(self, text_boxes_max_lenght: int = 3, text_boxes_max_width: int = 30):
+    def __init__(self, text_for_button_order:str = "order ids: ", text_boxes_max_lenght: int = 3, text_boxes_max_width: int = 30):
         super().__init__()
 
         int_validator = QIntValidator()
         
-        self.button_order_nums = QPushButton("order ids: ")
+        self.button_order_nums = QPushButton(text_for_button_order)
 
         self.label_order_nums__start = QLabel("start| ")
         self.textBox_order_nums__start = QLineEdit()

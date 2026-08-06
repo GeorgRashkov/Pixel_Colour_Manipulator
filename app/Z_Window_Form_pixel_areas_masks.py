@@ -7,12 +7,25 @@ from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QL
 from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QRadioButton, QPushButton, QButtonGroup, QLineEdit, QPlainTextEdit, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt
 
+from Form_elements__order_numbers import Form_elements__order_numbers
+
 class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
 
     def __init__(self):
         super().__init__()
 
         int_validator = QIntValidator(0, 999, self)
+
+    #<elements to order masks and regions
+        self.radioButton_order_masks = QRadioButton("masks")
+        self.radioButton_order_regions = QRadioButton("regions")
+        self.radioButton_order_regions.setChecked(True)
+        self.form_elements__order_masks_and_regions = Form_elements__order_numbers(text_for_button_order="order")
+
+        self.radioButtonsGroup_order_masks_or_regions = QButtonGroup()
+        self.radioButtonsGroup_order_masks_or_regions.addButton(self.radioButton_order_masks)
+        self.radioButtonsGroup_order_masks_or_regions.addButton(self.radioButton_order_regions)
+    #elements to order masks and regions>
 
     #<elements to create or delete a mask
         self.button_create_mask = QPushButton("create mask")
@@ -104,7 +117,7 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         #colour range elements>
 
         self.label_image_index = QLabel("image index")
-        self.textBox_image_index = QLineEdit("0")
+        self.textBox_image_index = QLineEdit("-1")
 
         self.label_pixel_area_id = QLabel("area id")
         self.textBox_pixel_area_id = QLineEdit("0")
@@ -156,7 +169,15 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
 
 
 
+        v_main_layout = QVBoxLayout()
+        h_heather_layout = QHBoxLayout()
         h_main_layout = QHBoxLayout()
+
+        container = QWidget()
+        container.setMaximumWidth(400)
+        h_heather_layout.addWidget(self.radioButton_order_masks)
+        h_heather_layout.addWidget(self.radioButton_order_regions)
+        h_heather_layout.addWidget(self.form_elements__order_masks_and_regions, alignment=Qt.AlignLeft)
 
         container = QWidget()
         container.setMaximumWidth(400)
@@ -246,6 +267,11 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         h_main_layout.addWidget(container)
         h_main_layout.addWidget(self.text_area)
 
+        v_main_layout.addLayout(h_heather_layout)
+        v_main_layout.addLayout(h_main_layout)
 
+        """
         self.setLayout(h_main_layout)
+        """
+        self.setLayout(v_main_layout)
    

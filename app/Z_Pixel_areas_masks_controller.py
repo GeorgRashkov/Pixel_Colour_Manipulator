@@ -19,6 +19,8 @@ class Pixel_areas_masks_controller:
 
         self.form_window_draw_mask = Window_Form_pixel_areas_masks()
 
+        self.form_window_draw_mask.form_elements__order_masks_and_regions.button_order_nums.clicked.connect(self.order_masks_or_regions)
+
         self.form_window_draw_mask.button_create_mask.clicked.connect(self.create_mask)
         self.form_window_draw_mask.button_delete_mask.clicked.connect(self.delete_mask)
         self.form_window_draw_mask.button_alter_mask.clicked.connect(self.alter_mask)
@@ -264,8 +266,6 @@ class Pixel_areas_masks_controller:
             self.display_masks_as_text()
         """
 
-    def order_masks(self):
-        pass
 
     #mask functions>
 
@@ -331,10 +331,27 @@ class Pixel_areas_masks_controller:
             self.display_masks_as_text()
         """
 
-    def order_regions(self):
-        pass
 
     #region functions>
+
+
+    def order_masks_or_regions(self):
+
+        order_obj = self.form_window_draw_mask.form_elements__order_masks_and_regions.get__order_obj()
+
+        if(order_obj is not None):
+
+            error_message = ""
+
+            if(self.form_window_draw_mask.radioButton_order_masks.isChecked() == True):
+                self.masks_manipulator.order_masks(order_obj=order_obj)
+
+            elif(self.form_window_draw_mask.radioButton_order_regions.isChecked() == True):
+                mask_id = self.get_mask_id_from_user_input()
+                if(mask_id is not None):
+                    error_message = self.masks_manipulator.order_regions(mask_id=mask_id, order_obj=order_obj)
+
+            self.print_error_message_or_display_masks(error_message=error_message)
 
 
     #<applied masks functions

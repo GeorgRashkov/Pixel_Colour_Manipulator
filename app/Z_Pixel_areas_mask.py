@@ -6,6 +6,9 @@ from Colour_range_region import Colour_range_region
 
 from Z_Pixel_area import Rectangle
 
+from Order_obj import Order_obj
+from Number_operatios import order_numbers
+
 class Mask():
     
     def __init__(self, id:int, height:int, width:int):
@@ -57,6 +60,23 @@ class Mask():
     def set_value_for__keep_ratio(self, new_value:bool):
         self.keep_ratio = new_value
 
+    def order_regions(self, order_obj: Order_obj):
+
+        colour_range_regions_ids:list[int] = []
+        for colour_range_region_id in self.colour_range_regions.keys():
+            colour_range_regions_ids.append(int(colour_range_region_id))
+        colour_range_regions_ids.sort()
+
+        ordered_colour_range_regions_ids = order_numbers(nums=colour_range_regions_ids.copy(), order_type=order_obj.order_type, start=order_obj.start, end=order_obj.end, step=order_obj.step)
+        ordered_colour_range_regions:dict[np.uint8, Colour_range_region] = {}
+
+        for i in range(0, len(colour_range_regions_ids)):
+
+            colour_range_region = self.colour_range_regions[np.uint8(ordered_colour_range_regions_ids[i])]
+            ordered_colour_range_regions[np.uint8(colour_range_regions_ids[i])] = colour_range_region
+            colour_range_region.alter_id(new_id=colour_range_regions_ids[i])
+
+        self.colour_range_regions = ordered_colour_range_regions
 
     def apply_regions(self, rectangles_with_ids:dict[int, Rectangle], images_for_creating_a_mask:list[np.ndarray[np.uint8]]):
 

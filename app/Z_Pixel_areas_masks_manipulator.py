@@ -68,6 +68,16 @@ class Pixel_areas_masks_manipulator:
 
         self.masks = ordered_masks
 
+    def order_regions(self, mask_id:int, order_obj: Order_obj) -> str:
+
+        if(mask_id not in self.masks.keys()):
+            return "error: the regions could not be ordered because the mask id was not found"
+
+        mask = self.masks[mask_id]
+        mask.order_regions(order_obj=order_obj)
+
+        return ""
+
 #mask functions>
 
 
