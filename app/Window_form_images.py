@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt
 
 from Draw_elements import Draw_elements
 
+from Form_elements__order_numbers import Form_elements__order_numbers
+
 class Window_form_images(QWidget):
     def __init__(self):
         super().__init__()
@@ -14,6 +16,8 @@ class Window_form_images(QWidget):
         int_validator = QIntValidator()
 
         self.label_images_count = QLabel()
+
+        self.form_elements__order_images = Form_elements__order_numbers(text_for_button_order="order images")
 
         #<elements to add new image
         self.button_add_image = QPushButton("add image")
@@ -108,6 +112,11 @@ class Window_form_images(QWidget):
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.label_images_count)
         v_layout.addLayout(h_layout)
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.form_elements__order_images)
+        v_layout.addLayout(h_layout)
+        
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_add_image)

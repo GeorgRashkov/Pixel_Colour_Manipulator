@@ -25,6 +25,8 @@ class Images_controller:
         self.window_show_image = Window_show_image()
         self.window_canvas = Window_Canvas_draw_mask()
 
+        self.window_form_images.form_elements__order_images.button_order_nums.clicked.connect(self.order_images)
+
         self.window_form_images.button_add_image.clicked.connect(self.add_image)
         self.window_form_images.button_remove_images.clicked.connect(self.remove_images)
         self.window_form_images.button_show_image.clicked.connect(self.show_image)
@@ -189,6 +191,12 @@ class Images_controller:
             self.images_manipulator.resize_image(images_new_percentage_height=images_height, images_new_percentage_width=images_width,  index=int(images_index1_txt))
         elif(images_index1_txt == "" and images_index2_txt != ""):
             self.images_manipulator.resize_image(images_new_percentage_height=images_height, images_new_percentage_width=images_width,  index=int(images_index2_txt))        
+
+    def order_images(self):
+
+        order_obj = self.window_form_images.form_elements__order_images.get__order_obj()
+        if(order_obj is not None):
+            self.images_manipulator.order_images(order_obj=order_obj)
 
 #functions for altering the collection of images in the image manipulator>
 

@@ -2,7 +2,9 @@ import numpy as np
 import cv2
 from typing import Callable
 
-from Number_operatios import get_proper_positive_index, get_proper_positive_indexes
+from Number_operatios import get_proper_positive_index, get_proper_positive_indexes, order_numbers
+from Order_obj import Order_obj
+
 
 class Images_manipulator:
 
@@ -29,12 +31,14 @@ class Images_manipulator:
     def add_image(self, img:np.ndarray[np.uint8]):
         self.images.append(img)
 
+    """
     def set_main_image(self, new_image:np.ndarray[np.uint8]):
 
         if(len(self.images) == 0):
             self.images.append(new_image)
         else:
             self.images[0] = new_image
+    """
 
     def remove_images_in_range(self, index1:int, index2:int):
 
@@ -84,6 +88,20 @@ class Images_manipulator:
 
     #functions for altering the collection of images>
 
+
+    def order_images(self, order_obj: Order_obj):
+
+        images_indexes:list[int] = []
+        for i in range(0, len(self.images)):
+            images_indexes.append(i)
+
+        ordered_images_indexes = order_numbers(nums=images_indexes, order_type=order_obj.order_type, start=order_obj.start, end=order_obj.end, step=order_obj.step)
+        ordered_images:list[np.ndarray[np.uint8]] = []
+
+        for i in range(0, len(self.images)):
+            ordered_images.append(self.images[ordered_images_indexes[i]])
+
+        self.images = ordered_images
 
 
     #<functions for getting images from the collection of images
