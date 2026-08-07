@@ -1,9 +1,5 @@
 from PyQt5.QtGui import QIntValidator
 from PyQt5 import QtWidgets
-"""
-from PyQt5.QtWidgets import QPushButton, QWidget
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QLabel, QLineEdit, QPlainTextEdit
-"""
 from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QRadioButton, QPushButton, QButtonGroup, QLineEdit, QPlainTextEdit, QVBoxLayout, QHBoxLayout
 from PyQt5.QtCore import Qt
 
@@ -69,9 +65,6 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.button_create_colour_range_region = QPushButton("create region")
         self.button_delete_colour_range_region = QPushButton("delete region")
 
-        """
-        self.label_region_id = QLabel("id")
-        """
         self.textBox_region_id = QLineEdit("1")
         self.textBox_region_id.setMaxLength(3)
         self.textBox_region_id.setMaximumWidth(30)
@@ -131,15 +124,6 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.textBox_pixel_area_id = QLineEdit("0")
     #elements to create or delete a colour range region>
 
-        """
-    #<check boxes for executing specific actions when appling masks
-
-        self.checkBox_auto_update_last_image_when_applying_masks = QCheckBox("auto update last image when applying masks")
-        self.checkBox_auto_update_last_image_when_applying_masks.setChecked(True)
-        self.checkBox_apply_already_applied_masks = QCheckBox("apply already applied masks")
-        self.checkBox_apply_already_applied_masks.setChecked(True)
-    #check boxes for executing specific actions when appling masks>
-        """
 
     #<check boxes and radio buttons for executing specific actions when appling masks
 
@@ -241,9 +225,6 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
-        """
-        h_layout.addWidget(self.checkBox_auto_update_last_image_when_applying_masks)
-        """
         h_layout.addWidget(self.checkBox_apply_already_applied_masks)
         h_layout.addWidget(self.checkBox_update_regions_when_applying_masks)
         v_layout.addLayout(h_layout)
@@ -254,11 +235,6 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         h_layout.addWidget(self.radioButton_take_transformed_image_from_capture_window)
         v_layout.addLayout(h_layout)
 
-        """
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(self.checkBox_apply_already_applied_masks)
-        v_layout.addLayout(h_layout)
-        """
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_selected_masks)
@@ -278,8 +254,5 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         v_main_layout.addLayout(h_heather_layout)
         v_main_layout.addLayout(h_main_layout)
 
-        """
-        self.setLayout(h_main_layout)
-        """
         self.setLayout(v_main_layout)
    

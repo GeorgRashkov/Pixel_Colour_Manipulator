@@ -26,21 +26,6 @@ class RGB_formulas_mask:
             self.resize_original_mask(new_height=new_height, new_width=new_width)
 
     #<those functions must be called from outside (all parameters must be correct and match exactly the specified type)
-    """
-    def get_min_not_used_region_id(self) -> int:
-        
-        num = 1
-        if(len(self.regions_ids) == 0):            
-            return num
-
-        while(num in self.regions_ids):
-            
-            num+=1
-            if(num > self.region_id_max_value):
-                return None
-
-        return num
-    """
     
 
     def add_region(self, region_id:np.uint8) -> bool:

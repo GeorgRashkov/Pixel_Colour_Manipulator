@@ -8,9 +8,6 @@ from Order_obj import Order_obj
 
 class Images_manipulator:
 
-    """
-    def __init__(self):
-    """
     def __init__(self, func_get_image_under_capture_window:Callable[[],np.ndarray[np.uint8]], func_get_transformed_image_from_capture_window: Callable[[],np.ndarray[np.uint8]]):
 
         self.images:list[np.ndarray[np.uint8]] = []
@@ -31,14 +28,6 @@ class Images_manipulator:
     def add_image(self, img:np.ndarray[np.uint8]):
         self.images.append(img)
 
-    """
-    def set_main_image(self, new_image:np.ndarray[np.uint8]):
-
-        if(len(self.images) == 0):
-            self.images.append(new_image)
-        else:
-            self.images[0] = new_image
-    """
 
     def remove_images_in_range(self, index1:int, index2:int):
 
@@ -167,12 +156,5 @@ class Images_manipulator:
     def get_image_count(self) -> int:
         return len(self.images)
 
-    """
-    def copy(self):
-
-        images_manipulator = Images_manipulator()
-        images_manipulator.images = self.images.copy()
-        return images_manipulator
-    """
         
     

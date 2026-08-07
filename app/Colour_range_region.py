@@ -7,9 +7,6 @@ from Number_operatios import get_proper_positive_index
 
 class Colour_range_region:
 
-    """
-    def __init__(self, id:int, image_index:int, rectangle_id:int, colour_range:Colour_range):
-    """
     def __init__(self, id:int, image_index:int, rectangle_id:int, colour_range:Colour_range, resize_image_before_creation:bool):
 
         self.id = id
@@ -33,8 +30,5 @@ class Colour_range_region:
         self.id = new_id
 
     def copy(self):
-        """
-        self_copy = Colour_range_region(id=self.id, image_index=self.image_index, rectangle_id=self.rectangle_id, colour_range=self.colour_range)
-        """
         self_copy = Colour_range_region(id=self.id, image_index=self.image_index, rectangle_id=self.rectangle_id, colour_range=self.colour_range, resize_image_before_creation=self.resize_image_before_creation)
         return self_copy

@@ -16,9 +16,6 @@ from Window_functions import get_rgb_pixel_values_from_window
 
 class Images_controller:
 
-    """
-    def __init__(self, get_original_img:Callable[[],np.ndarray[np.uint8]], get_transformed_img: Callable[[],np.ndarray[np.uint8]]):
-    """
     def __init__(self, images_manipulator:Images_manipulator):
 
         self.window_form_images = Window_form_images()
@@ -41,12 +38,6 @@ class Images_controller:
         self.window_form_images.draw_elements.button_clear_canvas.clicked.connect(self.window_canvas.clear)
         self.window_form_images.draw_elements.button_apply_brush_size_changes.clicked.connect(self.change_brush_size_parameters)
 
-        """
-        self.get_original_img = get_original_img
-        self.get_transformed_img = get_transformed_img
-
-        self.images_manipulator = Images_manipulator()
-        """
         self.images_manipulator = images_manipulator
 
         self.images_count_front_text = "image count: "
@@ -116,14 +107,8 @@ class Images_controller:
         image = None
 
         if(self.window_form_images.radioButton_add_window_capture_input.isChecked() == True):
-            """
-            image = self.get_original_img()
-            """
             image = self.images_manipulator.get_image_under_capture_window()
         elif(self.window_form_images.radioButton_add_window_capture_output.isChecked() == True):
-            """
-            image = self.get_transformed_img()
-            """
             image = self.images_manipulator.get_transformed_image_from_capture_window()
         elif(self.window_form_images.radioButton_add_draw_window_output.isChecked() == True):
             image = self.get_image_from_canvas()
@@ -206,9 +191,6 @@ class Images_controller:
         img_from_canvas = get_rgb_pixel_values_from_window(window=self.window_canvas)
         return img_from_canvas
 
-    """
-    def get_images_manipulator(self) -> Images_manipulator | None:
-    """
     def get_images_manipulator(self, func_get_image_under_capture_window:Callable[[],np.ndarray[np.uint8]], func_get_transformed_image_from_capture_window: Callable[[],np.ndarray[np.uint8]]) -> Images_manipulator | None:
         
         images_index1_txt = self.window_form_images.textBox_apply_images_index1.text().replace(" ", "").replace("\n", "")
@@ -223,9 +205,6 @@ class Images_controller:
             print("in order to apply images you must fill the two range text boxes")
             return None
 
-        """
-        images_manipulator = Images_manipulator()
-        """
         images_manipulator = Images_manipulator(func_get_image_under_capture_window=func_get_image_under_capture_window, func_get_transformed_image_from_capture_window=func_get_transformed_image_from_capture_window)
         images = self.images_manipulator.get_images_in_range(index1=int(images_index1_txt), index2=int(images_index2_txt))
         for image in images:

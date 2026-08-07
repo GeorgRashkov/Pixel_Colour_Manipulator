@@ -9,7 +9,7 @@ from Z_Areas_behiour_when_resizing_main_window import Areas_behaviour_when_resiz
 
 from Z_Pixel_area_animation_manipulator import Pixel_area_animation_manipulator
 from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
-from Z_Mask import Mask
+from Z_Pixel_areas_mask import Mask
 
 from Images_manipulator import Images_manipulator
 
@@ -260,9 +260,6 @@ class Pixel_areas_manipulator:
                     image_input = self.images[pixel_area.img_index]
             if(image_input is None):
                 image_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
-            """
-            image_version_input = image_versions[pixel_area.img_in_v if pixel_area.img_in_v<len(image_versions) else 0]
-            """
             
             rgb_formula_dynamic_variables = np.array(np.concatenate([pixel_area.current_f_vars, v]), dtype=np.uint8)
             rgb_formulas_for_masks:list = [self.rgb_formulas_dict[f_id] for f_id in pixel_area.mask_f_ids if f_id in self.rgb_formulas_dict]
@@ -387,9 +384,7 @@ class Pixel_areas_manipulator:
         rec_index = 0
 
         for rec in rectangles:
-            """
-            area_from_img = self.get_result_after_applying_used_area_on_main_area(main_area = pixel_area_input, main_area_rec=rectangles[0], used_area_rec=rec, img = img, rec_index=rec_index, rgb_formula_dynamic_variables=rgb_formula_dynamic_variables, rgb_formulas_for_masks=rgb_formulas_for_masks)
-            """
+            
             img_for_used_area = img
             img_index = self.pixel_areas_dict[rec.id].img_index
             if(img_index is not None):
@@ -658,9 +653,6 @@ class Pixel_areas_manipulator:
                         mask_index = rep_index % len(main_area.mask_ids_rep[rec_index])
                         mask_id = main_area.mask_ids_rep[rec_index][mask_index]
                         if(mask_id in self.masks.keys()):
-                            """
-                            rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
-                            """
                             mask = self.masks[mask_id]
                             rep_area = mask.transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
                 #apply mask>
@@ -911,9 +903,6 @@ class Pixel_areas_manipulator:
                         mask_index = rep_index % len(main_area.mask_ids_rep[rec_index])
                         mask_id = main_area.mask_ids_rep[rec_index][mask_index]
                         if(mask_id in self.masks.keys()):
-                            """
-                            rep_area = rep_area.reshape(1, rep_area.shape[0], rep_area.shape[1], rep_area.shape[2])
-                            """
                             mask = self.masks[mask_id]
                             rep_area = mask.transform_image(img=rep_area,rgb_formulas=rgb_formulas_for_masks,rgb_formulas_dynamic_variables=rgb_formula_dynamic_variables)
                 #apply mask>

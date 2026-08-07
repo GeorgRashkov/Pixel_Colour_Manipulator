@@ -281,11 +281,6 @@ class CaptureWindow(QtWidgets.QWidget):
         if(self.checkBox_auto_capture.isChecked() == True):
             self.update_capture()
         
-    """
-    def get_transformed_img(self) -> np:
-        self.update_capture()
-        return self.transformed_image
-    """
     def get_transformed_img(self) -> np.ndarray[np.uint8]:
 
         img = np.zeros(shape=[1,1,3], dtype=np.uint8)
@@ -293,18 +288,6 @@ class CaptureWindow(QtWidgets.QWidget):
             img = self.transformed_image.copy()
         return img
         
-    """
-    #this function is causing issues !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    def get_original_img(self) -> np.ndarray[np.uint8]:
-
-        img = np.zeros(shape=[1,1,3], dtype=np.uint8)
-        x, y, w, h = self.get_window_coordinates()
-        if(w > 0 and h > 0):
-            # Use dxcam to capture pixel values under the window
-            img = self.camera.grab(region=(x, y, x + w, y + h))#The returned frame will be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-            img = np.ascontiguousarray(img) # copy DXCamera view into a contiguous NumPy array
-        return img
-    """
 
     def get_original_img(self) -> np.ndarray[np.uint8]:
 
