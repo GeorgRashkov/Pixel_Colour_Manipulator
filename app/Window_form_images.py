@@ -17,7 +17,11 @@ class Window_form_images(QWidget):
 
         self.label_images_count = QLabel()
 
-        self.form_elements__order_images = Form_elements__order_numbers(text_for_button_order="order images")
+        self.form_elements__order_images = Form_elements__order_numbers()
+        self.form_elements__order_images.set_text_for_button_order(text="order")
+        self.form_elements__order_images.set_max_width_for_button_order(width=40)
+        self.form_elements__order_images.remove_radio_button_ascending()
+        self.form_elements__order_images.set_text_for_radio_button_descending(text="reverse")
 
         #<elements to add new image
         self.button_add_image = QPushButton("add image")

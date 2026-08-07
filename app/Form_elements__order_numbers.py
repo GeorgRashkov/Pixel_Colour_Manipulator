@@ -7,29 +7,30 @@ from Order_obj import Order_obj
 
 
 class Form_elements__order_numbers(QWidget):
-    def __init__(self, text_for_button_order:str = "order ids: ", text_boxes_max_lenght: int = 3, text_boxes_max_width: int = 30):
+    def __init__(self):
         super().__init__()
 
         int_validator = QIntValidator()
         
-        self.button_order_nums = QPushButton(text_for_button_order)
+        self.button_order_nums = QPushButton("order ids: ")
+        self.button_order_nums.setMaximumWidth(70)
 
         self.label_order_nums__start = QLabel("start| ")
         self.textBox_order_nums__start = QLineEdit()
-        self.textBox_order_nums__start.setMaximumWidth(text_boxes_max_width)
-        self.textBox_order_nums__start.setMaxLength(text_boxes_max_lenght)
+        self.textBox_order_nums__start.setMaximumWidth(30)
+        self.textBox_order_nums__start.setMaxLength(3)
         self.textBox_order_nums__start.setValidator(int_validator)
 
         self.label_order_nums__end = QLabel("end| ")
         self.textBox_order_nums__end = QLineEdit()
-        self.textBox_order_nums__end.setMaximumWidth(text_boxes_max_width)
-        self.textBox_order_nums__end.setMaxLength(text_boxes_max_lenght)
+        self.textBox_order_nums__end.setMaximumWidth(30)
+        self.textBox_order_nums__end.setMaxLength(3)
         self.textBox_order_nums__end.setValidator(int_validator)
 
         self.label_order_nums__step = QLabel("step| ")
         self.textBox_order_nums__step = QLineEdit()
-        self.textBox_order_nums__step.setMaximumWidth(text_boxes_max_width)
-        self.textBox_order_nums__step.setMaxLength(text_boxes_max_lenght)
+        self.textBox_order_nums__step.setMaximumWidth(30)
+        self.textBox_order_nums__step.setMaxLength(3)
         self.textBox_order_nums__step.setValidator(int_validator)
 
         self.radioButton_ascending = QRadioButton("ascending")
@@ -60,6 +61,48 @@ class Form_elements__order_numbers(QWidget):
 
         self.setLayout(v_layout)
     
+    
+    #<set text for different elements
+    def set_text_for_button_order(self, text:str):
+        self.button_order_nums.setText(text)
+
+    def set_text_for_radio_button_ascending(self, text:str):
+        self.radioButton_ascending.setText(text)
+
+    def set_text_for_radio_button_descending(self, text:str):
+        self.radioButton_descending.setText(text)
+
+    def set_text_for_radio_button_random(self, text:str):
+        self.radioButton_random.setText(text)
+    #set text for different elements>
+
+
+    #<set max width for different elements
+    def set_max_width_for_button_order(self, width:int):
+        self.button_order_nums.setMaximumWidth(width)
+
+    def set_max_width_for_text_boxes(self, width:int):
+        self.textBox_order_nums__start.setMaximumWidth(width)
+        self.textBox_order_nums__end.setMaximumWidth(width)
+        self.textBox_order_nums__step.setMaximumWidth(width)
+    #set max width for different elements>
+
+
+    #set max number af characters for each text
+    def set_max_length_for_text_boxes(self, width:int):
+        self.textBox_order_nums__start.setMaxLength(width)
+        self.textBox_order_nums__end.setMaxLength(width)
+        self.textBox_order_nums__step.setMaxLength(width)
+
+
+    #remove the radio button which sorts the elements in ascending order
+    def remove_radio_button_ascending(self):
+        self.radioButton_ascending.setChecked(False)
+        self.radioButton_descending.setChecked(True)
+        self.layout().removeWidget(self.radioButton_ascending)
+        self.radioButton_ascending.deleteLater()
+        self.radioButton_ascending = None
+
 
     def get__order_obj(self) -> Order_obj:
 

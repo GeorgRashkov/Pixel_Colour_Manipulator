@@ -17,10 +17,18 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         int_validator = QIntValidator(0, 999, self)
 
     #<elements to order masks and regions
+
         self.radioButton_order_masks = QRadioButton("masks")
+        self.radioButton_order_masks.setMaximumWidth(60)
         self.radioButton_order_regions = QRadioButton("regions")
+        self.radioButton_order_regions.setMaximumWidth(60)
         self.radioButton_order_regions.setChecked(True)
-        self.form_elements__order_masks_and_regions = Form_elements__order_numbers(text_for_button_order="order")
+
+        self.form_elements__order_masks_and_regions = Form_elements__order_numbers()
+        self.form_elements__order_masks_and_regions.set_text_for_button_order(text="order")
+        self.form_elements__order_masks_and_regions.set_max_width_for_button_order(width=40)
+        self.form_elements__order_masks_and_regions.remove_radio_button_ascending()
+        self.form_elements__order_masks_and_regions.set_text_for_radio_button_descending(text="reverse")
 
         self.radioButtonsGroup_order_masks_or_regions = QButtonGroup()
         self.radioButtonsGroup_order_masks_or_regions.addButton(self.radioButton_order_masks)
