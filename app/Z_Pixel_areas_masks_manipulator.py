@@ -15,6 +15,17 @@ class Pixel_areas_masks_manipulator:
 
 #<mask functions
 
+    def get_min_not_used_mask_id(self) -> int:
+        
+        num = 1
+        if(len(self.masks) == 0):            
+            return num
+
+        while(num in self.masks.keys()):
+            num+=1
+
+        return num
+    
     def create_mask(self, id:int, height:int, width:int, keep_ratio:bool, remove_previous_mask_when_applying_mask:bool) -> str:
 
         if(id in self.masks.keys()):
@@ -82,6 +93,17 @@ class Pixel_areas_masks_manipulator:
 
 
 #<region functions
+
+    def get_min_not_used_region_id(self, mask_id:int) -> np.uint8|None:
+
+        if(mask_id not in self.masks.keys()):
+            print("error: the region id cannot be created because the mask id was not found")
+            return None
+
+        mask = self.masks[mask_id]
+        region_id = mask.get_min_not_used_region_id()
+        return region_id
+
 
     def create_colour_range_region(self, mask_id:int, colour_range_region:Colour_range_region) -> str:
 
@@ -171,7 +193,9 @@ class Pixel_areas_masks_manipulator:
 
     def to_string(self):
 
-        txt = "applied masks ids: {" + str.join(", ", list(map(str, self.applied_masks.keys()))) + "}\n\n"
+        applied_masks_sorted_ids = list(self.applied_masks.keys())
+        applied_masks_sorted_ids.sort()
+        txt = "applied masks ids: {" + str.join(", ", list(map(str, applied_masks_sorted_ids))) + "}\n\n"
         for mask_id in self.masks.keys():
             txt += "{ " + f"{self.masks[mask_id].to_string()}" + "\n}\n"
         return txt

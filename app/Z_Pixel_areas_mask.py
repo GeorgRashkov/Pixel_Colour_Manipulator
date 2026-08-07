@@ -25,6 +25,10 @@ class Mask():
         self.remove_previous_mask_when_applying_mask = True
         self.keep_ratio = True
 
+    def get_min_not_used_region_id(self) -> np.uint8|None:
+        region_id = self.rgb_formulas_mask.get_min_not_used_region_id()
+        return region_id
+
     def alter_id(self, new_id:int):
         self.id = new_id
 

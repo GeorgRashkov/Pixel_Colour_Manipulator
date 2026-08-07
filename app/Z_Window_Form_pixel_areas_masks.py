@@ -37,7 +37,7 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.button_delete_mask = QPushButton("delete mask")
         self.button_delete_mask.setMaximumWidth(80)
 
-        self.textBox_mask_id = QLineEdit("1")
+        self.textBox_mask_id = QLineEdit("")
         self.textBox_mask_id.setMaxLength(3)
         self.textBox_mask_id.setMaximumWidth(30)
         self.textBox_mask_id.setValidator(int_validator)
@@ -65,7 +65,7 @@ class Window_Form_pixel_areas_masks(QtWidgets.QWidget):
         self.button_create_colour_range_region = QPushButton("create region")
         self.button_delete_colour_range_region = QPushButton("delete region")
 
-        self.textBox_region_id = QLineEdit("1")
+        self.textBox_region_id = QLineEdit("")
         self.textBox_region_id.setMaxLength(3)
         self.textBox_region_id.setMaximumWidth(30)
         self.textBox_region_id.setValidator(int_validator)

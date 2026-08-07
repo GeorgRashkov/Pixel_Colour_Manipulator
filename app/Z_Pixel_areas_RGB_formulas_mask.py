@@ -10,7 +10,7 @@ class RGB_formulas_mask:
 
     def __init__(self):
         
-        self.region_id_max_value = 255
+        self.region_id_max_value = np.uint8(255)
         self.regions_ids:list[np.uint8] = []
 
         self.mask_original:np.ndarray[np.uint8] = None #the mask is a numpy arrays which contains integers; each integer (except 0) in the array is also an id in `region_ids`
@@ -27,6 +27,19 @@ class RGB_formulas_mask:
 
     #<those functions must be called from outside (all parameters must be correct and match exactly the specified type)
     
+    def get_min_not_used_region_id(self) -> np.uint8|None:
+        
+        num = 1
+        if(len(self.regions_ids) == 0):            
+            return np.uint8(num)
+
+        while(num in self.regions_ids):
+            
+            num+=1
+            if(num > self.region_id_max_value):
+                return None
+
+        return np.uint8(num)
 
     def add_region(self, region_id:np.uint8) -> bool:
 

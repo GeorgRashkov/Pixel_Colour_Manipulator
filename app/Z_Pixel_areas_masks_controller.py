@@ -139,7 +139,15 @@ class Pixel_areas_masks_controller:
 
     def get_colour_range_region_from_user_input(self) -> Colour_range_region|None:
 
-        region_id = self.get_region_id_from_user_input()
+        region_id = None
+        if(self.form_window_draw_mask.textBox_region_id.text() == ""):
+            mask_id = self.get_mask_id_from_user_input()
+            if(mask_id is None):
+                return None
+            region_id = self.masks_manipulator.get_min_not_used_region_id(mask_id=mask_id)
+        else:
+            region_id = self.get_region_id_from_user_input()
+
         image_index = self.get_image_index_from_user_input()
         area_id = self.get_area_id_from_user_input()
         colour_range = self.get_colour_range_from_user_input()
@@ -176,7 +184,7 @@ class Pixel_areas_masks_controller:
 
     def create_mask(self):
 
-        mask_id = self.get_mask_id_from_user_input()
+        mask_id = self.masks_manipulator.get_min_not_used_mask_id() if self.form_window_draw_mask.textBox_mask_id.text() == "" else self.get_mask_id_from_user_input()
         mask_height, mask_width = self.get_mask_height_and_width()
         mask_keep_ratio = self.form_window_draw_mask.checkBox_keep_ratio.isChecked()
         mask_remove_previous_mask_when_applying_mask = self.form_window_draw_mask.checkBox_auto_remove_previous_mask_when_applying_new_mask.isChecked()
