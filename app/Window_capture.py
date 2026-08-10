@@ -1,14 +1,13 @@
 import ctypes
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QPushButton, QSlider
 import win32con, win32gui
-from PyQt5.QtWidgets import QVBoxLayout, QPushButton, QHBoxLayout, QCheckBox, QLabel
 from PyQt5.QtCore import Qt
-import RGB_formula_elements
+from  PyQt5.QtWidgets import QLabel, QSlider, QPushButton, QCheckBox, QVBoxLayout, QHBoxLayout, QApplication
+
+from RGB_formula_elements import RGB_formula_elements
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
 from Z_RGB_formulas_mask import RGB_formulas_mask
-from PyQt5.QtWidgets import QApplication
 from dxcam import DXCamera
 
 from Dynamic_variable import Dynamic_variable
@@ -16,18 +15,6 @@ from Dynamic_variable import Dynamic_variable
 from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
 
 from DXCamera_Singleton import DXCamera_Singleton
-
-class Kernel():
-    def __init__(self, stride: int, holes_count: int, kernel_values: np.ndarray):
-        self.stride = stride
-        self.holes_count = holes_count
-        self.kernel_values = kernel_values
-
-class RGB_Kernels():
-    def __init__(self, r_kernel: Kernel, g_kernel: Kernel, b_kernel: Kernel):
-        self.r_kernel = r_kernel
-        self.g_kernel = g_kernel
-        self.b_kernel = b_kernel
 
 
 
@@ -252,7 +239,7 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.slider_blue)
         self.v_layout.addLayout(h_layout)
         
-        self.rgb_elements = RGB_formula_elements.RGB_formula_elements()
+        self.rgb_elements = RGB_formula_elements()
         h_layout = QHBoxLayout()
         
         h_layout.addWidget(self.button4_showHide_widgets)
@@ -354,11 +341,12 @@ class CaptureWindow(QtWidgets.QWidget):
                     widget.hide()
        
     def set_default_color_function(self):
-        self.rgb_elements.change_RGB_formula()
-        self.default_color_function = self.rgb_elements.rgb_function
-        print(self.rgb_elements.red_func) 
-        print(self.rgb_elements.green_func) 
-        print(self.rgb_elements.blue_func) 
+        is_formula_changed = self.rgb_elements.change_RGB_formula()
+        if(is_formula_changed == True):
+            self.default_color_function = self.rgb_elements.rgb_function
+            print(self.rgb_elements.red_func) 
+            print(self.rgb_elements.green_func) 
+            print(self.rgb_elements.blue_func) 
 
 
     #creates a button which will remain clickable even when the window is click-trough

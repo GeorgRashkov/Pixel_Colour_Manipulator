@@ -22,7 +22,7 @@ class RGB_formula_elements(QWidget):
         self.text_boxes["g"].setMaxLength(text_boxes_max_lenght)
         self.text_boxes["b"].setMaxLength(text_boxes_max_lenght)
 
-        self.rgb_formula_initializer = RGB_formula_initializer(use_many_areas=use_areas)
+        self.rgb_formula_initializer = RGB_formula_initializer()
 
     def test_method(self):
         message = f"the formula `{self.rgb_function_str}`\nfor the input (r=1,g=2,b=3) gives {self.rgb_function(r=1,g=2,b=3)}"
@@ -35,7 +35,7 @@ class RGB_formula_elements(QWidget):
 
 
 
-    def change_RGB_formula(self):  
+    def change_RGB_formula(self) -> bool:  
 
         r_formula = self.text_boxes["r"].text()
         g_formula = self.text_boxes["g"].text()
@@ -50,3 +50,7 @@ class RGB_formula_elements(QWidget):
             self.red_func = rgb_formula.red_func
             self.green_func = rgb_formula.green_func
             self.blue_func = rgb_formula.blue_func
+
+            return True
+        else:
+            return False

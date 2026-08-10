@@ -14,7 +14,7 @@ class Pixel_area:
                  x_rep_start_p1:list, y_rep_start_p1:list, x_rep_end_p1:list, y_rep_end_p1:list, x_rep_step_p1:list,y_rep_step_p1:list, x_rep_count_p1:list, y_rep_count_p1:list, w_rep_p1:list, h_rep_p1:list,
                  x_rep_start_p2:list, y_rep_start_p2:list, x_rep_end_p2:list, y_rep_end_p2:list, x_rep_step_p2:list,y_rep_step_p2:list,  x_rep_count_p2:list, y_rep_count_p2:list, w_rep_p2:list, h_rep_p2:list,
                  f_ids_rep:list, rotations_rep:list, mask_ids_rep:list, ck_count_rep:list, ck_ids_rep:list,
-                 img_index:int=None):
+                 img_index:int|None):
         
         #area id
         self.id = id

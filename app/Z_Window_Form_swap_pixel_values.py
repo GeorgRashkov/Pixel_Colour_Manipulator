@@ -3,10 +3,9 @@ from PyQt5.QtWidgets import (
 )
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextCursor
 from PyQt5.QtGui import QIntValidator
 
-import RGB_formula_elements
+from RGB_formula_elements import RGB_formula_elements
 
 from Form_elements__order_numbers import Form_elements__order_numbers
 
@@ -21,7 +20,7 @@ class FormWindow_SwapPixelValues(QWidget):
         self.lable_for__text_area_swap_pixel_areas = QLabel("pixel areas")
         self.text_area_swap_pixel_areas = QTextEdit()
         self.lable_for__text_area_rgb_formulas = QLabel("rgb formulas")
-        self.text_area_rgb_formulas = Text_area()
+        self.text_area_rgb_formulas = QTextEdit()
 
         positive_int_validator = QIntValidator(0, 999_999)
         int_validator = QIntValidator(-999_999, 999_999)
@@ -163,7 +162,7 @@ class FormWindow_SwapPixelValues(QWidget):
 
 
         #<rgb formula elements
-        self.rgb_elements = RGB_formula_elements.RGB_formula_elements(use_areas=True)
+        self.rgb_elements = RGB_formula_elements(use_areas=True)
         self.rgb_labels_text = ["red channel","green channel","blue channel"]
         self.label_rgb_formula = QLabel("RGB formulas| ")
         self.button_add_rgb_formula = QPushButton("Add")
@@ -317,15 +316,3 @@ class FormWindow_SwapPixelValues(QWidget):
 
         self.setLayout(v_layout)
 
-
-
-class Text_area(QTextEdit):
-
-    def __init__(self):
-        super().__init__()
-
-    def append_on_same_line(self, text):
-        cursor = self.textCursor()
-        cursor.movePosition(QTextCursor.End)
-        cursor.insertText(text)
-        self.setTextCursor(cursor)       

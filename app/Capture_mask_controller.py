@@ -27,7 +27,7 @@ class Capture_mask_controller():
         self.rgb_formulas:dict[int,RGB_formula] = {}
         self.mask_colour_ranges:dict[int,Colour_range] = {}
 
-        self.rgb_formula_initializer = RGB_formula_initializer(use_many_areas=False)
+        self.rgb_formula_initializer = RGB_formula_initializer()
 
 
     #<get functions (helpers)

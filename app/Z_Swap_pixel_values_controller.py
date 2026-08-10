@@ -335,12 +335,12 @@ class Swap_pixel_values_controller:
             print("error: the maximum number of RGB formulas was reached")
             return
         
-        self.form_window_pixel_areas.rgb_elements.change_RGB_formula()
-
-        rgb_formulas_str = f"|{rgb_function_id}|  r->[ {self.form_window_pixel_areas.rgb_elements.red_func} ]  g->[ {self.form_window_pixel_areas.rgb_elements.green_func} ]  b->[ {self.form_window_pixel_areas.rgb_elements.blue_func} ]"
-        rgb_formulas_str = "{ " + rgb_formulas_str + " }\n"
-
-        self.form_window_pixel_areas.text_area_rgb_formulas.append(rgb_formulas_str)
+        is_formula_changed = self.form_window_pixel_areas.rgb_elements.change_RGB_formula()
+        
+        if(is_formula_changed == True):
+            rgb_formulas_str = f"|{rgb_function_id}|  r->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["r"].text()} ]  g->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["g"].text()} ]  b->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["b"].text()} ]"
+            rgb_formulas_str = "{ " + rgb_formulas_str + " }\n"
+            self.form_window_pixel_areas.text_area_rgb_formulas.append(rgb_formulas_str)
 
 
     

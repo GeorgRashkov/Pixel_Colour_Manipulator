@@ -4,8 +4,7 @@ from Formula_validation_collections import RGB_formula_validation_collections
 
 class RGB_formula_initializer():
     
-    def __init__(self, use_many_areas:bool = False):
-        self.use_many_areas = use_many_areas
+    def __init__(self):
         self.rgb_formula_validation_collections = RGB_formula_validation_collections()
 
 

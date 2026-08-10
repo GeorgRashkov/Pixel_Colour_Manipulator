@@ -90,7 +90,7 @@ class Mask():
             self.rgb_formulas_mask.create_colour_range_regions(mask_height=mask_height, mask_width=mask_width, images_for_creating_a_mask=images_for_creating_a_mask, rectangles_with_ids=rectangles_with_ids, colour_range_regions=self.colour_range_regions, remove_previous_mask=self.remove_previous_mask_when_applying_mask)
 
     
-    #`img` must be a "numpy.ndarray" in the shape of (Areas, Height, Width, 3) Where 3 is for the RGB color channels
+    #`img` must be a "numpy.ndarray" in the shape of (Areas, Height, Width, 3) or (Height, Width, 3) Where 3 is for the RGB color channels
     #`rgb_formulas` must be a list which contains objects of type `RGB_formula`
     #the first rgb formula will be applied to the first region, the second rgb formula will be applied to the second region and so on
     def transform_image(self, img:np.ndarray[np.uint8], rgb_formulas:list[RGB_formula], rgb_formulas_dynamic_variables:np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
