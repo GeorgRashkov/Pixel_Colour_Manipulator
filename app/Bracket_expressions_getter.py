@@ -128,7 +128,7 @@ def get_closing_bracket_index(txt:str) -> int:
 
 #the function returns a dictionary whose keys are the parameters while the values are the values of the parameters
 #the values must be placed in the brackets
-def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]:
+def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]|None:
     
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
 
@@ -211,7 +211,7 @@ def check_parameters(valid_parameters:set[str], required_parameters:set[str], pa
 
 
 
-def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]:
+def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]|None:
     
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
 

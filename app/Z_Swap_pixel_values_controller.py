@@ -6,6 +6,7 @@ from Z_Window_Canvas_swap_pixel_values import DrawingWidget
 from Z_Window_Form_swap_pixel_values import FormWindow_SwapPixelValues
 
 from Number_format_checker import check_for_positive_int_format, check_for_int_format
+from Number_operatios import get_smallest_unique_positive_integer
 
 from Z_Pixel_area import Pixel_area, Rectangle
 from Z_Pixel_area_initializer import Pixel_area_initializer
@@ -284,43 +285,6 @@ class Swap_pixel_values_controller:
     #<code for working with the text inside the text area containing the information for the rgb formulas
 
 
-    #explores the text inside the provided text; selects all valid ids; determines the first number which is not used as an id in the text (allowed ids should be in this range 1-999_999)
-    def get_first_unused_rgb_func_id(self, text: str, id_separator: str, id_max_digits:int):#each element which is inside 2 `id_separator` values will be considered as an id; only ids which are positive integer will be considered as valid (not valid ids are ignored)
-        
-        start_index = 0
-        used_ids = []
-
-        #this code get's the valid ids written in the text area
-        while True:
-            
-            stard_index_current_id = text.find(id_separator, start_index)
-            start_index = stard_index_current_id + 1
-
-            if (stard_index_current_id == -1):
-                break
-            
-            end_index_current_id = text.find(id_separator, stard_index_current_id+1)
-            if(end_index_current_id == -1):
-                break
-            
-            if(end_index_current_id - stard_index_current_id < 2):
-                continue
-
-            end_index_current_id = end_index_current_id if end_index_current_id - stard_index_current_id <= id_max_digits + 1 else  stard_index_current_id + id_max_digits + 1
-            current_id = text[stard_index_current_id+1:end_index_current_id]
-
-            is_id_correct = check_for_positive_int_format(txt_value = current_id, is_zero_allowed=False)
-            if(is_id_correct == True):
-                used_ids.append(int(current_id))
-
-        #this code get's the valid ids written in the text area
-
-        #finds the first unused index
-        for i in range (1, 1_000_000):
-            if(i not in used_ids):
-                return i
-        
-        return -1 #this code should never be reached unless the user defines over 999_999 valid ids
 
     def get_text_area_rgb_functions_formatted_text(self):
         rgb_funcs_str = self.form_window_pixel_areas.text_area_rgb_formulas.toPlainText()
@@ -330,8 +294,8 @@ class Swap_pixel_values_controller:
     def add_rgb_function(self):       
         
         rgb_function_from_text_area = self.get_text_area_rgb_functions_formatted_text()
-        rgb_function_id = self.get_first_unused_rgb_func_id(text = rgb_function_from_text_area, id_separator="|", id_max_digits=6)
-        if(rgb_function_id == -1):
+        rgb_function_id = get_smallest_unique_positive_integer(text=rgb_function_from_text_area, opening_separator="|", closing_separator="|")
+        if(rgb_function_id is None):
             print("error: the maximum number of RGB formulas was reached")
             return
         
