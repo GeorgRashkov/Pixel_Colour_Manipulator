@@ -3,6 +3,8 @@ from Number_format_checker import check_for_positive_int_format
 from Formula_validation_collections import RGB_formula_validation_collections
 from Formula_checker import check_formula_format, does_formula_contain_specific_variables
 from Formula_validation_collections import RGB_formula_validation_collections
+from Bracket_expressions_getter import get_subjects_represented_as__parameters_and_values_from_bracket_expressions
+from Enums import Enum__brackets, Enum_rgb_formulas_parameters
 
 
 def remove_indexes_from_rgb_channel_formula(formula:str) -> str:
@@ -65,8 +67,9 @@ def is_RGB_formula_compatible_with_dxcam(rgb_formula: str, channel: str, use_are
 def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = False) -> bool:
     
     rgb_formula_validation_collections = RGB_formula_validation_collections()
-    does_formula_contain_atleast_one_rgb_channel = does_formula_contain_specific_variables(formula=rgb_formula, variables={'r','g','b'},  formula_validation_collections=rgb_formula_validation_collections, find_all=False)
+    does_formula_contain_atleast_one_rgb_channel = does_formula_contain_specific_variables(formula=rgb_formula, variables=['r','g','b'],  formula_validation_collections=rgb_formula_validation_collections, find_all=False)
     if(does_formula_contain_atleast_one_rgb_channel == False):
+        print(f"error: the rgb formula for the {channel} channel must contain at least one rgb channel")
         return False
     
     is_format_correct = check_formula_format(formula=rgb_formula, expression_name=f"{channel} channel formula",  square_brackets_biggest_value=999_999, formula_validation_collections=rgb_formula_validation_collections)  
@@ -75,6 +78,40 @@ def check_RGB_formula_format(rgb_formula: str, channel: str,  use_areas: bool = 
 
     return is_format_correct
 
+
+def check_rgb_formulas_format(rgb_formulas:str,  use_areas: bool = False) -> bool:
+
+    id = Enum_rgb_formulas_parameters.id.name
+    r = Enum_rgb_formulas_parameters.r.name
+    g = Enum_rgb_formulas_parameters.g.name
+    b = Enum_rgb_formulas_parameters.b.name
+    rbg_formulas_parameters = (id, r, g, b)
+
+    rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator="->")
+    if(rbg_formulas_represented_as__parameters_and_values is None):
+        return False
+    
+    for i in range(0, len(rbg_formulas_represented_as__parameters_and_values)):
+
+        rbg_formula_represented_as__parameters_and_values = rbg_formulas_represented_as__parameters_and_values[i]
+        
+        id_txt = rbg_formula_represented_as__parameters_and_values[id]
+        r_txt = rbg_formula_represented_as__parameters_and_values[r]
+        g_txt = rbg_formula_represented_as__parameters_and_values[g]
+        b_txt = rbg_formula_represented_as__parameters_and_values[b]
+
+        is_id_valid = check_for_positive_int_format(txt_value=id_txt, is_zero_allowed=False)
+        if(is_id_valid == False or id_txt==""):
+            print(f"error: the rgb formula at index {i} has wrong format for the id; the id must be a positive integer")
+            return False
+
+        is_r_valid = check_RGB_formula_format(rgb_formula=r_txt, channel=r, use_areas=use_areas)
+        is_g_valid = check_RGB_formula_format(rgb_formula=g_txt, channel=g, use_areas=use_areas)
+        is_b_valid = check_RGB_formula_format(rgb_formula=b_txt, channel=b, use_areas=use_areas)
+        if(is_r_valid == False or is_g_valid == False or is_b_valid == False):
+            return False
+    return True
+#the bottom code might be redundant so when all its references are removed it can be deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 

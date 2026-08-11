@@ -45,6 +45,14 @@ class Enum__range(Enum):
     min = 0
     max = 1
 
+
+class Enum_rgb_formulas_parameters(Enum):
+
+    id = 0
+    r = 1
+    g = 2
+    b = 3
+
 #helper enum elements>
 
 

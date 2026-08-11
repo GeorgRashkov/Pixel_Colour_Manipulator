@@ -1,6 +1,8 @@
 import Z_RGB_formula_checker as RGB_formula_checker
 from Z_RGB_formula import RGB_formula
 from Formula_validation_collections import RGB_formula_validation_collections
+from Bracket_expressions_getter import get_subjects_represented_as__parameters_and_values_from_bracket_expressions
+from Enums import Enum__brackets, Enum_rgb_formulas_parameters
 
 class RGB_formula_initializer():
     
@@ -44,6 +46,51 @@ class RGB_formula_initializer():
         return rgb_formula
 
 
+    def create_many_rgb_formulas(self, rgb_formulas:str, use_pixel_areas:bool) -> dict[int,RGB_formula]:
+
+        rgb_formulas = rgb_formulas.replace(" ", "").replace("\n", "")
+        rgb_formulas_dict:dict[int,RGB_formula] = {}
+
+        id = Enum_rgb_formulas_parameters.id.name
+        r = Enum_rgb_formulas_parameters.r.name
+        g = Enum_rgb_formulas_parameters.g.name
+        b = Enum_rgb_formulas_parameters.b.name
+        rbg_formulas_parameters = (id, r, g, b)
+
+        #check whether the format of the rgb formula is correct
+        are_rgb_formulas_in_valid_format = RGB_formula_checker.check_rgb_formulas_format(rgb_formulas=rgb_formulas, use_areas=use_pixel_areas)
+        if(are_rgb_formulas_in_valid_format == False):
+            return None
+
+        rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator="->")
+        if(rbg_formulas_represented_as__parameters_and_values is None):
+            return None
+        
+        for i in range(0, len(rbg_formulas_represented_as__parameters_and_values)):
+
+            r_formula = rbg_formulas_represented_as__parameters_and_values[i][r]
+            g_formula = rbg_formulas_represented_as__parameters_and_values[i][g]
+            b_formula = rbg_formulas_represented_as__parameters_and_values[i][b]
+
+            r_formula = self.rgb_formula_validation_collections.update_format(formula=r_formula)
+            g_formula = self.rgb_formula_validation_collections.update_format(formula=g_formula)
+            b_formula = self.rgb_formula_validation_collections.update_format(formula=b_formula)
+
+            if(use_pixel_areas == False):
+                r_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula=r_formula)
+                g_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula=g_formula)
+                b_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula=b_formula)
+
+            rbg_formulas_represented_as__parameters_and_values[i][r] = r_formula
+            rbg_formulas_represented_as__parameters_and_values[i][g] = g_formula
+            rbg_formulas_represented_as__parameters_and_values[i][b] = b_formula
+
+            id_value = int(rbg_formulas_represented_as__parameters_and_values[i][id])
+            rgb_formulas_dict[id_value] = RGB_formula(red_func=r_formula,green_func=g_formula,blue_func=b_formula)
+
+        
+        return rgb_formulas_dict
+#the bottom code might be redundant so when all its references are removed it can be deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
