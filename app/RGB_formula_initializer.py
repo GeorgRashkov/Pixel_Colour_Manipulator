@@ -11,7 +11,7 @@ class RGB_formula_initializer():
 
 
     #this function must be called from outside
-    def create_rgb_formulas_without_pixel_areas(self, r_formula:str, g_formula:str, b_formula:str, use_pixel_areas:bool=False) -> RGB_formula:
+    def create_rgb_formulas(self, r_formula:str, g_formula:str, b_formula:str, use_pixel_areas:bool=False) -> RGB_formula:
 
         r_formula = r_formula.replace(" ", "").replace("\n", "")
         g_formula = g_formula.replace(" ", "").replace("\n", "")
@@ -77,6 +77,7 @@ class RGB_formula_initializer():
 
         rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square,
                                                             valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
+        #this check might be redundant as the rgb formula checker assures the value will not be `None`
         if(rbg_formulas_represented_as__parameters_and_values is None):
             return None
         
@@ -95,9 +96,11 @@ class RGB_formula_initializer():
                 g_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula=g_formula)
                 b_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula=b_formula)
 
+            """
             rbg_formulas_represented_as__parameters_and_values[i][r] = r_formula
             rbg_formulas_represented_as__parameters_and_values[i][g] = g_formula
             rbg_formulas_represented_as__parameters_and_values[i][b] = b_formula
+            """
 
             id_value = int(rbg_formulas_represented_as__parameters_and_values[i][id])
             rgb_formulas_dict[id_value] = RGB_formula(red_func=r_formula,green_func=g_formula,blue_func=b_formula)

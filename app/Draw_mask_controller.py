@@ -124,7 +124,7 @@ class Draw_mask_controller():
     def create_rgb_formula(self):
         
         rgb_formulas_str = self.get_text_in_rgb_function_fields()
-        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas_without_pixel_areas(r_formula=rgb_formulas_str["r"], g_formula=rgb_formulas_str["g"], b_formula=rgb_formulas_str["b"])
+        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas(r_formula=rgb_formulas_str["r"], g_formula=rgb_formulas_str["g"], b_formula=rgb_formulas_str["b"])
         if(rgb_formula is None):
             return
         

@@ -41,7 +41,7 @@ class RGB_formula_elements(QWidget):
         g_formula = self.text_boxes["g"].text()
         b_formula = self.text_boxes["b"].text()
 
-        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas_without_pixel_areas(r_formula=r_formula, g_formula=g_formula, b_formula=b_formula, use_pixel_areas=self.use_areas)
+        rgb_formula = self.rgb_formula_initializer.create_rgb_formulas(r_formula=r_formula, g_formula=g_formula, b_formula=b_formula, use_pixel_areas=self.use_areas)
         
         if(rgb_formula is not None):
             self.rgb_function_str = rgb_formula.rgb_function_str

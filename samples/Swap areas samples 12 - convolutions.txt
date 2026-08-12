@@ -1,0 +1,97 @@
+#<sample 1.0 - one pixel area with ck replicas and mask replicas
+
+#<pixel areas
+
+{id:1; x:0; y:0; w:378; h:378;f_id:1;
+p_ids:[1];
+mask_f_ids:[2];
+
+x_rep_count_p1:[10]; y_rep_count_p1:[10];
+x_rep_step_p1:[3]; y_rep_step_p1:[3];
+ w_rep_p1:[10];h_rep_p1:[10];
+
+x_rep_count_p2:[10]; y_rep_count_p2:[10];
+x_rep_step_p2:[3]; y_rep_step_p2:[3];
+ w_rep_p2:[10];h_rep_p2:[10];
+
+ck_ids_rep:[(1,2,0)];
+mask_ids_rep:[(0,0,1)]
+}
+
+#pixel areas>
+
+
+#<rgb formulas
+
+{ |1| 
+ r->[(r[1]>200)*255 ]  
+g->[(r[1]>80)*(r[1]<220)*255]  
+b->[ (r[1]>10)*(r[1]<100)*255 ] 
+}
+
+{ |2|  r->[ 255-r[1] ]  g->[ 255-g[1] ]  b->[ 255-b[1] ] }
+
+#rgb formulas>
+
+
+#<convolutional kernels for rgb channels
+
+{id:1; h:3; w:3; dilation_w:1; dilation_h:1; input_channel: 0} 
+{id:2; h:3; w:3; dilation_w:1; dilation_h:1; input_channel: 1}
+{id:3; h:3; w:3; dilation_w:1; dilation_h:1; input_channel: 2}
+
+#convolutional kernels for rgb channels>
+
+
+#<convolutional kernels for image
+
+{id:[1]; 
+
+r:[
+[0.5,0.15,0-0.10]
+[0-0.25,0.20,0.30]
+[0-0.20,0-0.25,0-0.30]
+]; r_id:[1];
+
+
+g:[
+[0.10,0.05,0.20]
+[0.15,0.30,0.10]
+[0.05,0.05,0.00]
+]; g_id:[2];
+
+b:[
+[0.15,0.10,0.05]
+[0.10,0.35,0.10]
+[0.05,0.10,0.00]
+]; b_id:[3];
+
+}
+
+{id:[2]; 
+
+r:[
+[0.5]
+[0.20,0.30]
+[0-0.20,0-0.30]
+]; r_id:[1];
+
+
+g:[
+[0.05,0.10,0.00]
+[0.05,0-0.10,0.00]
+[0.05,0-0.05,0.00]
+]; g_id:[2];
+
+b:[
+[0.15,0.10,0-0.05]
+[0.05,0.10,0.00]
+[0.05,0-0.10,0.00]
+]; b_id:[3];
+
+}
+
+#convolutional kernels for image>
+
+#sample 1.0 - one pixel area with ck replicas and mask replicas>
+

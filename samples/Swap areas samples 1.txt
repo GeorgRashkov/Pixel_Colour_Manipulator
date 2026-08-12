@@ -1,3 +1,28 @@
+#<sample 0
+
+#<pixel areas
+
+{id:1; x:0; y:0; w:378; h:378;f_id:1}
+
+{id:2; x:0; y:0; w:378; h:378;f_id:2}
+
+#<pixel areas
+
+
+#<rgb formulas
+
+{ |1| 
+ r->[(r>200)*255 ]  
+g->[(r>80)*(r<220)*255]  
+b->[ (r>10)*(r<100)*255 ] 
+}
+
+{ |2|  r->[ 255-g ]  g->[ r ]  b->[ r ] }
+
+#rgb formulas>
+
+#sample 0>
+
 #<sample 1
 
 {id:2; x:301; y:65; w:251; h:251; f_id:2; p_ids:[1]}
