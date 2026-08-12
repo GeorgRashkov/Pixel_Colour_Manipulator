@@ -128,9 +128,15 @@ def get_closing_bracket_index(txt:str) -> int:
 
 #the function returns a dictionary whose keys are the parameters while the values are the values of the parameters
 #the values must be placed in the brackets
+"""
 def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]|None:
+"""
+def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str, parameters_separator:str) -> dict[str, str]|None:
     
+    """
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
+    """
+    check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
 
     parameters = {}
     if(txt == ""):
@@ -139,26 +145,34 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
     parameter_start_index = 0
     while(parameter_start_index<len(txt)):
         
-        #<check whether the current parameter is valid
+        #<check whether the current parameter and its parameter value separator are valid
         separator_start_index = -1
         found_parameter = None
         for valid_parameter in valid_parameters:
             separator_start_index = parameter_start_index+len(valid_parameter)
             if( separator_start_index < len(txt) ):
                 if( txt[parameter_start_index:separator_start_index] == valid_parameter and txt[separator_start_index:separator_start_index+len(parameter_value_separator)] == parameter_value_separator):
-                    #separator_start_index = separator_start_index-1
                     found_parameter = valid_parameter
                     break
         
+        """
         if(separator_start_index == -1):
             print("error: invalid parameter")
+            return None
+        """
+        if(found_parameter is None):
+            parameter_end_index = min(txt.find(parameter_value_separator, parameter_start_index), txt.find(parameters_separator, parameter_start_index))
+            parameter_end_index = max(txt.find(parameter_value_separator, parameter_start_index), txt.find(parameters_separator, parameter_start_index)) if parameter_end_index==-1 else parameter_end_index
+            parameter_end_index = len(txt) if parameter_end_index==-1 else parameter_end_index
+            print(f"error: the parameter `{txt[parameter_start_index:parameter_end_index]}` is not allowed")
             return None
         
         if(found_parameter in parameters.keys()):
             print(f"error: the parameter `{found_parameter}` is used many times")
             return None
-        #check whether the current parameter is valid>
+        #check whether the current parameter and its parameter value separator are valid>
 
+        """
 
         #<check whether the parameter-value separator is valid
         #separator_start_index = separator_start_index + 1
@@ -173,6 +187,8 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
         
         #check whether the parameter-value separator is valid>
         
+        """
+        separator_end_index = separator_start_index + len(parameter_value_separator) - 1
         
         #<check whether the value of the current parameter has proper openning and closing bracket
         value_openning_bracket_index = separator_end_index+1
@@ -190,7 +206,16 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
         parameters[found_parameter] = expression_in_brackets
 
         value_closing_bracket_index = value_openning_bracket_index + len(expression_in_brackets) + 1
+        """
         parameter_start_index = value_closing_bracket_index + len(parameter_value_separator) + 1
+        """
+        if(value_closing_bracket_index == len(txt)-1):
+            break
+
+        parameter_start_index = value_closing_bracket_index + len(parameters_separator) + 1
+        if(txt[value_closing_bracket_index+1:parameter_start_index] != parameters_separator):
+            print(f"error: the parameter `{found_parameter}` had invalid separator after its value; the valid separator is `{parameters_separator}`")
+            return None
     
     for required_parameter in required_parameters:
         if(required_parameter not in parameters.keys()):
@@ -200,10 +225,21 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
     return parameters
 
 
+"""
 def check_parameters(valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str):
+"""
+def check_parameters(valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str, parameters_separator:str):
     
+    """
     if(len(parameter_value_separator) == 0):
         raise Exception(f"`parameter_value_separator` had no characters")
+    """
+
+    if(len(parameter_value_separator) == 0 or len(parameters_separator) == 0):
+        raise Exception("separators must contain at least one character")
+
+    if(len(valid_parameters) == 0):
+        raise Exception("at least one valid parameter must be provided")
 
     for required_parameter in required_parameters:
         if(required_parameter not in valid_parameters):
@@ -211,9 +247,15 @@ def check_parameters(valid_parameters:set[str], required_parameters:set[str], pa
 
 
 
+"""
 def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]|None:
-    
+"""
+def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], 
+                                                                                parameter_value_separator:str, parameters_separator:str, parameter_for_error_messages:str|None=None) -> list[dict[str, str]]|None:
+    """
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
+    """
+    check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
 
     subjects_represented_as__parameters_and_values = []
     if(txt == ""):
@@ -227,9 +269,25 @@ def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(
     subject_index = 0
     for subject in subjects:
         
+        """
         subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=inner_bracket_type, valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
         if(subject_represented_as__parameters_and_values is None):
             print(f"the previous error occurred on the {subject_name} at index {subject_index}")
+            return None
+        """
+        subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=inner_bracket_type, valid_parameters=valid_parameters, 
+                                                    required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
+        
+        if(subject_represented_as__parameters_and_values is None):
+
+            error_message = f"the previous error occurred on the {subject_name} at index {subject_index}"
+
+            if(parameter_for_error_messages is not None):
+                parameter_value = get_parameter_value(txt=subject, parameter=parameter_for_error_messages, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
+                if(parameter_value is not None):
+                    error_message += f" with {parameter_for_error_messages} {parameter_value}" 
+
+            print(error_message)
             return None
         
         subjects_represented_as__parameters_and_values.append(subject_represented_as__parameters_and_values)
@@ -237,3 +295,34 @@ def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(
         subject_index+=1
     
     return subjects_represented_as__parameters_and_values
+
+
+def get_parameter_value(txt:str, parameter:str, parameter_value_separator:str, parameters_separator:str) -> str|None:
+
+    parameter_start_index = 0
+    parameter_end_index = 0
+    while(True):
+
+        parameter_start_index = txt.find(parameter, parameter_end_index)
+        parameter_end_index = parameter_start_index + len(parameter) -1
+        if(parameter_start_index == -1):
+            break
+
+        #this is the first index of the parameters separator located before the parameter
+        parameters_separator_index = max(-1, parameter_start_index-len(parameters_separator))
+        if(parameters_separator_index != -1 ):
+            if(txt[parameters_separator_index:parameter_start_index] != parameters_separator):
+                continue
+
+        #this is the first index of the value located after the parameter
+        value_index = parameter_end_index+len(parameter_value_separator)+1
+
+        if(txt[parameter_end_index+1:value_index] == parameter_value_separator):
+            parameters_separator_index = txt.find(parameters_separator, value_index)
+            if(parameters_separator_index == -1):
+                parameters_separator_index = len(txt)
+            parameter_value = txt[value_index:parameters_separator_index]
+            return parameter_value
+
+    return None
+    

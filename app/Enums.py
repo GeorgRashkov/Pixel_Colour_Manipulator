@@ -45,7 +45,9 @@ class Enum__range(Enum):
     min = 0
     max = 1
 
+#helper enum elements>
 
+#<enum elements for "rgb formulas"
 class Enum_rgb_formulas_parameters(Enum):
 
     id = 0
@@ -53,8 +55,14 @@ class Enum_rgb_formulas_parameters(Enum):
     g = 2
     b = 3
 
-#helper enum elements>
+class Functions_for__Enum__rgb_formulas_parameters():
+    def get_rgb_formulas_parameter_value_separator(self)->str:
+        return "->"
 
+    def get_rgb_formulas_parameters_separator(self)->str:
+        return ";"
+
+#elements for "rgb formulas">
 
 #<enum elements for "rgb channles"
 

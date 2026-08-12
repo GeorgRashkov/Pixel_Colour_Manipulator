@@ -321,7 +321,7 @@ class Convolutional_kernels_initializer():
     def check_cks_parameters_for_image(self, cks_parameters_for_image_str:str) -> bool:
 
         convolutional_kernels_as_strings:list[dict[str, str]] = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=cks_parameters_for_image_str, subject_name="kernel expression (for image)", 
-        outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=set(self.ck_for_image_valid_parameters), required_parameters=self.ck_for_image_required_parameters, parameter_value_separator=":")
+        outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=set(self.ck_for_image_valid_parameters), required_parameters=self.ck_for_image_required_parameters, parameter_value_separator=":", parameters_separator=";", parameter_for_error_messages=ck2_enum.id.name)
         
         if(convolutional_kernels_as_strings == None):
             return False
@@ -384,7 +384,7 @@ class Convolutional_kernels_initializer():
         ck_parameters_for_rgb_channel__dict:dict[str, str] = self.get_str_dict_for__cks_parameters_for_rgb_channel(cks_parameters_for_rgb_channel_str=cks_parameters_for_rgb_channel_str)
 
         cks_parameters_and_values_for_image:list[dict[str, str]] = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=ck_parameters_for_image_str, subject_name="kernel expression (for image)", 
-        outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=set(self.ck_for_image_valid_parameters), required_parameters=self.ck_for_image_required_parameters, parameter_value_separator=":")
+        outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=set(self.ck_for_image_valid_parameters), required_parameters=self.ck_for_image_required_parameters, parameter_value_separator=":", parameters_separator=";")
         
         convolutional_kernels_for_image:dict[int,Convolutional_kernel_for_image] = {}
 

@@ -4,7 +4,7 @@ from Formula_validation_collections import RGB_formula_validation_collections
 from Formula_checker import check_formula_format, does_formula_contain_specific_variables
 from Formula_validation_collections import RGB_formula_validation_collections
 from Bracket_expressions_getter import get_subjects_represented_as__parameters_and_values_from_bracket_expressions
-from Enums import Enum__brackets, Enum_rgb_formulas_parameters
+from Enums import Enum__brackets, Enum_rgb_formulas_parameters, Functions_for__Enum__rgb_formulas_parameters
 
 
 def remove_indexes_from_rgb_channel_formula(formula:str) -> str:
@@ -87,7 +87,14 @@ def check_rgb_formulas_format(rgb_formulas:str,  use_areas: bool = False) -> boo
     b = Enum_rgb_formulas_parameters.b.name
     rbg_formulas_parameters = (id, r, g, b)
 
+    """
     rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator="->")
+    """
+    parameter_value_separator = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameter_value_separator()
+    parameters_separator = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameters_separator()
+
+    rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square,
+                                            valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator, parameter_for_error_messages=id)
     if(rbg_formulas_represented_as__parameters_and_values is None):
         return False
     
@@ -109,12 +116,14 @@ def check_rgb_formulas_format(rgb_formulas:str,  use_areas: bool = False) -> boo
         is_g_valid = check_RGB_formula_format(rgb_formula=g_txt, channel=g, use_areas=use_areas)
         is_b_valid = check_RGB_formula_format(rgb_formula=b_txt, channel=b, use_areas=use_areas)
         if(is_r_valid == False or is_g_valid == False or is_b_valid == False):
+            print(f"the previous error occured for the rgb formula with id {id_txt} at index {i}")
             return False
     return True
 #the bottom code might be redundant so when all its references are removed it can be deleted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 
+"""
 def check_rgb_formulas_format_for_pixel_areas(rgb_formulas_for_pixel_areas: str) -> bool:
     
     rgb_formulas_pixel_area_start_index = 0
@@ -224,3 +233,4 @@ def get_closing_square_bracket(text:str, start_index:int) -> int:
         index+=1
     
     return searched_index
+"""

@@ -2,7 +2,7 @@ import Z_RGB_formula_checker as RGB_formula_checker
 from Z_RGB_formula import RGB_formula
 from Formula_validation_collections import RGB_formula_validation_collections
 from Bracket_expressions_getter import get_subjects_represented_as__parameters_and_values_from_bracket_expressions
-from Enums import Enum__brackets, Enum_rgb_formulas_parameters
+from Enums import Enum__brackets, Enum_rgb_formulas_parameters, Functions_for__Enum__rgb_formulas_parameters
 
 class RGB_formula_initializer():
     
@@ -11,7 +11,7 @@ class RGB_formula_initializer():
 
 
     #this function must be called from outside
-    def create_rgb_formulas_without_pixel_areas(self, r_formula:str, g_formula:str, b_formula:str) -> RGB_formula:
+    def create_rgb_formulas_without_pixel_areas(self, r_formula:str, g_formula:str, b_formula:str, use_pixel_areas:bool=False) -> RGB_formula:
 
         r_formula = r_formula.replace(" ", "").replace("\n", "")
         g_formula = g_formula.replace(" ", "").replace("\n", "")
@@ -35,9 +35,16 @@ class RGB_formula_initializer():
         b_formula = self.rgb_formula_validation_collections.update_format(formula=b_formula)
 
         
+        """
         r_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = r_formula)
         g_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = g_formula)
         b_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = b_formula)
+        """
+
+        if(use_pixel_areas == False):
+            r_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = r_formula)
+            g_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = g_formula)
+            b_formula = RGB_formula_checker.remove_indexes_from_rgb_channel_formula(formula = b_formula)
 
         #updating format>
 
@@ -46,7 +53,7 @@ class RGB_formula_initializer():
         return rgb_formula
 
 
-    def create_many_rgb_formulas(self, rgb_formulas:str, use_pixel_areas:bool) -> dict[int,RGB_formula]:
+    def create_many_rgb_formulas(self, rgb_formulas:str, use_pixel_areas:bool=False) -> dict[int,RGB_formula]:
 
         rgb_formulas = rgb_formulas.replace(" ", "").replace("\n", "")
         rgb_formulas_dict:dict[int,RGB_formula] = {}
@@ -62,7 +69,14 @@ class RGB_formula_initializer():
         if(are_rgb_formulas_in_valid_format == False):
             return None
 
+        """
         rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square, valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator="->")
+        """
+        parameter_value_separator = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameter_value_separator()
+        parameters_separator = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameters_separator()
+
+        rbg_formulas_represented_as__parameters_and_values = get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt=rgb_formulas, subject_name="rgb formula", outer_bracket_type=Enum__brackets.curly, inner_bracket_type=Enum__brackets.square,
+                                                            valid_parameters=rbg_formulas_parameters, required_parameters=rbg_formulas_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
         if(rbg_formulas_represented_as__parameters_and_values is None):
             return None
         
@@ -95,6 +109,7 @@ class RGB_formula_initializer():
 
 
 
+    """
     #this function must be called from outside
     def create_rgb_formulas_with_pixel_areas(self, rgb_formulas:str) -> dict[int,RGB_formula]:
         
@@ -174,3 +189,4 @@ class RGB_formula_initializer():
 
     
   
+"""
