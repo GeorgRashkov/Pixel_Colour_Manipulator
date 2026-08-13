@@ -280,7 +280,7 @@ class Pixel_areas_masks_controller:
     #<applied masks functions
 
     #the function: updates the masks; adds the masks to the applied masks; returns the applied masks
-    def apply_masks(self, rectangles_with_ids:dict[int, Rectangle], images_for_masks:list[np.ndarray[np.uint8]], all_masks:bool) -> dict[int,Mask]|None:
+    def apply_masks(self, rectangles_with_ids:dict[int, Rectangle]|None, images_for_masks:list[np.ndarray[np.uint8]], all_masks:bool) -> dict[int,Mask]|None:
 
         masks_ids = None 
         if(all_masks == False):

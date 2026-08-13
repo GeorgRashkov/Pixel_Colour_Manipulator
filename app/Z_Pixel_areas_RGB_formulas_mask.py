@@ -68,7 +68,7 @@ class RGB_formulas_mask:
     # `colour_ranges` must be a dictionary which has for keys the ids of the colour ranges while the values must be tuples where:
     # the first value is the index of the image while the second value is the id of the rectangle in the image used by the region;
     # the third value must be an object of type `Colour_range`
-    def create_colour_range_regions(self, mask_height:int, mask_width:int, images_for_creating_a_mask:list[np.ndarray[np.uint8]], rectangles_with_ids:dict[int, Rectangle], colour_range_regions:dict[np.uint8, Colour_range_region], remove_previous_mask:bool = True) -> np.ndarray[np.uint8]:
+    def create_colour_range_regions(self, mask_height:int, mask_width:int, images_for_creating_a_mask:list[np.ndarray[np.uint8]], rectangles_with_ids:dict[int, Rectangle]|None, colour_range_regions:dict[np.uint8, Colour_range_region], remove_previous_mask:bool = True) -> np.ndarray[np.uint8]:
 
         if( mask_height < 1 or mask_width < 1):
             raise Exception("the height and the width of the maks must be positive integers above 0")

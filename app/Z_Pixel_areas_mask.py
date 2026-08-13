@@ -82,7 +82,7 @@ class Mask():
 
         self.colour_range_regions = ordered_colour_range_regions
 
-    def apply_regions(self, rectangles_with_ids:dict[int, Rectangle], images_for_creating_a_mask:list[np.ndarray[np.uint8]]):
+    def apply_regions(self, rectangles_with_ids:dict[int, Rectangle]|None, images_for_creating_a_mask:list[np.ndarray[np.uint8]]):
 
         if(len(images_for_creating_a_mask) > 0):
             mask_height = self.height if self.height>0 else images_for_creating_a_mask[-1].shape[0]

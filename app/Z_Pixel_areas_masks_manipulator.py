@@ -139,7 +139,7 @@ class Pixel_areas_masks_manipulator:
 #<applied masks functions
 
     #if `masks_ids` is `None` then all applied masks will be updated
-    def update_applied_masks(self, masks_ids:list[int]|None, rectangles_with_ids:dict[int, Rectangle], images_for_masks:list[np.ndarray[np.uint8]], apply_already_applied_masks:bool, update_regions_when_applying_masks:bool) -> str:
+    def update_applied_masks(self, masks_ids:list[int]|None, rectangles_with_ids:dict[int, Rectangle]|None, images_for_masks:list[np.ndarray[np.uint8]], apply_already_applied_masks:bool, update_regions_when_applying_masks:bool) -> str:
 
         if(len(images_for_masks) == 0):
             return "error: the masks could not be applied because the image collection for colour range masks was empty"

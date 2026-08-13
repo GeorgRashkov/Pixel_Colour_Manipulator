@@ -15,10 +15,13 @@ class Colour_range_region:
         self.colour_range = colour_range
         self.resize_image_before_creation = resize_image_before_creation
 
-    def get_image_used_by_region(self, images:list[np.ndarray[np.uint8]], rectangles_with_ids:dict[int, Rectangle]) -> np.ndarray[np.uint8]:
+    def get_image_used_by_region(self, images:list[np.ndarray[np.uint8]], rectangles_with_ids:dict[int, Rectangle]|None) -> np.ndarray[np.uint8]:
         
         image_index = get_proper_positive_index(index=self.image_index, elements_count=len(images))
         image_for_current_region =  images[image_index]
+
+        if(rectangles_with_ids is None):
+            return image_for_current_region
             
         if(self.rectangle_id in rectangles_with_ids.keys()):
             rec = rectangles_with_ids[self.rectangle_id]
