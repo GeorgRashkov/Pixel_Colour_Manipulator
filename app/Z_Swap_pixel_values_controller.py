@@ -296,9 +296,6 @@ class Swap_pixel_values_controller:
     def add_rgb_function(self):       
         
         rgb_function_from_text_area = self.get_text_area_rgb_functions_formatted_text()
-        """
-        rgb_function_id = get_smallest_unique_positive_integer(text=rgb_function_from_text_area, opening_separator="|", closing_separator="|")
-        """
         rgb_function_id = get_smallest_unique_positive_integer(text=rgb_function_from_text_area, opening_separator="id->[", closing_separator="]")
         if(rgb_function_id is None):
             print("error: the maximum number of RGB formulas was reached")
@@ -307,9 +304,6 @@ class Swap_pixel_values_controller:
         is_formula_changed = self.form_window_pixel_areas.rgb_elements.change_RGB_formula()
         
         if(is_formula_changed == True):
-            """
-            rgb_formulas_str = f"|{rgb_function_id}|  r->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["r"].text()} ]  g->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["g"].text()} ]  b->[ {self.form_window_pixel_areas.rgb_elements.text_boxes["b"].text()} ]"
-            """
             p_v_s = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameter_value_separator()
             ps_s = Functions_for__Enum__rgb_formulas_parameters().get_rgb_formulas_parameters_separator()
 
@@ -413,9 +407,6 @@ class Swap_pixel_values_controller:
 
         rgb_formulas_str = self.get_text_area_rgb_functions_formatted_text()
         rgb_formula_initializer = RGB_formula_initializer()
-        """
-        rgb_formulas_dict = rgb_formula_initializer.create_rgb_formulas_with_pixel_areas(rgb_formulas=rgb_formulas_str)
-        """
         rgb_formulas_dict = rgb_formula_initializer.create_many_rgb_formulas(rgb_formulas=rgb_formulas_str, use_pixel_areas=True)
 
         if(rgb_formulas_dict is None):

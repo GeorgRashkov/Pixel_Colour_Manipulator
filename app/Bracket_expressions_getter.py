@@ -128,14 +128,8 @@ def get_closing_bracket_index(txt:str) -> int:
 
 #the function returns a dictionary whose keys are the parameters while the values are the values of the parameters
 #the values must be placed in the brackets
-"""
-def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> dict[str, str]|None:
-"""
 def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str, parameters_separator:str) -> dict[str, str]|None:
     
-    """
-    check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
-    """
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
 
     parameters = {}
@@ -155,11 +149,6 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
                     found_parameter = valid_parameter
                     break
         
-        """
-        if(separator_start_index == -1):
-            print("error: invalid parameter")
-            return None
-        """
         if(found_parameter is None):
             parameter_end_index = min(txt.find(parameter_value_separator, parameter_start_index), txt.find(parameters_separator, parameter_start_index))
             parameter_end_index = max(txt.find(parameter_value_separator, parameter_start_index), txt.find(parameters_separator, parameter_start_index)) if parameter_end_index==-1 else parameter_end_index
@@ -172,22 +161,6 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
             return None
         #check whether the current parameter and its parameter value separator are valid>
 
-        """
-
-        #<check whether the parameter-value separator is valid
-        #separator_start_index = separator_start_index + 1
-        separator_end_index = separator_start_index + len(parameter_value_separator) - 1
-        if (separator_end_index >= len(txt)):
-            print(f"error: the parameter `{found_parameter}` had invalid separator")
-            return None
-
-        if(txt[separator_start_index:separator_end_index+1] != parameter_value_separator):
-            print(f"error: the parameter `{found_parameter}` had invalid separator")
-            return None
-        
-        #check whether the parameter-value separator is valid>
-        
-        """
         separator_end_index = separator_start_index + len(parameter_value_separator) - 1
         
         #<check whether the value of the current parameter has proper openning and closing bracket
@@ -206,9 +179,6 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
         parameters[found_parameter] = expression_in_brackets
 
         value_closing_bracket_index = value_openning_bracket_index + len(expression_in_brackets) + 1
-        """
-        parameter_start_index = value_closing_bracket_index + len(parameter_value_separator) + 1
-        """
         if(value_closing_bracket_index == len(txt)-1):
             break
 
@@ -225,15 +195,7 @@ def get_parameters_and_values_from_bracket_expressions(txt:str, bracket_type:Enu
     return parameters
 
 
-"""
-def check_parameters(valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str):
-"""
 def check_parameters(valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str, parameters_separator:str):
-    
-    """
-    if(len(parameter_value_separator) == 0):
-        raise Exception(f"`parameter_value_separator` had no characters")
-    """
 
     if(len(parameter_value_separator) == 0 or len(parameters_separator) == 0):
         raise Exception("separators must contain at least one character")
@@ -247,14 +209,9 @@ def check_parameters(valid_parameters:set[str], required_parameters:set[str], pa
 
 
 
-"""
-def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], parameter_value_separator:str) -> list[dict[str, str]]|None:
-"""
 def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(txt:str, subject_name:str, outer_bracket_type:Enum__brackets, inner_bracket_type:Enum__brackets, valid_parameters:set[str], required_parameters:set[str], 
                                                                                 parameter_value_separator:str, parameters_separator:str, parameter_for_error_messages:str|None=None) -> list[dict[str, str]]|None:
-    """
-    check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
-    """
+
     check_parameters(valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
 
     subjects_represented_as__parameters_and_values = []
@@ -269,12 +226,6 @@ def get_subjects_represented_as__parameters_and_values_from_bracket_expressions(
     subject_index = 0
     for subject in subjects:
         
-        """
-        subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=inner_bracket_type, valid_parameters=valid_parameters, required_parameters=required_parameters, parameter_value_separator=parameter_value_separator)
-        if(subject_represented_as__parameters_and_values is None):
-            print(f"the previous error occurred on the {subject_name} at index {subject_index}")
-            return None
-        """
         subject_represented_as__parameters_and_values = get_parameters_and_values_from_bracket_expressions(txt=subject, bracket_type=inner_bracket_type, valid_parameters=valid_parameters, 
                                                     required_parameters=required_parameters, parameter_value_separator=parameter_value_separator, parameters_separator=parameters_separator)
         

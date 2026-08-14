@@ -177,45 +177,6 @@ class FormWindow_Settings(QWidget):
 
         #widgets placement layout>
     
-    """
-    def apply_settings(self):#applies the settings only if all fields are in valid format (empty fields are considered as a correct format which means there will be no error messages for emtpy fields but their correspoding settings values will not change)
-
-        capture_time = self.textBox_update_capture_time.text()
-        if(Number_format_checker.check_for_positive_float_format(capture_time, is_zero_allowed=False)==False):
-            print("Error: the text box for updating the capture time was either in wrong format or it was equal to zero")
-            return None, None, None, None, None
-
-       
-        slider_min_value = self.textBox_slider_min_value.text()
-        if(Number_format_checker.check_for_int_format(slider_min_value)==False):
-            print("Error: the text box for setting the min value of the slider was in wrong format")
-            return None, None, None, None, None
-        
-        slider_max_value = self.textBox_slider_max_value.text()
-        if(Number_format_checker.check_for_int_format(slider_max_value)==False):
-            print("Error: the text box for setting the max value of the slider was in wrong format")
-            return None, None, None, None, None
-        
-        if(self.check_colour_functions_sequence_values()==False):
-            return None, None, None, None, None
-
-
-        RGB_use_doubles = self.checkBox_RGB_use_doubles.isChecked()
-       
-
-        if(capture_time != ''):
-            self.capture_time = float(capture_time)*1000 if(capture_time != "0") else 1
-        if(slider_min_value != ''):
-            self.slider_min_value = int(slider_min_value)
-        if(slider_max_value != ''):
-            self.slider_max_value = int(slider_max_value)
-
-        if(self.slider_min_value > self.slider_max_value):
-            print("Error: the minimun value of the sliders cannot be higher than the max value!")
-            return None, None, None, None, None
-        
-        return self.capture_time, self.slider_min_value, self.slider_max_value, RGB_use_doubles, self.colour_functions_execution_order
-    """
 
     #applies the settings only if all fields are in valid format;
     # empty fields are considered as a correct format which means there will be no error messages for emtpy fields but their correspoding settings values will not change

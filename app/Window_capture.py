@@ -7,9 +7,6 @@ from  PyQt5.QtWidgets import QLabel, QSlider, QPushButton, QCheckBox, QVBoxLayou
 
 from RGB_formula_elements import RGB_formula_elements
 from Z_Pixel_areas_manipulator import Pixel_areas_manipulator
-"""
-from Z_RGB_formulas_mask import RGB_formulas_mask
-"""
 from dxcam import DXCamera
 
 from Dynamic_variable import Dynamic_variable
@@ -42,26 +39,15 @@ class CaptureWindow(QtWidgets.QWidget):
         self.dynamic_variables_float_values:list[float] = [0]
 
         self.default_color_function = lambda r,g,b, areas_count=1, v=np.array([0], dtype=np.uint8) : np.stack([r, g, b], axis=-1)
-        
-        
-
-        """
-        self.rgb_mask:RGB_formulas_mask = None
-        """
 
         self.rgb_formulas_and_masks_manipulator = None
         self.pixel_areas_manipulator:Pixel_areas_manipulator = None
-        
-        
 
         self.RGB_use_doubles = False
 
         self.rgb_formulas_ids:list[int] = [0]
         self.color_methods_execution_order = [1, 2, 3, 4, 5] #the elements in "self.color_methods_execution_order" determine the execution order of the methods in "self.color_methods"
        
-        """
-        self.color_methods = [self.apply_default_color_function, self.apply_rgb_mask, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
-        """
         self.color_methods = [self.apply_rgb_formulas, self.apply_masks, self.apply_convolution_to_image, self.apply_sliders_values_to_image, self.apply_pixel_areas_manipulator] #all the methods must: take as input an image (as type "np.ndarray"); make transformations to the image; return the tranformed image (as type "np.ndarray")
 
         self.setWindowTitle("Colour Changer")
@@ -109,10 +95,6 @@ class CaptureWindow(QtWidgets.QWidget):
         self.label_auto_capture.setBuddy(self.checkBox_auto_capture)
 
         self.button_open_settings = QPushButton('settings',  QtWidgets.QWidget(self))
-        """
-        self.button_open_drawMask = QPushButton('draw mask',  QtWidgets.QWidget(self))
-        self.button_open_captureMask = QPushButton('capture mask',  QtWidgets.QWidget(self))
-        """
         self.button_open_masks_and_rgb_formulas = QPushButton('rgb formulas',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
@@ -230,10 +212,6 @@ class CaptureWindow(QtWidgets.QWidget):
 
         h_layout = QHBoxLayout()        
         h_layout.addWidget(self.button1_showHide_widgets)        
-        """
-        h_layout.addWidget(self.button_open_drawMask)
-        h_layout.addWidget(self.button_open_captureMask)
-        """
         h_layout.addWidget(self.button_open_masks_and_rgb_formulas)
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swapAreas)
@@ -589,30 +567,6 @@ class CaptureWindow(QtWidgets.QWidget):
         return transformed_image           
     
     
-    """
-    def apply_rgb_mask(self, img:np.ndarray):
-
-        if(self.rgb_mask is None):
-            return img
-        
-        transformed_image = self.rgb_mask.apply_mask_to_image(img=img, v=self.dynamic_variables_values)
-        return transformed_image
-    
-    def set_rgb_mask(self, rgb_mask:RGB_formulas_mask):
-
-        if(rgb_mask is not None):
-            self.rgb_mask = rgb_mask
-    
-    def remove_rgb_mask(self):
-        self.rgb_mask = None
-    """
-
-
-    """
-    def apply_default_color_function(self, img:np.ndarray):#img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
-        transformed_image = self.default_color_function(img[:,:,0], img[:,:,1], img[:,:,2], v=self.dynamic_variables_values)
-        return transformed_image
-    """
     #img must be a "numpy.ndarray" in the shape of (Height, Width, 3) Where 3 is for the RGB color channels
     def apply_rgb_formulas(self, img:np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
 
@@ -642,11 +596,6 @@ class CaptureWindow(QtWidgets.QWidget):
         return transformed_image
     
 
-    """
-    #the input must be a pixel areas manipulator or None
-    def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator):
-        self.pixel_areas_manipulator = pixel_areas_manipulator
-    """
     def set_pixel_areas_manipulator(self, pixel_areas_manipulator:Pixel_areas_manipulator|None):
         self.pixel_areas_manipulator = pixel_areas_manipulator
     
@@ -739,9 +688,6 @@ class CaptureWindow(QtWidgets.QWidget):
 #Functions for changing the RGB values of the area under the window>
 
     #This function is called by the Settings window when the user clicks the button for applying the changes
-    """
-    def apply_settings(self, capture_time: float, slider_min_value: float, slider_max_value: float, RGB_use_doubles:bool, color_functions_execution_order: list):
-    """
     def apply_settings(self, capture_time: float, slider_min_value: float, slider_max_value: float, RGB_use_doubles:bool, rgb_formulas_ids:list[int], color_functions_execution_order: list[int]):
         
         capture_time = int(capture_time)

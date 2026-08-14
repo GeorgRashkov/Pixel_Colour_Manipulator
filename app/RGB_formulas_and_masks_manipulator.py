@@ -45,22 +45,6 @@ class RGB_formulas_and_masks_manipulator():
 
         return img
 
-    """
-    #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
-    def transform_image_with_formulas(self, img:np, v:np.ndarray[np.uint8], rbg_formulas_ids:list[int]) -> np.ndarray:
-
-        r = img[:,:,0]
-        g = img[:,:,1]
-        b = img[:,:,2]
-
-        for rbg_formula_id in rbg_formulas_ids:
-            if(rbg_formula_id in self.rgb_formulas.keys()):
-
-                rgb_formula = self.rgb_formulas[rbg_formula_id]
-                img = rgb_formula.rgb_function(r=r, g=g, b=b, v=v)
-
-        return img
-    """
 
     #The input must be a "numpy.ndarray" in the shape of (Height, Width, 3[RGB])
     def transform_image_with_rgb_formulas(self, img:np, v:np.ndarray[np.uint8], rbg_formulas_ids:list[int]) -> np.ndarray:

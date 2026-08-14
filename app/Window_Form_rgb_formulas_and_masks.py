@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QLabel, QPushButton, QCheckBox, QLineEdit, QTextEdit, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QPushButton, QCheckBox, QTextEdit, QHBoxLayout, QVBoxLayout
 
 from RGB_formula_elements import RGB_formula_elements
 
@@ -71,12 +71,6 @@ class Window_Form_rgb_formulas_and_masks(QtWidgets.QWidget):
         h_layout.addWidget(self.text_area_rgb_formulas, 4)
         h_layout.addWidget(self.text_area_mask_ids_with_f_ids, 2)
         v_layout.addLayout(h_layout)
-
-        """
-        h_layout = QHBoxLayout()
-        h_layout.addWidget(self.button_open_masks_window)
-        v_layout.addLayout(h_layout)
-        """
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_apply_elements_to__rgb_formulas_and_masks_manipulator)
