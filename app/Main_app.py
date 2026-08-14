@@ -8,14 +8,18 @@ from Window_capture import CaptureWindow
 from Window_settings import FormWindow_Settings
 from Z_Swap_pixel_values_controller import Swap_pixel_values_controller
 from Window_dynamic_variables import Window_dynamic_variables
+"""
 from Draw_mask_controller import Draw_mask_controller
 from Capture_mask_controller import Capture_mask_controller
 from Z_RGB_formulas_mask import RGB_formulas_mask
+"""
 
 from Images_controller import Images_controller
 from Images_manipulator import Images_manipulator
 
 from Draw_formula_controller import Draw_formula_controller
+
+from RGB_formulas_and_masks_controller import RGB_formulas_and_masks_controller
 
 from Convolutional_kernels_manipulator import Convolutional_kernels_manipulator
 from Convolutional_kernels_controller import Convolutional_kernels_controller
@@ -26,6 +30,7 @@ class MainApp:
     def __init__(self):
         self.app = QtWidgets.QApplication(sys.argv)
 
+        """
         rgb_formulas_mask = RGB_formulas_mask()
 
         self.draw_mask_controller = Draw_mask_controller(rgb_formulas_mask=rgb_formulas_mask)
@@ -35,6 +40,7 @@ class MainApp:
         self.capture_mask_controller = Capture_mask_controller(rgb_formulas_mask=rgb_formulas_mask)
         self.capture_mask_controller.form_window_capture_mask.button_apply_mask.clicked.connect(self.apply_rgb_mask_from_capture_window)
         self.capture_mask_controller.form_window_capture_mask.button_remove_mask.clicked.connect(self.remove_rgb_mask)
+        """
 
 
         
@@ -48,14 +54,17 @@ class MainApp:
         self.capture_window = CaptureWindow()
 
         self.capture_window.button_open_settings.clicked.connect(self.open_window_settings)
+        """
         self.capture_window.button_open_drawMask.clicked.connect(self.open_windows_draw_mask)
         self.capture_window.button_open_captureMask.clicked.connect(self.open_window_capture_mask)
+        """
         
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_convolutional_kernels)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
         self.capture_window.button_open_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
         self.capture_window.button_open_images.clicked.connect(self.open_window_images)
+        self.capture_window.button_open_masks_and_rgb_formulas.clicked.connect(self.open_window_masks_and_rgb_formulas)
         
         #settings window
         self.settings_window = FormWindow_Settings()
@@ -78,6 +87,11 @@ class MainApp:
         self.images_controller = Images_controller(images_manipulator=self.images_manipulator)
         self.images_controller.window_form_images.button_apply_images_manipulator.clicked.connect(self.apply_images)
 
+        #rgb formulas and masks window
+        self.rgb_formulas_and_masks_controller = RGB_formulas_and_masks_controller(images_manipulator=self.images_manipulator)
+        self.rgb_formulas_and_masks_controller.form_window_rgb_formulas_and_masks.button_apply_elements_to__rgb_formulas_and_masks_manipulator.clicked.connect(self.apply_elements_to__rgb_formulas_and_masks_manipulator)
+        self.rgb_formulas_and_masks_controller.form_window_rgb_formulas_and_masks.button_remove_elements_from__rgb_formulas_and_masks_manipulator.clicked.connect(self.remove_elements_from__rgb_formulas_and_masks_manipulator)
+
         #pixel areas
         self.swap_pixel_values_controller = Swap_pixel_values_controller(images_manipulator=self.images_manipulator)
         self.swap_pixel_values_controller.form_window_pixel_areas.button_apply_elements_to_pixel_areas_manipulator.clicked.connect(self.apply_elements_to_pixel_areas_manipulator)
@@ -91,6 +105,17 @@ class MainApp:
         sys.exit(self.app.exec_())
         
         
+    def apply_elements_to__rgb_formulas_and_masks_manipulator(self):
+
+        self.rgb_formulas_and_masks_controller.apply_elements_to__rgb_formulas_and_masks_manipulator()
+        rgb_formulas_and_masks_manipulator = self.rgb_formulas_and_masks_controller.get__rgb_formulas_and_masks_manipulator()
+        self.capture_window.set_rgb_formulas_and_masks_manipulator(rgb_formulas_and_masks_manipulator=rgb_formulas_and_masks_manipulator)
+
+    def remove_elements_from__rgb_formulas_and_masks_manipulator(self):
+    
+        self.rgb_formulas_and_masks_controller.remove_elements_from__rgb_formulas_and_masks_manipulator()
+        rgb_formulas_and_masks_manipulator = self.rgb_formulas_and_masks_controller.get__rgb_formulas_and_masks_manipulator()
+        self.capture_window.set_rgb_formulas_and_masks_manipulator(rgb_formulas_and_masks_manipulator=rgb_formulas_and_masks_manipulator)
 
     
     def apply_elements_to_pixel_areas_manipulator(self):
@@ -110,6 +135,7 @@ class MainApp:
 
 
     
+    """
     def apply_rgb_mask_from_draw_window(self):
         rgb_formula_mask = self.draw_mask_controller.get_colour_mask()
         self.capture_window.set_rgb_mask(rgb_mask=rgb_formula_mask)
@@ -121,6 +147,7 @@ class MainApp:
     
     def remove_rgb_mask(self):
         self.capture_window.remove_rgb_mask()
+    """
 
 
     
@@ -157,12 +184,14 @@ class MainApp:
 
 
     
+    """
     def open_windows_draw_mask(self):
         windows = [self.draw_mask_controller.form_window_draw_mask, self.draw_mask_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
 
     def open_window_capture_mask(self):
         open_or_minimize_window(self.capture_mask_controller.form_window_capture_mask)
+    """
 
     
     def open_window_convolutional_kernels(self):
@@ -181,11 +210,24 @@ class MainApp:
     def open_window_images(self):
         self.images_controller.open_window_images()
 
+    def open_window_masks_and_rgb_formulas(self):
+        self.rgb_formulas_and_masks_controller.open_window_rgb_formulas_and_masks()
 
+
+    """
     def apply_settings(self):
         capture_time, slider_min_value, slider_max_value, RGB_use_doubles, color_functions_execution_order = self.settings_window.apply_settings()
         if(capture_time != None):#if any of the upper variables is "None" than all of them will always be "None"
             self.capture_window.apply_settings(capture_time=capture_time, slider_min_value=slider_min_value, slider_max_value=slider_max_value, RGB_use_doubles=RGB_use_doubles, color_functions_execution_order = color_functions_execution_order)
+
+    """
+
+    def apply_settings(self):
+        parameters = self.settings_window.apply_settings()
+        if(parameters is None):
+            return
+        capture_time, slider_min_value, slider_max_value, RGB_use_doubles, rgb_formulas_ids, color_functions_execution_order = parameters
+        self.capture_window.apply_settings(capture_time=capture_time, slider_min_value=slider_min_value, slider_max_value=slider_max_value, RGB_use_doubles=RGB_use_doubles, rgb_formulas_ids=rgb_formulas_ids, color_functions_execution_order = color_functions_execution_order)
 
     
     #The returned numpy array has shape (Height, Width, 3[RGB])

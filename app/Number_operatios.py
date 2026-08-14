@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 from Enums import Enum_order
-from Number_format_checker import check_for_positive_int_format
+from Number_format_checker import check_for_positive_int_format, check_for_int_format
 
 #step should not be equal to zero
 def order_numbers(nums:list[int], order_type: Enum_order = Enum_order.ascending, start:int=None, end:int=None, step:int=None) -> list[int]:
@@ -93,3 +93,22 @@ def get_smallest_unique_positive_integer(text: str, opening_separator: str, clos
             return i
 
     return None
+
+
+def get_integers_from_text(txt:str, separator:str=",", positives_only:bool=True, is_zero_allowed:bool=True) -> list[int]|None:
+
+    nums_as_strs:list[str] = txt.split(separator)
+    nums:list[int] = []
+
+    for num_as_str in nums_as_strs:
+
+        if(positives_only == True and check_for_positive_int_format(txt_value=num_as_str, is_zero_allowed=is_zero_allowed) == False):
+            return None
+        elif(positives_only == False and check_for_int_format(txt_value=num_as_str, is_zero_allowed=is_zero_allowed) == False):
+            return None
+        elif(num_as_str == ""):
+            return None
+
+        nums.append(int(num_as_str))
+
+    return nums

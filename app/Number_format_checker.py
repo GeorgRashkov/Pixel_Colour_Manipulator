@@ -81,7 +81,7 @@ def is_equal_to_zero(txt_value):
     
 
 
-def check_for_int_format(txt_value:str):
+def check_for_int_format(txt_value:str, is_zero_allowed:bool=True):
         
         if(txt_value == ''):
             return True      
@@ -89,6 +89,8 @@ def check_for_int_format(txt_value:str):
             (txt_value.__contains__('-') and txt_value[0] != '-') or
             (txt_value[0] == '-' and len(txt_value) == 1)
             ):
+            return False
+        elif(is_zero_allowed==False and (txt_value=='0' or txt_value=='-0')):
             return False
         
         allowed_chars = ['0','1','2','3','4','5','6','7','8','9', '-']

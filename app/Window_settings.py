@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 import Number_format_checker
+from Number_operatios import get_integers_from_text
 
 class FormWindow_Settings(QWidget):
     def __init__(self):
@@ -45,6 +46,12 @@ class FormWindow_Settings(QWidget):
         self.textBox_slider_max_value.setMaxLength(9)
         self.textBox_slider_max_value.setValidator(slider_validator)
         #elements - set min and max values for the sliders on the window capture>
+
+        #<elements - rgb formulas ids
+        self.rgb_formulas_ids:list[int] = [0]
+        self.label_rgb_formulas_ids = QLabel("rgb formulas ids")
+        self.textBox_rgb_formulas_ids = QLineEdit()
+        #elements - rgb formulas ids>
 
         #<elements - execution sequence of the functions for setting the pixel values
         self.allowed_colour_functions_values = ["1", "2", "3", "4", "5"]
@@ -131,6 +138,10 @@ class FormWindow_Settings(QWidget):
         
 
 
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.label_rgb_formulas_ids)
+        h_layout.addWidget(self.textBox_rgb_formulas_ids)
+        v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.label_colour_functions_sequence)
@@ -166,6 +177,7 @@ class FormWindow_Settings(QWidget):
 
         #widgets placement layout>
     
+    """
     def apply_settings(self):#applies the settings only if all fields are in valid format (empty fields are considered as a correct format which means there will be no error messages for emtpy fields but their correspoding settings values will not change)
 
         capture_time = self.textBox_update_capture_time.text()
@@ -203,6 +215,57 @@ class FormWindow_Settings(QWidget):
             return None, None, None, None, None
         
         return self.capture_time, self.slider_min_value, self.slider_max_value, RGB_use_doubles, self.colour_functions_execution_order
+    """
+
+    #applies the settings only if all fields are in valid format;
+    # empty fields are considered as a correct format which means there will be no error messages for emtpy fields but their correspoding settings values will not change
+    def apply_settings(self) -> tuple[int, int, int, bool, list[int], list[int]]|None:
+
+        capture_time_txt = self.textBox_update_capture_time.text()
+        if(Number_format_checker.check_for_positive_float_format(capture_time_txt, is_zero_allowed=False)==False):
+            print("Error: capture time must be a positive number above zero")
+            return None
+
+       
+        slider_min_value_txt = self.textBox_slider_min_value.text()
+        if(Number_format_checker.check_for_int_format(slider_min_value_txt)==False):
+            print("Error: the slider min value must be an integer")
+            return None
+        
+        slider_max_value_txt = self.textBox_slider_max_value.text()
+        if(Number_format_checker.check_for_int_format(slider_max_value_txt)==False):
+            print("Error: the slider max value must be an integer")
+            return None
+
+        rgb_formulas_ids_txt = self.textBox_rgb_formulas_ids.text().replace(" ", "").replace("\n", "")
+        if(rgb_formulas_ids_txt != ""):
+
+            rgb_formulas_ids:list[int] = get_integers_from_text(txt=rgb_formulas_ids_txt)
+            if(rgb_formulas_ids is None):
+                print("Error: rgb formulas ids must be positive integers separated by comma")
+                return None
+            else:
+                self.rgb_formulas_ids = rgb_formulas_ids
+        
+        if(self.check_colour_functions_sequence_values()==False):
+            return None
+
+
+        RGB_use_doubles = self.checkBox_RGB_use_doubles.isChecked()
+       
+
+        if(capture_time_txt != ''):
+            self.capture_time = float(capture_time_txt)*1000
+        if(slider_min_value_txt != ''):
+            self.slider_min_value = int(slider_min_value_txt)
+        if(slider_max_value_txt != ''):
+            self.slider_max_value = int(slider_max_value_txt)
+
+        if(self.slider_min_value > self.slider_max_value):
+            print("Error: the minimun value of the sliders cannot be higher than the max value!")
+            return None
+        
+        return (self.capture_time, self.slider_min_value, self.slider_max_value, RGB_use_doubles, self.rgb_formulas_ids, self.colour_functions_execution_order)
     
     
     def check_colour_functions_sequence_values(self) -> bool:
