@@ -12,7 +12,9 @@ from Window_dynamic_variables import Window_dynamic_variables
 from Images_controller import Images_controller
 from Images_manipulator import Images_manipulator
 
+"""
 from Draw_formula_controller import Draw_formula_controller
+"""
 
 from RGB_formulas_and_masks_controller import RGB_formulas_and_masks_controller
 
@@ -26,8 +28,10 @@ class MainApp:
         self.app = QtWidgets.QApplication(sys.argv)
         
 
+        """
         self.draw_formula_controller = Draw_formula_controller()
         self.draw_formula_controller.form_window_draw_formula.button_show_drawing.clicked.connect(self.show_draw_formula_drawing)
+        """
 
         #capture window 
         self.camera = DXCamera_Singleton()
@@ -38,7 +42,9 @@ class MainApp:
         
         self.capture_window.button_open_convolutionalFilter.clicked.connect(self.open_window_convolutional_kernels)
         self.capture_window.button_open_swapAreas.clicked.connect(self.open_windows_swop_pixel_areas)
+        """
         self.capture_window.button_open_drawFormula.clicked.connect(self.open_window_draw_formula)
+        """
         self.capture_window.button_open_dynamic_variables.clicked.connect(self.open_window_dynamic_variables)
         self.capture_window.button_open_images.clicked.connect(self.open_window_images)
         self.capture_window.button_open_masks_and_rgb_formulas.clicked.connect(self.open_window_masks_and_rgb_formulas)
@@ -133,10 +139,12 @@ class MainApp:
             self.images_manipulator = images_manipulator
 
 
+    """
     def show_draw_formula_drawing(self):
         
         img = self.get_rgb_pixel_values_from_capture_window()
         self.draw_formula_controller.show_drawing(img=img)
+    """
 
 
     def open_window_settings(self):
@@ -152,8 +160,10 @@ class MainApp:
         windows = [self.swap_pixel_values_controller.form_window_pixel_areas, self.swap_pixel_values_controller.canvas_window]
         open_or_minimize_windows(windows=windows)
     
+    """
     def open_window_draw_formula(self):
         open_or_minimize_window(window=self.draw_formula_controller.form_window_draw_formula)
+    """
        
     def open_window_dynamic_variables(self):
         open_or_minimize_window(self.window_dynamic_variables)
@@ -174,11 +184,13 @@ class MainApp:
         self.capture_window.apply_settings(capture_time=capture_time, slider_min_value=slider_min_value, slider_max_value=slider_max_value, RGB_use_doubles=RGB_use_doubles, rgb_formulas_ids=rgb_formulas_ids, color_functions_execution_order = color_functions_execution_order)
 
     
+    """
     #The returned numpy array has shape (Height, Width, 3[RGB])
     def get_rgb_pixel_values_from_capture_window(self) -> np.ndarray[np.uint8]:
         
         rgb_values_from_capture_window = self.capture_window.get_transformed_img()
         return rgb_values_from_capture_window
+    """
     
 
 

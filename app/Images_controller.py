@@ -9,6 +9,7 @@ from Window_form_images import Window_form_images
 from Window_show_image import Window_show_image
 from Window_Canvas_draw_mask import Window_Canvas_draw_mask
 
+from Draw_formula_controller import Draw_formula_controller
 from Images_manipulator import Images_manipulator
 
 from Number_format_checker import check_for_int_format, check_for_positive_int_format
@@ -17,6 +18,9 @@ from Window_functions import get_rgb_pixel_values_from_window
 class Images_controller:
 
     def __init__(self, images_manipulator:Images_manipulator):
+
+        self.draw_formula_controller = Draw_formula_controller()
+        self.draw_formula_controller.form_window_draw_formula.button_show_drawing.clicked.connect(self.open_window_show_draw_formula_drawing)
 
         self.window_form_images = Window_form_images()
         self.window_show_image = Window_show_image()
@@ -30,6 +34,7 @@ class Images_controller:
         self.window_form_images.button_resize_images.clicked.connect(self.resize_images)
         self.window_form_images.button_open_canvas_window.clicked.connect(self.open_window_canvas)
         self.window_form_images.button_open_image_window.clicked.connect(self.open_window_show_image)
+        self.window_form_images.button_open_draw_formula_window.clicked.connect(self.open_window_draw_formula)
 
         self.window_form_images.draw_elements.slider_red.valueChanged.connect(lambda: self.slider_value_changed(self.window_form_images.draw_elements.slider_red.value(), 'r'))
         self.window_form_images.draw_elements.slider_green.valueChanged.connect(lambda: self.slider_value_changed(self.window_form_images.draw_elements.slider_green.value(), 'g'))
@@ -51,6 +56,13 @@ class Images_controller:
 
     def open_window_show_image(self):
         open_or_minimize_window(window=self.window_show_image)
+
+    def open_window_draw_formula(self):
+        open_or_minimize_window(window=self.draw_formula_controller.form_window_draw_formula)
+
+    def open_window_show_draw_formula_drawing(self):
+        img = self.get_image()
+        self.draw_formula_controller.show_drawing(img=img)
 
 
 #<drawing functions
@@ -99,10 +111,7 @@ class Images_controller:
 #drawing functions>
 
 
-
-#<functions for altering the collection of images in the image manipulator
-
-    def add_image(self):
+    def get_image(self) -> np.ndarray[np.uint8]:
 
         image = None
 
@@ -114,6 +123,27 @@ class Images_controller:
             image = self.get_image_from_canvas()
         else:
             raise Exception("the image cannot be added when none of the image buttons is selected")
+
+        return image
+
+
+#<functions for altering the collection of images in the image manipulator
+
+    def add_image(self):
+
+        """
+        image = None
+
+        if(self.window_form_images.radioButton_add_window_capture_input.isChecked() == True):
+            image = self.images_manipulator.get_image_under_capture_window()
+        elif(self.window_form_images.radioButton_add_window_capture_output.isChecked() == True):
+            image = self.images_manipulator.get_transformed_image_from_capture_window()
+        elif(self.window_form_images.radioButton_add_draw_window_output.isChecked() == True):
+            image = self.get_image_from_canvas()
+        else:
+            raise Exception("the image cannot be added when none of the image buttons is selected")
+        """
+        image = self.get_image()
 
         if(self.window_form_images.checkBox_remove_last_image_before_creating_new_image.isChecked() == True):
             self.images_manipulator.remove_image(index=-1)

@@ -57,7 +57,9 @@ class Window_form_images(QWidget):
 
         #<elements to resize images - the selected images will be resized in percentage based on the current size of the main (capture) window
         self.button_resize_images = QPushButton("resize images")
+        self.button_resize_images.setMaximumWidth(100)
         self.label_resize_images = QLabel("range:")
+        self.label_resize_images.setMaximumWidth(30)
         self.textBox_resize_images_index1 = QLineEdit("0")
         self.textBox_resize_images_index1.setMaxLength(4)
         self.textBox_resize_images_index1.setMaximumWidth(33)
@@ -67,12 +69,20 @@ class Window_form_images(QWidget):
         self.textBox_resize_images_index2.setMaximumWidth(33)
         self.textBox_resize_images_index2.setValidator(int_validator)
 
+        """
         self.label_resize_images_height = QLabel("height:")
+        """
+        self.label_resize_images_height = QLabel("height")
+        self.label_resize_images_height.setMaximumWidth(30)
         self.textBox_resize_images_height = QLineEdit("100")
         self.textBox_resize_images_height.setMaxLength(4)
         self.textBox_resize_images_height.setMaximumWidth(33)
         self.textBox_resize_images_height.setValidator(int_validator)
+        """
         self.label_resize_images_width = QLabel("width:")
+        """
+        self.label_resize_images_width = QLabel("width")
+        self.label_resize_images_width.setMaximumWidth(25)
         self.textBox_resize_images_width = QLineEdit("100")
         self.textBox_resize_images_width.setMaxLength(4)
         self.textBox_resize_images_width.setMaximumWidth(33)
@@ -89,10 +99,15 @@ class Window_form_images(QWidget):
         self.textBox_show_image.setValidator(int_validator)
         #elements to show an image>
 
+        """
         self.button_open_image_window = QPushButton("open image window")
         self.button_open_image_window.setMaximumWidth(111)
         self.button_open_canvas_window = QPushButton("open canvas window")
         self.button_open_canvas_window.setMaximumWidth(111)
+        """
+        self.button_open_draw_formula_window = QPushButton("open draw formulas")
+        self.button_open_canvas_window = QPushButton("open canvas")
+        self.button_open_image_window = QPushButton("open images")
 
         self.draw_elements = Draw_elements()
         
@@ -128,9 +143,12 @@ class Window_form_images(QWidget):
         h_layout.addWidget(self.radioButton_add_window_capture_output)
         h_layout.addWidget(self.radioButton_add_draw_window_output)
         h_layout.addWidget(self.checkBox_remove_last_image_before_creating_new_image)
+        """
         h_layout.setAlignment(Qt.AlignLeft)
+        """
         v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_remove_images)
         h_layout.addWidget(self.label_remove_images)
@@ -138,6 +156,7 @@ class Window_form_images(QWidget):
         h_layout.addWidget(self.textBox_remove_images_index2)
         h_layout.setAlignment(Qt.AlignLeft)
         v_layout.addLayout(h_layout)
+        """
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_resize_images)
@@ -149,19 +168,35 @@ class Window_form_images(QWidget):
         h_layout.addWidget(self.textBox_resize_images_height)
         h_layout.addWidget(self.label_resize_images_width)
         h_layout.addWidget(self.textBox_resize_images_width)
+        """
         h_layout.setAlignment(Qt.AlignLeft)
+        """
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_show_image)
         h_layout.addWidget(self.textBox_show_image)
+        h_layout.addWidget(self.button_remove_images)
+        h_layout.addWidget(self.label_remove_images)
+        h_layout.addWidget(self.textBox_remove_images_index1)
+        h_layout.addWidget(self.textBox_remove_images_index2)
+        """
         h_layout.setAlignment(Qt.AlignLeft)
+        """
         v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button_open_image_window)
         h_layout.addWidget(self.button_open_canvas_window)
         h_layout.setAlignment(Qt.AlignLeft)
+        v_layout.addLayout(h_layout)
+        """
+
+        h_layout = QHBoxLayout()
+        h_layout.addWidget(self.button_open_draw_formula_window)
+        h_layout.addWidget(self.button_open_canvas_window)
+        h_layout.addWidget(self.button_open_image_window)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()

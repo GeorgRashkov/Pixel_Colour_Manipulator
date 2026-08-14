@@ -22,8 +22,10 @@ class RGB_formulas_and_masks_controller():
         self.form_window_rgb_formulas_and_masks = Window_Form_rgb_formulas_and_masks()
         self.form_window_rgb_formulas_and_masks.button_open_masks_window.clicked.connect(self.open_window_masks)
         self.form_window_rgb_formulas_and_masks.button_add_rgb_formula.clicked.connect(self.add_rgb_function)
+        """
         self.form_window_rgb_formulas_and_masks.button_apply_elements_to__rgb_formulas_and_masks_manipulator.clicked.connect(self.apply_elements_to__rgb_formulas_and_masks_manipulator)
         self.form_window_rgb_formulas_and_masks.button_remove_elements_from__rgb_formulas_and_masks_manipulator.clicked.connect(self.apply_elements_to__rgb_formulas_and_masks_manipulator)
+        """
 
         self.masks_controller = Pixel_areas_masks_controller()
         self.masks_controller.form_window_draw_mask.button_apply_all_masks.clicked.connect(lambda _: self.apply_masks(all_masks=True))

@@ -97,10 +97,15 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button_open_settings = QPushButton('settings',  QtWidgets.QWidget(self))
         self.button_open_masks_and_rgb_formulas = QPushButton('rgb formulas',  QtWidgets.QWidget(self))
         self.button_open_convolutionalFilter = QPushButton('convolution',  QtWidgets.QWidget(self))
+        """
         self.button_open_swapAreas = QPushButton('swap areas',  QtWidgets.QWidget(self))
 
         self.button_open_drawFormula = QPushButton('draw formula',  QtWidgets.QWidget(self))
         self.button_open_dynamic_variables = QPushButton('dynamic variables',  QtWidgets.QWidget(self))
+        self.button_open_images = QPushButton('images',  QtWidgets.QWidget(self))
+        """
+        self.button_open_swapAreas = QPushButton('pixel areas',  QtWidgets.QWidget(self))
+        self.button_open_dynamic_variables = QPushButton('variables',  QtWidgets.QWidget(self))
         self.button_open_images = QPushButton('images',  QtWidgets.QWidget(self))
 
         #<color sliders
@@ -183,9 +188,11 @@ class CaptureWindow(QtWidgets.QWidget):
         self.button3_showHide_widgets.clicked.connect(lambda: self.hide_widgets(3))
         self.button3_showHide_widgets.setMaximumSize(10,10)
 
+        """
         self.button4_showHide_widgets = QPushButton('', QtWidgets.QWidget(self))
         self.button4_showHide_widgets.clicked.connect(lambda: self.hide_widgets(4))
         self.button4_showHide_widgets.setMaximumSize(10,10)
+        """
 
         self.button_showHide_all_widgets = QPushButton('', QtWidgets.QWidget(self))
         self.button_showHide_all_widgets.clicked.connect(self.show_or_hide_all_widgets)
@@ -215,9 +222,12 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_masks_and_rgb_formulas)
         h_layout.addWidget(self.button_open_convolutionalFilter)
         h_layout.addWidget(self.button_open_swapAreas)
+        h_layout.addWidget(self.button_open_dynamic_variables)
+        h_layout.addWidget(self.button_open_images)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
 
+        """
         h_layout = QHBoxLayout()
         h_layout.addWidget(self.button2_showHide_widgets)
         h_layout.addWidget(self.button_open_drawFormula)
@@ -225,9 +235,13 @@ class CaptureWindow(QtWidgets.QWidget):
         h_layout.addWidget(self.button_open_images)
         h_layout.setAlignment(Qt.AlignLeft)
         self.v_layout.addLayout(h_layout)
+        """
 
         h_layout = QHBoxLayout()        
+        """
         h_layout.addWidget(self.button3_showHide_widgets)
+        """
+        h_layout.addWidget(self.button2_showHide_widgets)
         h_layout.addWidget(self.slider_red)
         h_layout.addWidget(self.slider_green)
         h_layout.addWidget(self.slider_blue)
@@ -236,7 +250,10 @@ class CaptureWindow(QtWidgets.QWidget):
         self.rgb_elements = RGB_formula_elements()
         h_layout = QHBoxLayout()
         
+        """
         h_layout.addWidget(self.button4_showHide_widgets)
+        """
+        h_layout.addWidget(self.button3_showHide_widgets)
         for channel in self.rgb_elements.channels:
             button_apply_formula = QPushButton("OK")
             button_apply_formula.setMaximumWidth(30)
