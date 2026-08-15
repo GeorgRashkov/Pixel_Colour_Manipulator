@@ -39,7 +39,6 @@ class FormWindow_SwapPixelValues(QWidget):
         self.radioButtonGroup_resize_behaviour.addButton(self.radioButton_areas_move)
         self.radioButtonGroup_resize_behaviour.addButton(self.radioButton_areas_keep_aspect_ratio)
 
-        self.checkBox_fast_area_creation = QCheckBox("use smallest area size")
         #pixel areas behaviour when resizing main window>
 
         #<pixel areas elements to order ids
@@ -210,7 +209,6 @@ class FormWindow_SwapPixelValues(QWidget):
         h_layout.addWidget(self.radioButton_areas_resize)
         h_layout.addWidget(self.radioButton_areas_move)
         h_layout.addWidget(self.radioButton_areas_keep_aspect_ratio)
-        h_layout.addWidget(self.checkBox_fast_area_creation)
         v_layout.addLayout(h_layout)
 
         h_layout = QHBoxLayout()
