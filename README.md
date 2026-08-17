@@ -5,8 +5,12 @@ The app is a Python tool designed for Windows OS which uses a Main window that c
 
 <br>
 
-**Important Note** 
-This project depends on third-party packages that may have their own license agreements. Their licenses and usage terms may change over time. You can find the third-party packages in the `requirements.txt` file.
+**Copyright © 2026 Georg Rashkov** 
+This project is licensed under the GNU General Public License v3.0 only.
+See `LICENSE` for the complete license text.
+
+This project uses third-party packages distributed under their own
+licenses. See `THIRD-PARTY-NOTICES.txt` for details.
 
 ##
 
@@ -183,5 +187,7 @@ The sliders on the Main window and the convolutional filters on the Convolution 
 
 4) Install the required packages in the env  
    `pip install -r requirements.txt`
+   - To reproduce the exact package environment used for the current release,
+     use  `pip install -r requirements-lock.txt` instead
 
 5) Run the `Main_app.py` file

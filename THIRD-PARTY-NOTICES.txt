@@ -1,0 +1,236 @@
+Third-Party Software Notices
+
+This project uses third-party software packages. The project itself is
+licensed under the GNU General Public License v3.0; however, third-party
+software remains subject to its own copyright and license terms.
+
+This file documents the third-party packages and versions present in
+the environment used for this release. It does not provide licensing
+information for packages or package versions that are not included in
+that environment.
+
+The dependency set installed by pip may vary depending on the package
+versions available at the time of installation, the Python version,
+the operating system, and other environment-specific factors.
+Additional packages may also be installed as transitive dependencies.
+
+If your installation contains third-party packages or versions that
+differ from those identified in this file, you should review the
+applicable license terms and notices for those packages.
+
+This file is provided as a notice and summary. It does not replace the
+original license texts or notices supplied with the respective
+third-party packages. When redistributing third-party software or a
+compiled application containing it, the applicable original license
+texts and notices should also be preserved as required by those
+licenses.
+
+---------------------------------------------------------------------
+
+1. altgraph
+
+Package: altgraph
+Version: 0.17.4
+License: MIT License
+
+
+2. comtypes
+
+Package: comtypes
+Version: 1.4.12
+License: MIT License
+
+
+3. contourpy
+
+Package: contourpy
+Version: 1.3.3
+License: BSD License
+
+
+4. cycler
+
+Package: cycler
+Version: 0.12.1
+License: BSD License
+
+
+5. DXcam
+
+Package: dxcam
+Version: 0.0.5
+License: MIT License
+
+
+6. fonttools
+
+Package: fonttools
+Version: 4.63.0
+License: MIT License
+
+
+7. kiwisolver
+
+Package: kiwisolver
+Version: 1.5.0
+License: BSD License
+
+
+8. matplotlib
+
+Package: matplotlib
+Version: 3.10.9
+License: Python Software Foundation License
+
+
+9. mss
+
+Package: mss
+Version: 10.1.0
+License: MIT License
+
+
+10. NumPy
+
+Package: numpy
+Version: 2.2.6
+License: BSD License
+
+
+11. OpenCV-Python
+
+Package: opencv-python
+Version: 4.12.0.88
+License: Apache Software License
+
+
+12. packaging
+
+Package: packaging
+Version: 25.0
+Licenses: Apache Software License; BSD License
+
+
+13. pefile
+
+Package: pefile
+Version: 2023.2.7
+License: MIT License
+
+
+14. Pillow
+
+Package: pillow
+Version: 11.3.0
+License: MIT-CMU License
+
+
+15. pip
+
+Package: pip
+Version: 25.2
+License: MIT License
+
+pip is the Python package installer used for installing the packages
+in the project and it is normally a development/build environment 
+component rather than a runtime dependency of this application.
+
+
+16. PyInstaller
+
+Package: pyinstaller
+Version: 6.16.0
+License: GNU General Public License v2 (GPLv2)
+
+PyInstaller is a build tool rather than a runtime dependency of this
+application.
+
+
+17. pyinstaller-hooks-contrib
+
+Package: pyinstaller-hooks-contrib
+Version: 2025.9
+Licenses: Apache Software License; GNU General Public License v2 (GPLv2)
+
+
+18. pyparsing
+
+Package: pyparsing
+Version: 3.3.2
+License: MIT License
+
+
+19. PyQt5
+
+Package: PyQt5
+Version: 5.15.11
+License: GPL v3
+
+
+20. PyQt5-Qt5
+
+Package: PyQt5-Qt5
+Version: 5.15.2
+License: LGPL v3
+
+
+21. PyQt5_sip
+
+Package: PyQt5_sip
+Version: 12.17.1
+License: BSD-2-Clause License
+
+
+22. python-dateutil
+
+Package: python-dateutil
+Version: 2.9.0.post0
+Licenses: Apache Software License; BSD License
+
+
+23. pywin32
+
+Package: pywin32
+Version: 311
+License: Python Software Foundation License
+
+
+24. pywin32-ctypes
+
+Package: pywin32-ctypes
+Version: 0.2.3
+License: BSD-3-Clause License
+
+
+25. setuptools
+
+Package: setuptools
+Version: 80.9.0
+License: MIT License
+
+setuptools is normally a development/build environment component
+rather than a runtime dependency of this application.
+
+
+26. six
+
+Package: six
+Version: 1.17.0
+License: MIT License
+
+---------------------------------------------------------------------
+
+Important distribution note
+
+The list above describes the Python packages present in the
+development environment used for this project. Some packages contain
+additional third-party software and files under different licenses. 
+The license of the project does not replace or alter those licenses.
+
+If distributing source code only, the applicable source-code license
+notices should be retained as required by the respective licenses.
+
+If distributing a compiled or packaged application, such as an
+executable created with PyInstaller, the distributor should also
+review the licenses and notices applicable to the software actually
+included in the resulting application.
