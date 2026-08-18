@@ -6,11 +6,12 @@ The app is a Python tool designed for Windows OS which uses a Main window that c
 <br>
 
 **Copyright © 2026 Georg Rashkov** 
+<br>
 This project is licensed under the GNU General Public License v3.0 only.
-See `LICENSE` for the complete license text.
-
+See [LICENSE](LICENSE) for the complete license text.
+<br>
 This project uses third-party packages distributed under their own
-licenses. See `THIRD-PARTY-NOTICES.txt` for details.
+licenses. See [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for details.
 
 ##
 
@@ -19,13 +20,11 @@ licenses. See `THIRD-PARTY-NOTICES.txt` for details.
 
 **🧮 User-defined formulas for each RGB channel**
 
-**🌀 Near real-time pixel transformation using a configurable timer**
+**🌀 Real-time pixel transformation using a configurable timer**
 
 **🎛️ Per-channel convolutional filters**
 
-**🎨 Drawing masks that apply separate formulas to user-painted regions**
-
-**📸 Capture masks that apply separate formulas to different regions created with the output of the Main window and RGB thresholds defined by the user**
+**🎨 Masks that apply separate formulas to user-defined regions**
 
 **🎥 Works on almost anything placed below the Main window including static content or live video behind the window**
 
@@ -35,119 +34,69 @@ licenses. See `THIRD-PARTY-NOTICES.txt` for details.
 
 The Main window continuously samples the pixels under it and applies the user-defined formulas to them.
 
-The Main window allows the user to enter formula for each of the RGB channels. Formulas entered by user are used as a return value from lambda functions. Each lambda function takes as input the parameters `(r,g,b)` where `r` contains the red channel pixel values under the window, `g` contains the green channel pixel values under the window, `b` contains the blue channel pixel values under the window. Each Main window RGB channel has its own lambda function whose return value is defined by the user. The lambda finctions look like this:
+The Main window allows the user to enter formula for each of the RGB channels. Formulas entered by the user are used as a return value from lambda functions. Each lambda function takes as input the parameters `(r,g,b)` where `r` contains the red channel pixel values under the window, `g` contains the green channel pixel values under the window, `b` contains the blue channel pixel values under the window. Each Main window RGB channel has its own lambda function whose return value is defined by the user. The lambda functions look like this:
 <br>
-`eval(f"lambda r,g,b: np.stack([{self.red_func},{self.green_func},{self.blue_func}], axis=-1)")`
+`eval(f"lambda r,g,b: np.stack([ {self.red_func}, {self.green_func}, {self.blue_func} ], axis=-1)")`
 
-The user can use any of the following characters when writing the formula: \[`.` `(` `)` `r` `g` `b` `+` `-` `*` `/` `^` `%` `<` `>` `=` `0` `1` `2` `3` `4` `5` `6` `7` `8` `9`]. When writing the formula the user must use at least once any of the symbols \[`r` `g` `b`] so the program can have pixel values to apply transformations. 
+The user can use any of the following characters when writing the formula: \[`.` `(` `)` `r` `g` `b` `+` `-` `*` `/` `^` `%` `<` `>` `=` `0` `1` `2` `3` `4` `5` `6` `7` `8` `9`]. When writing the formula the user must use at least once any of the symbols [`r` `g` `b`] so the program can have pixel values to apply transformations. 
 
-Most of the time if the RGB formula has a correct Python syntax the app will consider it as valid. However the app considers as invalid all RGB formulas which have a comparison or arithmetic operator placed before or after another comparison or arithmetic operator. Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not allow the user to change the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.<br>
+Most of the time if the RGB formula has a correct Python syntax the app will consider it as valid. However the app considers as invalid all RGB formulas which have a comparison or arithmetic operator placed before or after another comparison or arithmetic operator. Some symbols are transformed by the app to make them compatible with the Python syntax. The symbol `^` is transformed into `**` while `=` is transformed into `==`. The app will not apply the RGB formulas if the user uses invalid symbols (spaces are ignored but also allowed for readability) or invalid syntax. Here are a few valid formulas: `r-g+100`; `r-g-b*0.2`; `b`, `r>155`; `5^r^g`; `(r-20)*(g-150)`. Here are a few invalid formulas: `r-g+`, `100`, `200-100`, `r**2`.<br>
 
-If you want to know more about the RGB formulas you can check my `RGB_formulas.md` document.
+Another thing which the RGB formulas rely on is the range of the numbers used inside them. The app uses dxcam to get the pixel values under the Main window and dxcam produces a uint8 numpy array making the formula uncapable of handling values outside the range 0-255 (the app won't crash as it will use the previous working formula). Operation between 2 int values which results in a value outside the range 0-255 (for instance `100*3`, `0-1`) will cause the same problem, however operations between uint8 value and another uint8 value will manage to wrap the result if it is outside the range without throwing errors. Since the input RGB values are represented as numpy array containing uint8 values the app will be able to wrap operations' results outside the range 0-255. If the RGB formula is `200+200+r` the app will not apply it, however if the RGB formula is `200+(200+r)` the app will apply it due to the wraps by numpy.
+
+If you want to know more about the RGB formulas you can check my [RGB_formulas.md](RGB_formulas.md) document.
 ##
 
 
-### **Windows and tools**
+### **Main window widgets**
 
-###### 
+![Main window](images_for_documentation/capture_window.jpg)
 
-#### **Main window**
+0) The first element on each line represents a button displayed as a dot which when pressed will remove all widgets on the line. An exception makes the button on the last line which is used to either show the widgets on each line or hide them all.
 
-* RGB text boxes - allow the user to enter formulas for R, G, B outputs
-* RGB sliders - allow the user to suppress or strengthen the R, G, B outputs in a simple, fast and smooth way
-* Slider value - an int value which gets divided by 100 and then it is multiplied by the RGB input values 
-* Capture timer - defines how often the pixels under the window are captured and updated
-* `capture` button - samples the pixels under the Main window only once allowing the user to update the output of the main window manually when the Capture timer value is high
-* `settings` button - opens the Settings window
-* `draw mask` button - opens the Draw masks window
-* `capture mask` button - opens the Capture mask window
-* `convolution` button - opens the Convolution window
-* `stack output` check box - when checked the Main window will use as input the RGB values of it's own result; when unchecked the Main window will use as input the RGB values of the pixels under itself
+1) The first line contains elements which control how often the Main window will capture the pixels under itself:
+   - when the `auto capture` check box is checked the window will use a frame rate defined by the user in the `settings` window
+   - when the `auto capture` check box is not checked the Main window will capture the pixel values only once when the user presses the button `capture` which is useful when the user defined formulas require a computation time over half a second.
+   - when the `stack output` check box is checked the window will take as input the RGB values of its own result
+   - when the `stack output` check box is not checked the Main window will use as input the RGB values of the pixels under itself
 
+2) The second line contains buttons which open windows providing advanced control over the transformation of the pixel values.
 
-#### **Settings window**
+3) The third line contains RGB sliders which allow the user to suppress or strengthen the R, G, B outputs in a simple, fast and smooth way.
 
-* `Update capture time` text box - allows the user to set the value for the Capture timer (in seconds) of the Main Window
-* `Slider min value (in %)` text box - allows the user to set the min value (in percentage) of the RGB sliders on the Main window
-* `Slider max value (in %)` text box - allows the user to set the max value (in percentage) of the RGB sliders on the Main window 
-* Colour functions sequence order - allows the user to determine the execution sequence of different colour functions 
-* `RGB use doubles` check box - when the check box is checked the Main window will be showing the actual result from the colour functions without transforming the values to np.uint8.
+4) The fourth line contains text boxes for entering RGB formulas:
+   - the first text box determines the RGB formula for the red output channel
+   - the second text box determines the RGB formula for the green output channel
+   - the third text box determines the RGB formula for the blue output channel
 
 
+### **Main window additional functionalities**
 
-#### **Convolution window**
+* The user can freely move the Main window to any point on the screen.
 
-* allows the user to define convolutional filters for each RGB channel which the Main window will apply to the pixel values under it for obtaining the result
-* the user can set the width, height, stride and dilation of the convolutional kernels
-* each Main window RGB channel has its convolutional kernel
-* the values of the convolutional filter are represented as text fields in which the user can enter any float numbers, including negative ones
-* Useful for blur/sharpen/edge detect
+* The user can change the width and height of the Main window to match the size of the region on the screen which the user wants to capture.
+
+* The user can make the window to be click-through by double mouse clicking on top of the window. When the window is click-through the only widgets which will be shown are two buttons (shown as dots) on the top corners of the window. In order to make the window clickable the user will have to press the button on the left corner. The button on the right corner can be used to make the window cover the entire screen excluding the task bar.
 
 
 
-#### **Draw Masks window**
-
-* Six colour sections: red, green, blue, yellow, black, white
-* Each colour section has its own RGB formulas (they are the same as those of the Main window) defined by the user
-* The colour sections allow the user to draw on a canvas and apply to the Main window separate RGB formulas to user-painted regions
-* The app will use as a default RGB formula the last section. The default RGB formula is applied not only to the regions with its colour but also to those regions that were not painted at all by the user.
-
-
-
-#### **Capture Masks window**
-
-* Six sections with min-max RGB thresholds defined by the user
-* Each section has its own RGB formulas (they are the same as those of the main Window) defined by the user
-* Allows the user to apply up to 6 RGB formulas in different locations of the Main window. When the user applies the capture mask, the app creates those locations (the mask) by using the min-max RGB threshold values and the output result of the Main window. The result is that the RGB formulas of any section will be applied to those locations where the pixel values of the Main window were within the RGB thresholds of the section. During the creation of the mask if a pixel appears to be within the RGB thresholds of 2 or more sections the location of that pixel will use the RGB formulas of the first matching section.
-* The app will use as a default RGB formula the last section. The default RGB formula is applied not only to the regions that match its min-max RGB threshold values but also to those regions which didn't match any of the min-max RGB threshold values for the six sections.
 
 
 ##
 
 
-### **Additional functionalities**
+### **Real time processing**
+
+Whether the app will be able to run in real time will be determined by the user setup.
+* User hardware - hardware components such as the CPU and the RAM can determine the overall performance of the app. During the tests the used CPU was `AMD Ryzen 7 2700X` (Physical Cores: 8; Logical Cores/Threads: 16) while the used RAM had a total memory size of 16 GB
+* User defined RGB formulas - RGB formulas which contain many arithmetic operations will require more time to process, slowing down performance. Some of the windows for advanced control over the transformation of the pixel values allow the user to enter computationally heavy transformations such as the usage of a convolutional kernel.
+* Number of user defined colour transformers - the Main window provides only colour sliders and colour formulas for each RGB channel and since the colours sliders are processed one by one while the RGB formulas are processed at once, the total number of colour transforms which the user can define with it is 4 which shouldn't make a significant frame drop off. However some of the windows for advanced control over the transformation of the pixel values allow the user to enter multiple colour transformers each of which is processed separately from the rest in a defined sequence.
+* Total number of pixels to process - the app will not able to run in real time when the total number of pixel values to transform is too much. During the tests the app was able to run in real time when the RGB formulas per colour channel were simple (such as `255-r`) and the pixel values were taken from a region with size up to 1000x1000.
 
 
-#### **Main window movement**
+### **Error messages**
 
-The user can freely move the Main window to any point on the screen. The user can also change the width and height of the Main window to match the size of the region on the screen which the user wants to capture.
-
-
-#### **Brush size**
-
-When using the canvas of the Draw mask window the user can change the brush size by placing the cursor on top of the canvas and move the scroll up (to increase the size) or down (to reduce the size). The user can also define min, max and increment values of the brush by using the specified text boxes on the Draw mask window.
-
-
-#### **Controlling number of active sections when creating masks**
-
-When the user creates a drawn or captured mask, the mask will have 6 sections. Since each section is processed separately on each pixel under the Main window, the app uses only the active sections to boost performance. The app activates only those sections which have different RGB formulas from the previous sections.
-
-
-#### **Showing current RGB section formula**
-
-When the user uses the Draw mask window or the Capture mask window he can check the current RGB formulas by pressing the button `show`. Both windows have this button in each of their sections. This button is useful when the user tries to apply invalid RGB formulas - the RGB text box will have the value which the user entered (which can be wrong) while the button `show` is responsible for showing the currently selected formula for the section. 
-
-
-#### **Controlling colour functions**
-
-When the user applies a colour function, the function may either overwrite other colour functions or it might be added as a separate colour function. This behaviour depends on the type of the colour function. 
-
-The Capture mask window, the Draw mask window and the text boxes on the Main window all use RGB formulas for changing the colour of the pixels under the Main window and when the user applies a new RGB formula it can overwrite the others. Capture mask window and Draw mask window can apply different RGB formulas at specific regions and whenever the user applies a captured mask or drawn mask it will override the previous mask as well as the RGB formulas defined in the text boxes on the Main window. The RGB formulas created with the text boxes on the Main window act as default colour function which means whenever the user creates a captured mask or drawn mask he can change their default colour function by using the text boxes on the Main window. In order to remove a captured mask or drawn mask the user must use the button `Remove mask` located on the Draw mask window. When the mask is removed the current default colour function will remain.
-
-The sliders on the Main window and the convolutional filters on the Convolution mask window use independent colour functions. This means they cannot overwrite other colour functions except their own colour function. This behaviour allows the user to define either captured mask or drawn mask which can be processed alongside the sliders' values and the convolutional filters. The processing of the colour functions happens in a sequence. The user can define the execution sequence of the colour functions in the Settings window. In order to disable the convolutional filters the user must use the button `Remove filters` in the Convolutional mask window. In order to disable the sliders the user has to set them to the value 100. As the sliders provide a little info about their exact value the user can set their min and max values from the settings window. In fact the user can automatically set the sliders to the exact value he wants by setting their max and min value to be the value he wants.
-
-
-##
-
-
-### **Tips**
-
-* For fast performance - simplify RGB formulas, avoid convolution, reduce the size of the Main window, when using captured mask or drawn mask use small number of active sections
-* When using convolution is advisable to disable auto update by setting timer high (e.g., 999999), as the convolutional process may take a while before completing.  
-* When using the Capture mask window consider not applying the same RGB formulas in more than 1 section as the program will use only the first one of them. If you want to use the same RGB formula for 2 or more min-max colour ranges you can do that by changing the string representation of any of the RGB formulas without affecting the result. For instance the RGB formula `r` produces the same result as `r+0` however since their string representation is different when you apply the capture mask the program will create 2 separate active regions and will threat them as if they were different formulas. Consider that this will lead to extra computation in comparison to using the RGB formula in just one section. Keep in mind that the program ignores spaces (the program will threat `r + g`, `r+ g`, `r  +g` as `r+b`). 
-* Do not use values in the RGB formulas outside 0-255. The app uses dxcam to get the pixel values under the Main window and dxcam produces a uint8 numpy array making the formula uncapable of handling values outside 0-255 (the app won't crash as it will use the previous working formula). Operation between 2 uint8 values which results in a value outside 0-255 (for instance `100*3`, `0-1`) will cause the same problem, however operations between uint8 value and a numpy array (which can be any of the RGB channels for the pixels under the Main window) will silently wrap the result if it is outside 0-255 without throwing errors: if you use `200+200+r` the app will not apply the formula, however if you use `r+200+200` the app will apply the formula due to the silent wraps by numpy. If you want to use negative powers on RGB channels consider writing something like `r^(r*0+1-2)` (if you try to use `r^(1-2)` the app will not apply your formula because `1-2` is outside the range 0-255).
-* Keep the `RGB use doubles` check box from the Settings window unchecked as it can make the output of the Main window look very weird.
-* All messages created by the app are shown in the terminal. In case you wonder why the app doesn't apply your input you can check the terminal for error messages to find out what was wrong with the input. 
+All messages created by the app are shown in the terminal. In case you wonder why the app doesn't apply your input you can check the terminal for error messages to find out what was wrong with the input. 
 
 
 ##
@@ -156,9 +105,9 @@ The sliders on the Main window and the convolutional filters on the Convolution 
 ### **Requirements**
 
 * Windows OS - confirmed to work on Windows 11
-* Python - confirmed to work with Python 3.12.5
+* Python - confirmed to work with Python 3.12
 * Virtual python env
-* IDE - tested with VS Code
+* Terminal - tested with Windows PowerShell
 
 
 ##
@@ -170,24 +119,25 @@ The sliders on the Main window and the convolutional filters on the Convolution 
 - If you are not familiar with python you can execute files by running `python path/to/file` where `path/to/file` starts from the current working directory.
 
 
-##
-
 
 ### Setup
-0) Clone the repository
+0) Open the terminal, navigate to the folder where you want the project to be located and execute the following commands
 
-1) Open the terminal
+1) Clone the repository
+   `git clone https://github.com/GeorgRashkov/Pixel_Colour_Manipulator.git`
 
-2) Create a virtual python environment (make sure the env's folder is inside the repo)  
-   `python -m venv "path/to/new/virtual/environment"`
-   - If you have 2 or more python versions and you want to use version 3.12.5 you should run   
-   `py -3.12 -m venv "path/to/new/virtual/environment"`
+2) Navigate to the projects' directory
+   `cd Pixel_Colour_Manipulator`
 
-3) Activate the env - if you don't know how, you can check my `python_venv_activation.md` file
+3) Create a virtual python environment (make sure the env's folder is inside the repo)  
+   `python -m venv ".venv"`
+   - If you have 2 or more python versions and you want to use version 3.12 you should run   
+   `py -3.12 -m venv ".venv"`
 
 4) Install the required packages in the env  
-   `pip install -r requirements.txt`
-   - To reproduce the exact package environment used for the current release,
-     use  `pip install -r requirements-lock.txt` instead
+   `.venv\Scripts\python.exe -m pip install -r requirements.txt`
+   - To reproduce the exact package environment used for the current release, use
+     `.venv\Scripts\python.exe -m pip install -r requirements-lock.txt`
 
-5) Run the `Main_app.py` file
+5) Run the application 
+   `.venv\Scripts\python.exe app/Main_app.py`
